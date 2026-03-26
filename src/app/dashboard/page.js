@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback, lazy, Suspense } from 'react';
 import { getSupabase } from '@/lib/supabase';
+import { DEPTS } from '@/lib/constants';
 import TopBar from '@/components/TopBar';
 import Sidebar from '@/components/Sidebar';
 import { useRouter } from 'next/navigation';
@@ -107,11 +108,12 @@ export default function Dashboard() {
 
     const taskList = [];
     for (const dept of depts) {
+      const deptName = DEPTS[dept]?.name || dept;
       for (const cat of b2bCats) {
-        taskList.push({ dept, category: cat, type: 'b2b' });
+        taskList.push({ dept, deptName, category: cat, type: 'b2b' });
       }
       for (const cat of coproCats) {
-        taskList.push({ dept, category: cat, type: 'copro' });
+        taskList.push({ dept, deptName, category: cat, type: 'copro' });
       }
     }
     if (customQueries?.length > 0) {
@@ -132,7 +134,7 @@ export default function Dashboard() {
       const task = taskList[i];
       const queryStr = task.type === 'custom'
         ? task.query
-        : `${task.category} ${task.dept}`;
+        : `${task.category} ${task.deptName}`;
 
       setSearchProgress((prev) => ({
         ...addLog(prev, `Searching: ${queryStr}`),

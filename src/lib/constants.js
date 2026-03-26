@@ -1,8 +1,8 @@
 export const DEPTS = {
-  "971": { name: "Guadeloupe", lat: 16.265, lng: -61.551, r: 40000 },
-  "972": { name: "Martinique", lat: 14.636, lng: -61.024, r: 35000 },
-  "973": { name: "Guyane", lat: 4.937, lng: -52.326, r: 50000 },
-  "974": { name: "La Réunion", lat: -21.115, lng: 55.536, r: 35000 }
+  "971": { name: "Guadeloupe", lat: 16.265, lng: -61.551, r: 80000 },
+  "972": { name: "Martinique", lat: 14.636, lng: -61.024, r: 60000 },
+  "973": { name: "Guyane", lat: 4.937, lng: -52.326, r: 150000 },
+  "974": { name: "La Réunion", lat: -21.115, lng: 55.536, r: 60000 }
 };
 
 export const B2B_CATS = [
