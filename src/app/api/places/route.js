@@ -69,7 +69,7 @@ export async function POST(request) {
       const errorData = await response.text();
       console.error('Google Places API error:', errorData);
       return Response.json(
-        { error: `Google Places API error: ${response.status}` },
+        { error: `Google Places API error: ${response.status} — ${errorData.substring(0, 200)}` },
         { status: response.status }
       );
     }
