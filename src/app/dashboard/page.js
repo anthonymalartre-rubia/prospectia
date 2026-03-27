@@ -83,16 +83,19 @@ export default function Dashboard() {
       setUser(currentUser);
 
       // Load plan
-      const { data: profile } = await supabase
+      const { data: profile, error: profileError } = await supabase
         .from('user_profiles')
         .select('plan, stripe_customer_id, is_admin')
         .eq('id', currentUser.id)
         .single();
 
+      console.log('[Dashboard] profile loaded:', profile, 'error:', profileError);
+
       if (profile) {
         const { getPlan } = await import('@/lib/plans');
         setUserPlan(getPlan(profile.plan));
         setIsAdmin(!!profile.is_admin);
+        console.log('[Dashboard] isAdmin set to:', !!profile.is_admin);
       }
 
       // Load usage
