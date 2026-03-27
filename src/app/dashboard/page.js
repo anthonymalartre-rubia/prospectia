@@ -387,14 +387,14 @@ export default function Dashboard() {
   const [isWaterfallEnriching, setIsWaterfallEnriching] = useState(false);
   const [waterfallProgress, setWaterfallProgress] = useState({
     current: 0, total: 0, currentSite: '', logs: [],
-    stats: { scrape: 0, apollo: 0, enrichly: 0, anymail: 0, findymail: 0, guess: 0 },
+    stats: { scrape: 0, serper: 0, apollo: 0, enrichly: 0, anymail: 0, findymail: 0, guess: 0 },
   });
   const stopWaterfallRef = useRef(false);
 
   const startWaterfallEnrichment = useCallback(async () => {
     stopWaterfallRef.current = false;
     setIsWaterfallEnriching(true);
-    const initStats = { scrape: 0, apollo: 0, enrichly: 0, anymail: 0, findymail: 0, guess: 0 };
+    const initStats = { scrape: 0, serper: 0, apollo: 0, enrichly: 0, anymail: 0, findymail: 0, guess: 0 };
     setWaterfallProgress({ current: 0, total: 0, currentSite: '', logs: [], stats: initStats });
 
     const prospectsToEnrich = prospects.filter((p) => !p.email && p.site_web);

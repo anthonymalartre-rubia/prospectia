@@ -119,7 +119,42 @@ async function apolloEnrich(domain, name) {
   return null;
 }
 
-// ─── Serper — LinkedIn matching ─────────────────────────
+// ─── Serper.dev — email search + LinkedIn matching ──────
+
+async function serperEnrich(name, domain) {
+  const apiKey = process.env.SERPER_API_KEY;
+  if (!apiKey) return null;
+
+  try {
+    // Search for email addresses associated with the company
+    const emailQuery = `"${name}" "${domain}" email contact @${domain}`;
+    const res = await fetch('https://google.serper.dev/search', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-API-KEY': apiKey },
+      body: JSON.stringify({ q: emailQuery, num: 10 }),
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+
+    // Extract emails from snippets and titles
+    const allText = (data.organic || [])
+      .map((r) => `${r.title || ''} ${r.snippet || ''}`)
+      .join(' ');
+    const emailRegex = /[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}/g;
+    const foundEmails = [...new Set((allText.match(emailRegex) || []).map((e) => e.toLowerCase()))];
+
+    // Filter: prefer emails matching the domain
+    const domainEmails = foundEmails.filter((e) => e.includes(domain));
+    const bestEmail = domainEmails[0] || foundEmails.find((e) =>
+      !['gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'example.com'].includes(e.split('@')[1])
+    );
+
+    if (bestEmail) {
+      return { email: bestEmail, source: 'serper' };
+    }
+  } catch {}
+  return null;
+}
 
 async function serperLinkedinMatch(name, domain) {
   const apiKey = process.env.SERPER_API_KEY;
@@ -211,6 +246,7 @@ async function findymailEnrich(domain, name) {
 
 const WATERFALL_STEPS = [
   { name: 'scrape', label: 'Scraping site web', fn: async (ctx) => scrapeForEmail(ctx.url) },
+  { name: 'serper', label: 'Serper.dev', fn: async (ctx) => serperEnrich(ctx.name, ctx.domain) },
   { name: 'apollo', label: 'Apollo.io', fn: async (ctx) => apolloEnrich(ctx.domain, ctx.name) },
   { name: 'enrichly', label: 'Enrichly', fn: async (ctx) => enrichlyEnrich(ctx.domain, ctx.name) },
   { name: 'anymail', label: 'Anymail Finder', fn: async (ctx) => anymailEnrich(ctx.domain) },

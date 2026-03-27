@@ -38,6 +38,7 @@ const EMAIL_METHOD_INFO = {
   scrape: { label: "Trouvé sur le site", color: "text-green-400" },
   "deep-verified": { label: "Vérifié (MX + pattern)", color: "text-purple-400" },
   "deep-pattern": { label: "Généré par pattern", color: "text-purple-400/70" },
+  serper: { label: "Serper.dev (Google)", color: "text-yellow-400" },
   apollo: { label: "Apollo.io", color: "text-orange-400" },
   enrichly: { label: "Enrichly", color: "text-cyan-400" },
   anymail: { label: "Anymail Finder", color: "text-teal-400" },
@@ -219,11 +220,12 @@ export default function ResultsPanel({
                 <div className="font-semibold text-orange-400 mb-1">Enrichissement cascade</div>
                 <div className="space-y-0.5">
                   <div>1. Scraping site web (gratuit)</div>
-                  <div>2. Apollo.io ($79/mo)</div>
-                  <div>3. Enrichly ($59/mo)</div>
-                  <div>4. Anymail Finder</div>
-                  <div>5. Findymail</div>
-                  <div>6. Email deviné (fallback)</div>
+                  <div>2. Serper.dev — recherche Google ($0.002/req)</div>
+                  <div>3. Apollo.io ($79/mo)</div>
+                  <div>4. Enrichly ($59/mo)</div>
+                  <div>5. Anymail Finder</div>
+                  <div>6. Findymail</div>
+                  <div>7. Email deviné (fallback)</div>
                 </div>
                 <div className="text-[#3f3f46] mt-1">S'arrête dès qu'un email est trouvé</div>
               </div>
@@ -347,7 +349,11 @@ export default function ResultsPanel({
               method === 'scrape' ? 'bg-green-400' :
               method === 'deep-verified' ? 'bg-purple-400' :
               method === 'deep-pattern' ? 'bg-purple-400/70' :
+              method === 'serper' ? 'bg-yellow-400' :
               method === 'apollo' ? 'bg-orange-400' :
+              method === 'enrichly' ? 'bg-cyan-400' :
+              method === 'anymail' ? 'bg-teal-400' :
+              method === 'findymail' ? 'bg-sky-400' :
               'bg-amber-400'
             }`} />
             <span className="text-[10px] text-[#3f3f46]">{info.label}</span>
