@@ -26,7 +26,7 @@ export async function POST(request) {
 
     const resend = getResend();
     const { data, error } = await resend.emails.send({
-      from: 'Prospect IA <noreply@ezdrive.fr>',
+      from: 'Prospect IA <noreply@flottes.lumeafleet.com>',
       to: email,
       subject: type === 'welcome'
         ? 'Bienvenue sur Prospect IA'
