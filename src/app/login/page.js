@@ -54,9 +54,9 @@ export default function LoginPage() {
         {/* Logo */}
         <div className="text-center">
           <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 shadow-lg shadow-indigo-500/20">
-            <span className="text-lg font-bold text-white">LG</span>
+            <span className="text-lg font-bold text-white">P</span>
           </div>
-          <h1 className="mt-4 text-2xl font-bold text-[#fafafa]">Lead Generator</h1>
+          <h1 className="mt-4 text-2xl font-bold text-[#fafafa]">Prospectia<span className="text-rose-400">.ai</span></h1>
           <p className="mt-2 text-sm text-[#71717a]">
             Connectez-vous à votre compte
           </p>

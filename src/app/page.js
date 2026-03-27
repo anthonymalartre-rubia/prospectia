@@ -3,7 +3,7 @@ import { ArrowRight, Check } from 'lucide-react';
 import { NavAuth, HeroCTA, FooterCTA } from '@/components/AuthCTA';
 
 export const metadata = {
-  title: 'EZData — Trouvez vos prospects DOM-TOM en quelques clics',
+  title: 'Prospectia — Trouvez vos prospects DOM-TOM en quelques clics',
   description: 'La plateforme de prospection B2B la plus abordable pour les DOM-TOM. Recherche Google Places + enrichissement email en cascade. 92% moins cher que la concurrence.',
 };
 
@@ -14,8 +14,8 @@ export default function LandingPage() {
       <nav className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-xl border-b border-gray-100">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
-            <span className="text-xl font-bold tracking-tight">EZData</span>
-            <span className="text-xl">&#8599;</span>
+            <span className="text-xl font-bold tracking-tight">Prospectia</span>
+            <span className="text-[10px] font-medium text-rose-500 ml-0.5">.ai</span>
           </Link>
           <div className="hidden sm:flex items-center gap-8">
             <Link href="#features" className="text-sm text-gray-500 hover:text-black transition">Fonctionnalites</Link>
@@ -60,7 +60,7 @@ export default function LandingPage() {
           <div className="border border-gray-200 rounded-2xl p-8 bg-gray-50/50">
             <div className="max-w-xl mx-auto">
               <div className="text-center mb-6">
-                <span className="text-xl font-bold tracking-tight">EZData &#8599;</span>
+                <span className="text-xl font-bold tracking-tight">Prospectia<span className="text-rose-500">.ai</span></span>
                 <p className="text-sm text-gray-400 mt-1">Prospection B2B & Copro — DOM-TOM</p>
               </div>
               <div className="border border-gray-200 rounded-xl p-4 bg-white">
@@ -100,7 +100,7 @@ export default function LandingPage() {
           <div className="border border-gray-200 rounded-2xl bg-white overflow-hidden shadow-sm">
             <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 bg-gray-50">
               <div className="flex items-center gap-3">
-                <span className="text-sm font-bold">EZData &#8599;</span>
+                <span className="text-sm font-bold">Prospectia<span className="text-rose-500">.ai</span></span>
                 <div className="flex items-center gap-2 px-3 py-1 bg-white border border-gray-200 rounded-lg">
                   <span className="text-xs font-medium">B2B</span>
                   <span className="text-gray-300">/</span>
@@ -328,7 +328,7 @@ export default function LandingPage() {
                 <thead>
                   <tr className="border-b border-gray-200">
                     <th className="text-left py-3 px-4 font-medium text-gray-400"></th>
-                    <th className="text-center py-3 px-4 font-bold">EZData Pro</th>
+                    <th className="text-center py-3 px-4 font-bold">Prospectia</th>
                     <th className="text-center py-3 px-4 font-medium text-gray-400">Apollo.io</th>
                     <th className="text-center py-3 px-4 font-medium text-gray-400">LeadQuest</th>
                   </tr>
@@ -375,8 +375,8 @@ export default function LandingPage() {
       <footer className="border-t border-gray-100 py-12 px-6 bg-white">
         <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <span className="text-lg font-bold tracking-tight">EZData</span>
-            <span>&#8599;</span>
+            <span className="text-lg font-bold tracking-tight">Prospectia</span>
+            <span className="text-rose-500 text-sm font-medium">.ai</span>
           </div>
           <div className="flex items-center gap-6 text-sm text-gray-400">
             <span>Guadeloupe</span>
@@ -385,7 +385,7 @@ export default function LandingPage() {
             <span>La Reunion</span>
           </div>
           <p className="text-xs text-gray-400">
-            &copy; 2026 EZData. Tous droits reserves.
+            &copy; 2026 Prospectia.ai — Tous droits reserves.
           </p>
         </div>
       </footer>

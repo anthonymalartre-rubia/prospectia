@@ -14,8 +14,8 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata = {
-  title: 'Lead Generator — Prospection automatisée DOM-TOM',
-  description: 'Outil de prospection B2B et copropriété pour les DOM-TOM. Recherche Google Places, enrichissement email automatique, export CSV et Zoho CRM.',
+  title: 'Prospectia.ai — Prospection automatisée DOM-TOM',
+  description: 'La plateforme de prospection B2B la plus abordable pour les DOM-TOM. Recherche Google Places, enrichissement email en cascade, export CSV et Zoho CRM.',
 };
 
 export default function RootLayout({ children }) {

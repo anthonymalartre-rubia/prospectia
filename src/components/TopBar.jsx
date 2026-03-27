@@ -35,9 +35,9 @@ export default function TopBar({ user, onToggleSidebar, searchProgress, isSearch
           </button>
           <div className="flex items-center gap-3">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 shadow-lg shadow-indigo-500/20">
-              <span className="text-xs font-bold text-white">LG</span>
+              <span className="text-xs font-bold text-white">P</span>
             </div>
-            <span className="text-sm font-semibold text-[#fafafa] hidden sm:block tracking-tight">Lead Generator</span>
+            <span className="text-sm font-semibold text-[#fafafa] hidden sm:block tracking-tight">Prospectia<span className="text-rose-400">.ai</span></span>
           </div>
         </div>
 
