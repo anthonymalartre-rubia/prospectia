@@ -344,6 +344,7 @@ export default function Dashboard() {
               seenPlaceIds.add(place.place_id);
               added++;
               newProspects.push({
+                user_id: user.id,
                 place_id: place.place_id,
                 nom: place.nom,
                 adresse: place.adresse || '',
