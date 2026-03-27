@@ -79,16 +79,29 @@ function isValidEmail(email) {
 function scoreEmail(email, domain) {
   if (!email) return 0;
   const [localPart, emailDomain] = email.split('@');
+  if (!localPart || !emailDomain) return 0;
   let score = 0;
-  if (emailDomain.includes(domain)) score += 100;
-  const contactPrefixes = ['contact', 'info', 'support', 'hello', 'business'];
-  if (contactPrefixes.some((prefix) => localPart.toLowerCase().startsWith(prefix))) score += 80;
-  const genericDomains = ['gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com'];
-  if (!genericDomains.includes(emailDomain.toLowerCase())) {
-    score += 60;
+
+  // Domain match is the most important signal
+  const domainMatches = emailDomain.toLowerCase().includes(domain.toLowerCase()) ||
+    domain.toLowerCase().includes(emailDomain.toLowerCase().replace(/^www\./, ''));
+
+  if (domainMatches) {
+    score += 200; // Strong boost for matching domain
   } else {
-    score += 20;
+    score -= 100; // Heavy penalty for non-matching domain (e.g. contact@pierreetvacances.com on hotel-carayou.com)
   }
+
+  // Prefix bonus
+  const contactPrefixes = ['contact', 'info', 'support', 'hello', 'business', 'accueil', 'reception'];
+  if (contactPrefixes.some((prefix) => localPart.toLowerCase().startsWith(prefix))) score += 50;
+
+  // Generic email providers get lower score
+  const genericDomains = ['gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'yahoo.fr', 'orange.fr', 'free.fr', 'sfr.fr', 'laposte.net'];
+  if (genericDomains.includes(emailDomain.toLowerCase())) {
+    score -= 30;
+  }
+
   return score;
 }
 
@@ -149,7 +162,10 @@ async function enrichEmail(url) {
       score: scoreEmail(email, domain),
     }));
     scoredEmails.sort((a, b) => b.score - a.score);
-    return { email: scoredEmails[0].email, method: 'scrape' };
+    // Only return if the best email has a positive score (domain matches)
+    if (scoredEmails[0].score > 0) {
+      return { email: scoredEmails[0].email, method: 'scrape' };
+    }
   }
 
   return { email: `contact@${domain}`, method: 'guess' };

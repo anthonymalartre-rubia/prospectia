@@ -39,11 +39,21 @@ function extractEmails(html) {
 
 function scoreEmail(email, domain) {
   const [local, emailDomain] = email.split('@');
+  if (!local || !emailDomain) return 0;
   let score = 0;
-  if (emailDomain.includes(domain)) score += 100;
-  if (['contact', 'info', 'support', 'hello', 'business'].some((p) => local.startsWith(p))) score += 80;
-  if (!['gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com'].includes(emailDomain)) score += 60;
-  else score += 20;
+
+  // Domain match is the most important signal
+  const domainMatches = emailDomain.toLowerCase().includes(domain.toLowerCase()) ||
+    domain.toLowerCase().includes(emailDomain.toLowerCase().replace(/^www\./, ''));
+
+  if (domainMatches) {
+    score += 200;
+  } else {
+    score -= 100; // Penalize emails from other domains (e.g. contact@pierreetvacances.com)
+  }
+
+  if (['contact', 'info', 'support', 'hello', 'business', 'accueil', 'reception'].some((p) => local.toLowerCase().startsWith(p))) score += 50;
+  if (['gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'yahoo.fr', 'orange.fr', 'free.fr'].includes(emailDomain.toLowerCase())) score -= 30;
   return score;
 }
 
