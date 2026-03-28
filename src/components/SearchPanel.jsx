@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { DEPTS, REGIONS, B2B_CATS, COPRO_CATS } from "@/lib/constants";
+import { DEPTS, REGIONS, B2B_CATS, COPRO_CATS, B2B_GROUPS, COPRO_GROUPS } from "@/lib/constants";
 import {
-  Send, Square, Sparkles, MapPin, Building2, Home, Search,
+  Send, Square, Sparkles, MapPin, Building2, Home, Search, PenLine,
   Plus, X, Play, RotateCcw, ChevronRight, FolderPlus, Folder,
 } from "lucide-react";
 
@@ -120,6 +120,8 @@ export default function SearchPanel({
 
   const [deptSearch, setDeptSearch] = useState('');
   const [expandedRegions, setExpandedRegions] = useState(new Set());
+  const [catSearch, setCatSearch] = useState('');
+  const [expandedCatGroups, setExpandedCatGroups] = useState(new Set());
 
   const toggleRegion = (regionKey) => {
     const region = REGIONS[regionKey];
@@ -149,6 +151,16 @@ export default function SearchPanel({
     setStep(1);
   };
 
+  const [freeSearchInput, setFreeSearchInput] = useState('');
+  const [freeSearchTerms, setFreeSearchTerms] = useState([]);
+
+  const addFreeSearch = () => {
+    if (freeSearchInput.trim()) {
+      setFreeSearchTerms((prev) => [...prev, freeSearchInput.trim()]);
+      setFreeSearchInput('');
+    }
+  };
+
   const toggleDept = (code) => {
     setSelectedDepts((prev) =>
       prev.includes(code) ? prev.filter((d) => d !== code) : [...prev, code]
@@ -161,16 +173,52 @@ export default function SearchPanel({
     );
   };
 
+  const toggleCatGroupExpand = (groupName) => {
+    setExpandedCatGroups((prev) => {
+      const next = new Set(prev);
+      if (next.has(groupName)) next.delete(groupName);
+      else next.add(groupName);
+      return next;
+    });
+  };
+
+  const toggleCatGroup = (cats) => {
+    setSelectedCats((prev) => {
+      const allSelected = cats.every((c) => prev.includes(c));
+      if (allSelected) return prev.filter((c) => !cats.includes(c));
+      return [...new Set([...prev, ...cats])];
+    });
+  };
+
+  const selectAllCats = (groups) => {
+    const all = Object.values(groups).flat();
+    setSelectedCats((prev) => [...new Set([...prev, ...all])]);
+  };
+
+  const clearAllCats = (groups) => {
+    const all = Object.values(groups).flat();
+    setSelectedCats((prev) => prev.filter((c) => !all.includes(c)));
+  };
+
   const confirmDepts = () => {
     if (selectedDepts.length === 0) return;
-    if (searchType === 'b2b') setSelectedCats([...B2B_CATS]);
-    else if (searchType === 'copro') setSelectedCats([...COPRO_CATS]);
-    else setSelectedCats([...B2B_CATS, ...COPRO_CATS]);
-    setStep(2);
+    if (searchType === 'custom') {
+      setSelectedCats([]);
+      setStep(2); // goes to free search input
+    } else {
+      if (searchType === 'b2b') setSelectedCats([...B2B_CATS]);
+      else if (searchType === 'copro') setSelectedCats([...COPRO_CATS]);
+      else setSelectedCats([...B2B_CATS, ...COPRO_CATS]);
+      setStep(2);
+    }
   };
 
   const confirmCats = () => {
-    if (selectedCats.length === 0) return;
+    if (searchType === 'custom') {
+      if (freeSearchTerms.length === 0) return;
+    } else {
+      if (selectedCats.length === 0) return;
+    }
     setStep(3);
   };
 
@@ -208,7 +256,10 @@ export default function SearchPanel({
     const copro = searchType === 'copro' || searchType === 'both'
       ? selectedCats.filter((c) => COPRO_CATS.includes(c))
       : [];
-    onStartScraping(selectedDepts, b2b, copro, customQueries, selectedFolder?.id);
+    const allCustom = searchType === 'custom'
+      ? [...freeSearchTerms, ...customQueries]
+      : customQueries;
+    onStartScraping(selectedDepts, b2b, copro, allCustom, selectedFolder?.id);
   };
 
   const handleReset = () => {
@@ -218,6 +269,8 @@ export default function SearchPanel({
     setSelectedCats([]);
     setCustomQueries([]);
     setCustomInput('');
+    setFreeSearchTerms([]);
+    setFreeSearchInput('');
     setSelectedFolder(null);
     setNewFolderName('');
     setShowNewFolder(false);
@@ -290,12 +343,19 @@ export default function SearchPanel({
                 <Sparkles size={15} />
                 Les deux
               </button>
+              <button
+                onClick={() => handleTypeSelect('custom')}
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-line-hover text-sm font-medium text-content-secondary hover:border-amber-500/30 hover:text-amber-400 hover:bg-amber-600/10 transition-all active:scale-[0.97]"
+              >
+                <PenLine size={15} />
+                Recherche libre
+              </button>
             </div>
           )}
 
           {searchType && (
             <UserMessage>
-              {searchType === 'b2b' ? 'B2B — Entreprises' : searchType === 'copro' ? 'Copropriete — Syndics' : 'B2B + Copropriete'}
+              {searchType === 'b2b' ? 'B2B — Entreprises' : searchType === 'copro' ? 'Copropriete — Syndics' : searchType === 'custom' ? 'Recherche libre' : 'B2B + Copropriete'}
             </UserMessage>
           )}
 
@@ -414,39 +474,224 @@ export default function SearchPanel({
             </>
           )}
 
-          {/* Step 3: Categories */}
+          {/* Step 3: Categories or Free Search */}
           {step >= 2 && (
             <>
-              <BotMessage icon={searchType === 'copro' ? Home : Building2} delay={step === 2 ? 400 : 0}>
-                <div>
-                  Quelles categories ? <span className="text-content-muted">(toutes selectionnees par defaut)</span>
-                </div>
-              </BotMessage>
+              {searchType === 'custom' ? (
+                <BotMessage icon={PenLine} delay={step === 2 ? 400 : 0}>
+                  <div>
+                    Quels types d'entreprises recherchez-vous ? <span className="text-content-muted">Tapez vos termes de recherche</span>
+                  </div>
+                </BotMessage>
+              ) : (
+                <BotMessage icon={searchType === 'copro' ? Home : Building2} delay={step === 2 ? 400 : 0}>
+                  <div>
+                    Quelles categories ? <span className="text-content-muted">(toutes selectionnees par defaut)</span>
+                  </div>
+                </BotMessage>
+              )}
 
-              {step === 2 && (
+              {step === 2 && searchType === 'custom' && (
+                <div className="pl-10 space-y-3 animate-in fade-in duration-300">
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={freeSearchInput}
+                      onChange={(e) => setFreeSearchInput(e.target.value)}
+                      onKeyDown={(e) => e.key === 'Enter' && addFreeSearch()}
+                      placeholder="Ex: boulangerie, coiffeur, cabinet comptable, salle de sport..."
+                      className="flex-1 bg-surface-deep border border-line rounded-xl px-4 py-2.5 text-sm text-content-primary placeholder-content-faint focus:outline-none focus:border-amber-500/40 transition"
+                    />
+                    <button
+                      onClick={addFreeSearch}
+                      disabled={!freeSearchInput.trim()}
+                      className="px-3 py-2.5 rounded-xl bg-surface-elevated hover:bg-line-hover text-content-secondary transition disabled:opacity-30 disabled:cursor-not-allowed"
+                    >
+                      <Plus size={16} />
+                    </button>
+                  </div>
+                  {freeSearchTerms.length > 0 && (
+                    <div className="flex flex-wrap gap-2">
+                      {freeSearchTerms.map((t, i) => (
+                        <div key={i} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs font-medium">
+                          {t}
+                          <button onClick={() => setFreeSearchTerms((prev) => prev.filter((_, idx) => idx !== i))} className="text-amber-600 hover:text-amber-300">
+                            <X size={12} />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  <button
+                    onClick={confirmCats}
+                    disabled={freeSearchTerms.length === 0}
+                    className="flex items-center gap-1.5 text-sm font-medium text-indigo-400 hover:text-indigo-300 transition disabled:text-content-faint disabled:cursor-not-allowed"
+                  >
+                    Continuer <ChevronRight size={14} />
+                  </button>
+                </div>
+              )}
+
+              {step === 2 && searchType !== 'custom' && (
                 <div className="pl-10 space-y-3">
-                  {(searchType === 'both') && (
-                    <p className="text-[10px] uppercase tracking-wider text-blue-400/60 font-semibold">B2B</p>
-                  )}
+                  {/* Search + select/deselect */}
+                  <div className="flex items-center gap-2">
+                    <div className="relative flex-1">
+                      <Search size={12} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-content-faint" />
+                      <input
+                        type="text"
+                        value={catSearch}
+                        onChange={(e) => setCatSearch(e.target.value)}
+                        placeholder="Rechercher une catégorie..."
+                        className="w-full pl-7 pr-3 py-1.5 rounded-lg bg-surface-input border border-line text-xs text-content-primary placeholder:text-content-faint focus:outline-none focus:border-indigo-500/50"
+                      />
+                    </div>
+                  </div>
+
+                  {/* B2B groups */}
                   {(searchType === 'b2b' || searchType === 'both') && (
-                    <OptionChips
-                      options={B2B_CATS}
-                      selected={selectedCats}
-                      onToggle={toggleCat}
-                      colorClass="blue"
-                    />
+                    <div className="space-y-1">
+                      {searchType === 'both' && (
+                        <div className="flex items-center justify-between">
+                          <p className="text-[10px] uppercase tracking-wider text-blue-400/60 font-semibold">B2B — Entreprises</p>
+                          <div className="flex gap-2">
+                            <button onClick={() => selectAllCats(B2B_GROUPS)} className="text-[10px] text-blue-400/60 hover:text-blue-400 transition">Tout</button>
+                            <button onClick={() => clearAllCats(B2B_GROUPS)} className="text-[10px] text-content-faint hover:text-content-secondary transition">Aucun</button>
+                          </div>
+                        </div>
+                      )}
+                      {searchType === 'b2b' && (
+                        <div className="flex justify-end gap-2">
+                          <button onClick={() => selectAllCats(B2B_GROUPS)} className="text-[10px] text-blue-400/60 hover:text-blue-400 transition">Tout sélectionner</button>
+                          <button onClick={() => clearAllCats(B2B_GROUPS)} className="text-[10px] text-content-faint hover:text-content-secondary transition">Tout désélectionner</button>
+                        </div>
+                      )}
+                      {Object.entries(B2B_GROUPS).map(([groupName, cats]) => {
+                        const q = catSearch.toLowerCase();
+                        const matchingCats = q ? cats.filter((c) => c.toLowerCase().includes(q)) : cats;
+                        if (matchingCats.length === 0) return null;
+                        const selectedInGroup = matchingCats.filter((c) => selectedCats.includes(c)).length;
+                        const isExpanded = expandedCatGroups.has(groupName) || !!catSearch;
+                        return (
+                          <div key={groupName} className="rounded-lg border border-line overflow-hidden">
+                            <button
+                              onClick={() => toggleCatGroupExpand(groupName)}
+                              className="w-full flex items-center justify-between px-3 py-2 bg-surface-card hover:bg-surface-hover transition"
+                            >
+                              <div className="flex items-center gap-2">
+                                <ChevronRight size={12} className={`text-content-faint transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
+                                <span className="text-xs font-medium text-content-primary">{groupName}</span>
+                                <span className="text-[10px] text-content-faint">({selectedInGroup}/{matchingCats.length})</span>
+                              </div>
+                              <button
+                                onClick={(e) => { e.stopPropagation(); toggleCatGroup(matchingCats); }}
+                                className={`text-[10px] px-2 py-0.5 rounded-md transition ${
+                                  selectedInGroup === matchingCats.length
+                                    ? 'text-blue-400 bg-blue-500/10'
+                                    : 'text-content-faint hover:text-content-secondary'
+                                }`}
+                              >
+                                {selectedInGroup === matchingCats.length ? 'Désélect.' : 'Tout'}
+                              </button>
+                            </button>
+                            {isExpanded && (
+                              <div className="flex flex-wrap gap-1.5 px-3 py-2 bg-surface-base border-t border-line">
+                                {matchingCats.map((cat) => {
+                                  const isSelected = selectedCats.includes(cat);
+                                  return (
+                                    <button
+                                      key={cat}
+                                      onClick={() => toggleCat(cat)}
+                                      className={`px-2 py-1 rounded-md border text-[10px] font-medium transition ${
+                                        isSelected
+                                          ? 'bg-blue-600/20 border-blue-500/30 text-blue-400'
+                                          : 'border-line text-content-muted hover:border-content-faint hover:text-content-secondary'
+                                      }`}
+                                    >
+                                      {cat}
+                                    </button>
+                                  );
+                                })}
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
                   )}
-                  {(searchType === 'both') && (
-                    <p className="text-[10px] uppercase tracking-wider text-purple-400/60 font-semibold pt-2">Copropriete</p>
-                  )}
+
+                  {/* Copro groups */}
                   {(searchType === 'copro' || searchType === 'both') && (
-                    <OptionChips
-                      options={COPRO_CATS}
-                      selected={selectedCats}
-                      onToggle={toggleCat}
-                      colorClass="purple"
-                    />
+                    <div className="space-y-1">
+                      {searchType === 'both' && (
+                        <div className="flex items-center justify-between pt-2">
+                          <p className="text-[10px] uppercase tracking-wider text-purple-400/60 font-semibold">Copropriété — Syndics</p>
+                          <div className="flex gap-2">
+                            <button onClick={() => selectAllCats(COPRO_GROUPS)} className="text-[10px] text-purple-400/60 hover:text-purple-400 transition">Tout</button>
+                            <button onClick={() => clearAllCats(COPRO_GROUPS)} className="text-[10px] text-content-faint hover:text-content-secondary transition">Aucun</button>
+                          </div>
+                        </div>
+                      )}
+                      {searchType === 'copro' && (
+                        <div className="flex justify-end gap-2">
+                          <button onClick={() => selectAllCats(COPRO_GROUPS)} className="text-[10px] text-purple-400/60 hover:text-purple-400 transition">Tout sélectionner</button>
+                          <button onClick={() => clearAllCats(COPRO_GROUPS)} className="text-[10px] text-content-faint hover:text-content-secondary transition">Tout désélectionner</button>
+                        </div>
+                      )}
+                      {Object.entries(COPRO_GROUPS).map(([groupName, cats]) => {
+                        const q = catSearch.toLowerCase();
+                        const matchingCats = q ? cats.filter((c) => c.toLowerCase().includes(q)) : cats;
+                        if (matchingCats.length === 0) return null;
+                        const selectedInGroup = matchingCats.filter((c) => selectedCats.includes(c)).length;
+                        const isExpanded = expandedCatGroups.has(groupName) || !!catSearch;
+                        return (
+                          <div key={groupName} className="rounded-lg border border-line overflow-hidden">
+                            <button
+                              onClick={() => toggleCatGroupExpand(groupName)}
+                              className="w-full flex items-center justify-between px-3 py-2 bg-surface-card hover:bg-surface-hover transition"
+                            >
+                              <div className="flex items-center gap-2">
+                                <ChevronRight size={12} className={`text-content-faint transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
+                                <span className="text-xs font-medium text-content-primary">{groupName}</span>
+                                <span className="text-[10px] text-content-faint">({selectedInGroup}/{matchingCats.length})</span>
+                              </div>
+                              <button
+                                onClick={(e) => { e.stopPropagation(); toggleCatGroup(matchingCats); }}
+                                className={`text-[10px] px-2 py-0.5 rounded-md transition ${
+                                  selectedInGroup === matchingCats.length
+                                    ? 'text-purple-400 bg-purple-500/10'
+                                    : 'text-content-faint hover:text-content-secondary'
+                                }`}
+                              >
+                                {selectedInGroup === matchingCats.length ? 'Désélect.' : 'Tout'}
+                              </button>
+                            </button>
+                            {isExpanded && (
+                              <div className="flex flex-wrap gap-1.5 px-3 py-2 bg-surface-base border-t border-line">
+                                {matchingCats.map((cat) => {
+                                  const isSelected = selectedCats.includes(cat);
+                                  return (
+                                    <button
+                                      key={cat}
+                                      onClick={() => toggleCat(cat)}
+                                      className={`px-2 py-1 rounded-md border text-[10px] font-medium transition ${
+                                        isSelected
+                                          ? 'bg-purple-600/20 border-purple-500/30 text-purple-400'
+                                          : 'border-line text-content-muted hover:border-content-faint hover:text-content-secondary'
+                                      }`}
+                                    >
+                                      {cat}
+                                    </button>
+                                  );
+                                })}
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
                   )}
+
                   <button
                     onClick={confirmCats}
                     disabled={selectedCats.length === 0}
@@ -459,8 +704,13 @@ export default function SearchPanel({
 
               {step > 2 && (
                 <UserMessage>
-                  {selectedCats.length} categories selectionnees
-                  {searchType === 'both' && ` (${b2bCount} B2B, ${coproCount} Copro)`}
+                  {searchType === 'custom'
+                    ? `${freeSearchTerms.length} terme${freeSearchTerms.length > 1 ? 's' : ''} de recherche`
+                    : <>
+                        {selectedCats.length} categories selectionnees
+                        {searchType === 'both' && ` (${b2bCount} B2B, ${coproCount} Copro)`}
+                      </>
+                  }
                 </UserMessage>
               )}
             </>

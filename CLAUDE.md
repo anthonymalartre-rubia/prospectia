@@ -59,8 +59,8 @@ Configurées dans Vercel > Project Settings > Environment Variables.
 
 - **101 départements** : métropole (96) + outre-mer (5), organisés en 14 régions avec sélection par région, recherche par nom/code.
 - **Recherche Google Places** : interroge l'API Places (New) REST pour chaque combinaison département × catégorie. Déduplication par `place_id`. LocationBias par cercle (lat/lng/rayon) par département.
-- **Catégories B2B** : 13 catégories (hôtel, restaurant, centre commercial, concessionnaire, supermarché, clinique, location voiture, pharmacie, station service, bureau études, électricien, architecte, garage).
-- **Catégories Copro** : 6 catégories (syndic, administrateur de biens, gestionnaire immobilier, gestion immobilière, agence immobilière gestion, cabinet syndic).
+- **Catégories B2B** : 150+ catégories organisées en 12 secteurs (Hôtellerie & Restauration, Commerce & Distribution, Automobile & Transport, Santé & Bien-être, BTP & Construction, Services aux entreprises, Immobilier, Industrie & Artisanat, Finance & Assurance, Éducation & Culture, Technologie & Digital, Agriculture & Alimentation).
+- **Catégories Copro** : 27 catégories organisées en 3 groupes (Syndics & Gestion, Expertise & Conseil, Entretien & Services).
 - **Enrichissement email** : scraping côté serveur (homepage + pages contact/mentions légales), extraction regex + mailto + patterns obfusqués, scoring (domain match=100, contact@=80, pro=60, generic=20), fallback email probable (`contact@domain.com`).
 - **Persistance Supabase** : tous les prospects sont sauvegardés et rechargés au lancement.
 - **Export CSV** : format standard ou format Zoho CRM (Last Name, Company, Email, Phone, etc.).
