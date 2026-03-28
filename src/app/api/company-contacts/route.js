@@ -84,10 +84,8 @@ export async function POST(request) {
     // Step 1: Try Apollo People Search (best source)
     if (apolloKey) {
       try {
-        // Search for people at the company
         const searchBody = {
-          per_page: 5,
-          person_titles: ['CEO', 'Founder', 'Director', 'Manager', 'Gérant', 'Directeur', 'Responsable', 'Owner', 'President', 'COO', 'CTO', 'CFO'],
+          per_page: 10,
           reveal_personal_emails: false,
         };
 
@@ -106,18 +104,6 @@ export async function POST(request) {
         if (res.ok) {
           const data = await res.json();
           const people = data.people || [];
-          contacts = people
-            .filter(p => p.email && !PERSONAL_DOMAINS.has(p.email.split('@')[1]?.toLowerCase()))
-            .slice(0, 3)
-            .map(p => ({
-              name: [p.first_name, p.last_name].filter(Boolean).join(' '),
-              email: p.email,
-              title: p.title || null,
-              linkedin_url: p.linkedin_url || null,
-              phone: p.phone_numbers?.[0]?.sanitized_number || null,
-              company: p.organization?.name || company_name,
-              company_domain: p.organization?.primary_domain || company_domain,
-            }));
 
           // Get org info from first result
           if (people[0]?.organization) {
@@ -130,6 +116,38 @@ export async function POST(request) {
               linkedin_url: org.linkedin_url,
             };
           }
+
+          // Score people: prefer those with email, seniority titles, and LinkedIn
+          const SENIOR_KEYWORDS = ['ceo', 'founder', 'president', 'director', 'directeur', 'gérant', 'owner', 'coo', 'cto', 'cfo', 'manager', 'responsable', 'chef', 'head'];
+          const scored = people
+            .filter(p => {
+              // Filter out personal emails
+              if (p.email && PERSONAL_DOMAINS.has(p.email.split('@')[1]?.toLowerCase())) return false;
+              // Must have at least a name
+              return p.first_name || p.last_name;
+            })
+            .map(p => {
+              let score = 0;
+              if (p.email) score += 50;
+              if (p.linkedin_url) score += 20;
+              if (p.title) {
+                const titleLower = p.title.toLowerCase();
+                if (SENIOR_KEYWORDS.some(k => titleLower.includes(k))) score += 30;
+              }
+              if (p.phone_numbers?.length > 0) score += 10;
+              return { ...p, _score: score };
+            })
+            .sort((a, b) => b._score - a._score);
+
+          contacts = scored.slice(0, 5).map(p => ({
+            name: [p.first_name, p.last_name].filter(Boolean).join(' '),
+            email: p.email || null,
+            title: p.title || null,
+            linkedin_url: p.linkedin_url || null,
+            phone: p.phone_numbers?.[0]?.sanitized_number || null,
+            company: p.organization?.name || company_name,
+            company_domain: p.organization?.primary_domain || company_domain,
+          }));
         }
       } catch {}
     }
