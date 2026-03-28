@@ -932,7 +932,7 @@ export default memo(function ResultsPanel({
             </div>
             <div className="relative group/tip">
               <button
-                onClick={onStartWaterfallEnrichment}
+                onClick={() => onStartWaterfallEnrichment()}
                 disabled={prospects.length === 0}
                 className="flex items-center gap-2 px-3 sm:px-4 py-2 min-h-[44px] sm:min-h-0 rounded-lg bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 disabled:bg-surface-elevated disabled:from-surface-elevated disabled:to-surface-elevated disabled:text-content-faint text-white text-xs font-semibold transition active:scale-[0.98] disabled:cursor-not-allowed shadow-lg shadow-orange-600/10"
               >
