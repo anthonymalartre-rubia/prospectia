@@ -667,7 +667,9 @@ export default memo(function ResultsPanel({
   }, [folderProspects]);
 
   const prospectsWithoutEmail = useMemo(() => {
-    return folderProspects.filter((p) => p.site_web && !p.email).length;
+    // Count ALL prospects without email — those with a website will use waterfall,
+    // those without will be enriched via Apollo (name-based search)
+    return folderProspects.filter((p) => !p.email).length;
   }, [folderProspects]);
 
   const totalPages = Math.ceil(filteredProspects.length / PAGE_SIZE);

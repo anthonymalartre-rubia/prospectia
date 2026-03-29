@@ -766,7 +766,9 @@ export default function Dashboard() {
       // Enrich only selected prospects (even without site_web — waterfall can use name)
       toEnrich = prospects.filter(p => selectedIds.includes(p.id) && !p.email);
     } else {
-      toEnrich = prospects.filter(p => !p.email && p.site_web);
+      // Include ALL prospects without email — those with a website use waterfall,
+      // those without will be enriched via Apollo (name-based lookup)
+      toEnrich = prospects.filter(p => !p.email);
       if (folderId) toEnrich = toEnrich.filter(p => p.folder_id === folderId);
     }
     if (toEnrich.length === 0) return;

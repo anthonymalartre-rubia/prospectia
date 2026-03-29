@@ -166,7 +166,10 @@ async function serperEnrich(name, domain) {
 
   try {
     // Search for email addresses associated with the company
-    const emailQuery = `"${name}" "${domain}" email contact @${domain}`;
+    if (!domain && !name) return null;
+    const emailQuery = domain
+      ? `"${name}" "${domain}" email contact @${domain}`
+      : `"${name}" email contact professionnel`;
     const res = await fetchWithTimeout('https://google.serper.dev/search', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'X-API-KEY': apiKey },
