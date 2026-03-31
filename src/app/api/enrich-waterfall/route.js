@@ -109,9 +109,16 @@ async function scrapeForEmail(url) {
   if (emails.length > 0) {
     const scored = emails.map((e) => ({ email: e, score: scoreEmail(e, domain) }));
     scored.sort((a, b) => b.score - a.score);
-    // Only return if the best email has a positive score (domain matches)
+    // Accept the best email if score > 0 (domain match),
+    // or if it's a professional email found on the site (score >= -50)
     if (scored[0].score > 0) {
       return { email: scored[0].email, source: 'scrape' };
+    }
+    // Accept non-personal emails even without exact domain match
+    // (e.g. hotel uses a different email domain than their website)
+    const bestNonPersonal = scored.find(e => e.score > -100 && !isPersonalEmail(e.email));
+    if (bestNonPersonal) {
+      return { email: bestNonPersonal.email, source: 'scrape' };
     }
   }
   return null;
@@ -300,12 +307,25 @@ async function serperLinkedinMatch(name, domain) {
 // For prospects without a website, discover their domain via Google search
 
 const SKIP_DOMAINS = new Set([
+  // Social media
   'facebook.com', 'instagram.com', 'twitter.com', 'linkedin.com', 'youtube.com',
-  'tiktok.com', 'pinterest.com', 'tripadvisor.com', 'tripadvisor.fr',
-  'pagesjaunes.fr', 'societe.com', 'infogreffe.fr', 'verif.com',
-  'google.com', 'google.fr', 'yelp.com', 'yelp.fr', 'horaires.lefigaro.fr',
-  'lafourchette.com', 'thefork.com', 'booking.com', 'airbnb.com', 'airbnb.fr',
-  'wikipedia.org', 'wikidata.org', 'kompass.com', 'mappy.com',
+  'tiktok.com', 'pinterest.com', 'x.com', 'threads.net',
+  // Travel / booking
+  'tripadvisor.com', 'tripadvisor.fr', 'booking.com', 'airbnb.com', 'airbnb.fr',
+  'hotels.com', 'expedia.com', 'expedia.fr', 'hostelworld.com', 'trivago.com',
+  'lafourchette.com', 'thefork.com', 'opentable.com',
+  // Directories / aggregators
+  'pagesjaunes.fr', 'societe.com', 'infogreffe.fr', 'verif.com', 'kompass.com',
+  'mappy.com', 'yelp.com', 'yelp.fr', 'horaires.lefigaro.fr', 'linternaute.com',
+  'cylex.fr', 'europages.fr', 'manageo.fr', 'score3.fr',
+  // Platforms / marketplaces
+  'google.com', 'google.fr', 'apple.com', 'maps.google.com',
+  'wikipedia.org', 'wikidata.org', 'amazon.com', 'amazon.fr',
+  'leboncoin.fr', 'indeed.fr', 'indeed.com', 'glassdoor.com',
+  // Chain / franchise sites (not the business's own domain)
+  'zenitude-hotel-residences.com', 'accor.com', 'ibis.com', 'novotel.com',
+  'bestwestern.com', 'bestwestern.fr', 'marriott.com', 'hilton.com',
+  'adopt.com', 'mcdonalds.fr', 'carrefour.fr', 'leclerc.com',
 ]);
 
 async function serperDiscoverDomain(name) {
@@ -375,21 +395,27 @@ export async function POST(request) {
       }
       validatedUrl = validation.url;
       domain = extractDomain(validatedUrl);
+
+      // If the URL is a third-party site (booking, tripadvisor, etc.), treat as no URL
+      if (domain && SKIP_DOMAINS.has(domain)) {
+        validatedUrl = null;
+        domain = null;
+      }
     }
 
-    // If no URL/domain, discover domain via Google search
-    let discoveredDomain = false;
+    // If no URL/domain (or third-party URL), discover the real domain via Google search
     if (!domain && name) {
       const found = await serperDiscoverDomain(name);
       if (found) {
         domain = found;
         validatedUrl = `https://${found}`;
-        discoveredDomain = true;
       }
     }
 
     const ctx = { url: validatedUrl, domain, name };
     const tried = [];
+
+    console.log(`[waterfall] name="${name}" domain="${domain}" url="${validatedUrl}"`);
 
     // ─── Fetch user preference for personal email filtering ───
     const { data: userProfile } = await supabase

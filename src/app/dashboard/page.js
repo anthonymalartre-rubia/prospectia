@@ -701,7 +701,7 @@ export default function Dashboard() {
     const initStats = { scrape: 0, serper: 0, apollo: 0, apollo_org: 0, guess: 0 };
     setWaterfallProgress({ current: 0, total: 0, currentSite: '', logs: [], stats: initStats });
 
-    const prospectsToEnrich = customList || prospects.filter((p) => !p.email && p.site_web);
+    const prospectsToEnrich = customList || prospects.filter((p) => !p.email);
     const total = prospectsToEnrich.length;
     setWaterfallProgress((prev) => ({ ...prev, total }));
 
