@@ -51,9 +51,9 @@ export async function POST(request) {
       .eq('id', user.id)
       .single();
 
-    if (profile?.plan !== 'enterprise') {
+    if (profile?.plan === 'free') {
       return Response.json(
-        { error: 'Cette fonctionnalite est reservee au plan Enterprise.' },
+        { error: 'Cette fonctionnalite est reservee aux plans Pro et Enterprise.' },
         { status: 403 }
       );
     }

@@ -20,7 +20,7 @@ export default function Sidebar({ activeView, onViewChange, onClose, isOpen, pro
     { id: 'search', label: t('sidebar.search'), icon: Search, description: 'Google Places' },
     { id: 'results', label: t('sidebar.leads'), icon: Users, description: 'Prospects' },
     { id: 'export', label: t('sidebar.export'), icon: Download, description: 'CSV & Zoho' },
-    { id: 'verify', label: t('sidebar.verify'), icon: ShieldCheck, description: t('sidebar.verifyDesc'), enterprise: true },
+    { id: 'verify', label: t('sidebar.verify'), icon: ShieldCheck, description: t('sidebar.verifyDesc'), paid: true },
   ];
 
   return (
@@ -52,7 +52,7 @@ export default function Sidebar({ activeView, onViewChange, onClose, isOpen, pro
 
           {/* Navigation */}
           <nav className="space-y-1.5" role="navigation" aria-label="Navigation principale">
-            {NAV_ITEMS.filter(item => !item.enterprise || userPlan?.id === 'enterprise').map((item) => {
+            {NAV_ITEMS.filter(item => !item.paid || userPlan?.id === 'pro' || userPlan?.id === 'enterprise').map((item) => {
               const isActive = activeView === item.id;
               return (
                 <button

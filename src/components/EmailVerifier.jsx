@@ -48,7 +48,7 @@ export default function EmailVerifier({ userPlan }) {
   const [filter, setFilter] = useState('all');
   const fileInputRef = useRef(null);
 
-  const isEnterprise = userPlan?.id === 'enterprise';
+  const hasPaidPlan = userPlan?.id === 'pro' || userPlan?.id === 'enterprise';
 
   const handleFileUpload = useCallback((e) => {
     const file = e.target.files?.[0];
@@ -176,7 +176,7 @@ export default function EmailVerifier({ userPlan }) {
   const filteredResults = results?.filter(r => filter === 'all' || r.result === filter) || [];
 
   // ─── Enterprise gate ─────────────────────────────────────
-  if (!isEnterprise) {
+  if (!hasPaidPlan) {
     return (
       <div className="flex flex-col items-center justify-center py-20 text-center space-y-4">
         <div className="w-16 h-16 rounded-2xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center">
