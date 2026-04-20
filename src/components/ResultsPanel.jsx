@@ -970,7 +970,7 @@ export default memo(function ResultsPanel({
           </div>
         )}
 
-        <div>
+        <div className="flex items-center gap-2">
           <button
             onClick={() => onBulkEnrich?.(activeFolder === 'all' ? null : activeFolder, null)}
             disabled={isWaterfallEnriching || prospectsWithoutEmail === 0}
@@ -979,6 +979,19 @@ export default memo(function ResultsPanel({
             <Zap className="h-3.5 w-3.5" />
             {t('results.enrichAll', { count: prospectsWithoutEmail })}
           </button>
+          {activeFolder === 'archived' && folderProspects.length > 0 && (
+            <button
+              onClick={() => {
+                if (!confirm(`Desarchiver ${folderProspects.length} prospect(s) ?`)) return;
+                folderProspects.forEach((p) => onUpdateProspect?.(p.id, { archived_at: null }));
+              }}
+              className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium bg-surface-elevated text-content-secondary hover:bg-surface-active transition-all"
+              title="Remettre ces prospects dans la liste active"
+            >
+              <Archive className="h-3.5 w-3.5" />
+              Desarchiver tout
+            </button>
+          )}
         </div>
 
         <div className="flex-1" />
