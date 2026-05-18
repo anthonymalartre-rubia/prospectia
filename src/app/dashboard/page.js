@@ -7,6 +7,7 @@ import TopBar from '@/components/TopBar';
 import Sidebar from '@/components/Sidebar';
 import UsageBanner from '@/components/UsageBanner';
 import UpgradeBanner from '@/components/UpgradeBanner';
+import LimitReachedModal from '@/components/LimitReachedModal';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 // Lazy load panels — only loaded when navigated to
@@ -150,6 +151,9 @@ export default function Dashboard() {
   const [userPlan, setUserPlan] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [userUsage, setUserUsage] = useState(null);
+  // Modal "limite atteinte" affichée quand une API renvoie 429
+  // { type: 'searches'|'enrichments', current, limit, processed?, total? } | null
+  const [limitModal, setLimitModal] = useState(null);
   const [isDeepEnriching, setIsDeepEnriching] = useState(false);
   const [deepEnrichProgress, setDeepEnrichProgress] = useState({
     current: 0, total: 0, currentSite: '', logs: [],
@@ -426,6 +430,13 @@ export default function Dashboard() {
         if (response.status === 429) {
           setSearchProgress((prev) => addLog(prev, `Limite atteinte: ${data.error || 'Limite atteinte'}`));
           stopSearchRef.current = true;
+          setLimitModal({
+            type: 'searches',
+            current: data.current ?? data.limit ?? 0,
+            limit: data.limit ?? 0,
+            processed: i,
+            total: taskList.length,
+          });
           break;
         }
 
@@ -593,6 +604,19 @@ export default function Dashboard() {
         });
         const data = await response.json();
 
+        if (response.status === 429) {
+          setEnrichProgress((prev) => addLog(prev, `Limite atteinte: ${data.error || 'Limite atteinte'}`));
+          stopEnrichRef.current = true;
+          setLimitModal({
+            type: 'enrichments',
+            current: data.current ?? data.limit ?? 0,
+            limit: data.limit ?? 0,
+            processed: i,
+            total: prospectsToEnrich.length,
+          });
+          break;
+        }
+
         if (data.email) {
           const emailMethod = data.method || 'guess';
           if (emailMethod === 'scrape') foundScrape++;
@@ -658,6 +682,19 @@ export default function Dashboard() {
           body: JSON.stringify({ url: prospect.site_web }),
         });
         const data = await response.json();
+
+        if (response.status === 429) {
+          setDeepEnrichProgress((prev) => addLog(prev, `Limite atteinte: ${data.error || 'Limite atteinte'}`));
+          stopDeepEnrichRef.current = true;
+          setLimitModal({
+            type: 'enrichments',
+            current: data.current ?? data.limit ?? 0,
+            limit: data.limit ?? 0,
+            processed: i,
+            total: prospectsToEnrich.length,
+          });
+          break;
+        }
 
         const allEmails = [
           ...(data.scrapedEmails || []).map((e) => ({ ...e, method: 'scrape' })),
@@ -763,6 +800,13 @@ export default function Dashboard() {
         if (response.status === 429) {
           setWaterfallProgress((prev) => addLog(prev, `Limite atteinte: ${data.error || 'Limite atteinte'}`));
           stopWaterfallRef.current = true;
+          setLimitModal({
+            type: 'enrichments',
+            current: data.current ?? data.limit ?? 0,
+            limit: data.limit ?? 0,
+            processed: i,
+            total: prospectsToEnrich.length,
+          });
           break;
         }
 
@@ -1109,6 +1153,19 @@ export default function Dashboard() {
             onStartSearch={() => setActiveView('search')}
           />
         </Suspense>
+      )}
+
+      {limitModal && (
+        <LimitReachedModal
+          type={limitModal.type}
+          current={limitModal.current}
+          limit={limitModal.limit}
+          processed={limitModal.processed}
+          total={limitModal.total}
+          currentPlanName={userPlan?.name || 'Starter'}
+          onClose={() => setLimitModal(null)}
+          onUpgrade={() => { setLimitModal(null); handleUpgrade('pro'); }}
+        />
       )}
     </div>
   );

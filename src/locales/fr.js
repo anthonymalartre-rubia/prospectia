@@ -428,6 +428,25 @@ const fr = {
     upgradePro: 'Passer Pro',
   },
 
+  // ─── Limit Reached Modal ──────────────────────────────────
+  limitModal: {
+    enrichments: 'enrichissements',
+    prospects: 'prospects',
+    title: 'Limite de {{metric}} atteinte',
+    subtitle: 'Vous avez atteint le plafond mensuel de votre plan {{plan}}.',
+    usageLabel: '{{metric}} ce mois-ci',
+    stoppedAt: "L'operation s'est arretee a {{processed}} / {{total}}. Il reste {{remaining}} prospects a traiter — passez Pro pour continuer maintenant.",
+    proHeadline: 'Plan Pro - 49 EUR/mois',
+    proBenefitEnrich1: '500 enrichissements / mois (au lieu de 20)',
+    proBenefitEnrich2: 'Acces complet a la cascade waterfall (7 sources)',
+    proBenefitEnrich3: 'Export CSV + Zoho CRM, sans limite',
+    proBenefitSearch1: 'Prospects illimites / mois',
+    proBenefitSearch2: 'Recherche naturelle illimitee',
+    proBenefitSearch3: 'Export CSV + Zoho CRM, sans limite',
+    upgradeCta: 'Passer Pro maintenant',
+    dismiss: 'Plus tard',
+  },
+
   // ─── Settings ──────────────────────────────────────────────
   settings: {
     title: 'Parametres',

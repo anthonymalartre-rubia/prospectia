@@ -428,6 +428,25 @@ const en = {
     upgradePro: 'Upgrade to Pro',
   },
 
+  // ─── Limit Reached Modal ──────────────────────────────────
+  limitModal: {
+    enrichments: 'enrichments',
+    prospects: 'prospects',
+    title: '{{metric}} limit reached',
+    subtitle: "You've hit the monthly cap of your {{plan}} plan.",
+    usageLabel: '{{metric}} this month',
+    stoppedAt: 'The operation stopped at {{processed}} / {{total}}. {{remaining}} prospects left — upgrade to Pro to continue right now.',
+    proHeadline: 'Pro plan - 49 EUR/month',
+    proBenefitEnrich1: '500 enrichments / month (instead of 20)',
+    proBenefitEnrich2: 'Full waterfall cascade access (7 sources)',
+    proBenefitEnrich3: 'CSV + Zoho CRM export, no cap',
+    proBenefitSearch1: 'Unlimited prospects / month',
+    proBenefitSearch2: 'Unlimited natural language search',
+    proBenefitSearch3: 'CSV + Zoho CRM export, no cap',
+    upgradeCta: 'Upgrade to Pro now',
+    dismiss: 'Later',
+  },
+
   // ─── Settings ──────────────────────────────────────────────
   settings: {
     title: 'Settings',
