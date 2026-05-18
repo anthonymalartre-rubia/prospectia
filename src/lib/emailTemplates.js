@@ -99,8 +99,8 @@ export function welcomeEmail(userName) {
         </tr>
         <tr>
           <td style="padding:12px 0;">
-            <span style="color:#6366f1;font-weight:600;font-size:14px;">&#x1f4e5; Export CSV &amp; Zoho CRM</span>
-            <p style="margin:4px 0 0;font-size:13px;color:#71717a;">Exportez vos leads en un clic dans le format de votre choix</p>
+            <span style="color:#6366f1;font-weight:600;font-size:14px;">&#x1f4e5; Export CSV</span>
+            <p style="margin:4px 0 0;font-size:13px;color:#71717a;">Exportez vos leads en un clic, compatible avec n'importe quel CRM</p>
           </td>
         </tr>
       </table>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Download, FileSpreadsheet, Table2, CheckCircle2, Users, Mail, Phone, ArrowRight } from "lucide-react";
+import { Download, Table2, CheckCircle2, Users, Mail, Phone, ArrowRight } from "lucide-react";
 
 export default function ExportPanel({ prospects, onDownloadCSV }) {
   const [lastExport, setLastExport] = useState(null);
@@ -48,7 +48,7 @@ export default function ExportPanel({ prospects, onDownloadCSV }) {
         <div className="flex items-center gap-3 p-4 rounded-xl border border-green-500/20 bg-green-500/5 animate-toast-in">
           <CheckCircle2 size={18} className="text-green-400 flex-shrink-0" />
           <p className="text-sm text-green-400">
-            Export {lastExport === 'zoho' ? 'Zoho CRM' : 'CSV standard'} téléchargé avec succès
+            Export CSV téléchargé avec succès
           </p>
         </div>
       )}
@@ -109,11 +109,11 @@ export default function ExportPanel({ prospects, onDownloadCSV }) {
         </div>
       </div>
 
-      {/* Export options */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      {/* Export option — CSV only */}
+      <div>
         <button
           onClick={() => handleExport("standard")}
-          className="group relative p-6 rounded-2xl border border-line bg-surface-card hover:border-green-500/30 active:scale-[0.99] transition-all text-left overflow-hidden"
+          className="group relative w-full p-6 rounded-2xl border border-line bg-surface-card hover:border-green-500/30 active:scale-[0.99] transition-all text-left overflow-hidden"
         >
           <div className="absolute top-0 right-0 w-24 h-24 bg-green-500/5 rounded-bl-full transition-all group-hover:w-32 group-hover:h-32" />
           <div className="p-3 rounded-xl bg-green-600/10 w-fit mb-4">
@@ -121,28 +121,9 @@ export default function ExportPanel({ prospects, onDownloadCSV }) {
           </div>
           <h3 className="text-base font-semibold text-content-primary mb-1">CSV Standard</h3>
           <p className="text-xs text-content-muted leading-relaxed">
-            Format classique avec nom, email, téléphone, site web, adresse, département et catégorie.
+            Format classique avec nom, email, téléphone, site web, adresse, département et catégorie. Compatible avec tous les CRM.
           </p>
           <div className="mt-4 flex items-center gap-2 text-xs text-green-400/70 group-hover:text-green-400 transition">
-            <Download size={14} />
-            <span className="font-medium">Télécharger</span>
-            <ArrowRight size={12} className="group-hover:translate-x-0.5 transition-transform" />
-          </div>
-        </button>
-
-        <button
-          onClick={() => handleExport("zoho")}
-          className="group relative p-6 rounded-2xl border border-line bg-surface-card hover:border-indigo-500/30 active:scale-[0.99] transition-all text-left overflow-hidden"
-        >
-          <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-500/5 rounded-bl-full transition-all group-hover:w-32 group-hover:h-32" />
-          <div className="p-3 rounded-xl bg-indigo-600/10 w-fit mb-4">
-            <FileSpreadsheet size={24} className="text-indigo-400" />
-          </div>
-          <h3 className="text-base font-semibold text-content-primary mb-1">Zoho CRM</h3>
-          <p className="text-xs text-content-muted leading-relaxed">
-            Format compatible Zoho avec First Name, Last Name, Company, Email, Phone, Website, Address.
-          </p>
-          <div className="mt-4 flex items-center gap-2 text-xs text-indigo-400/70 group-hover:text-indigo-400 transition">
             <Download size={14} />
             <span className="font-medium">Télécharger</span>
             <ArrowRight size={12} className="group-hover:translate-x-0.5 transition-transform" />

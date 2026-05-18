@@ -215,7 +215,6 @@ const en = {
     deleteProspects: 'Delete prospects',
     exportPreview: 'Export preview',
     exportCSV: 'Export as standard CSV',
-    exportZoho: 'Export as Zoho CRM format',
     searchPlaceholder: 'Search by name, email, phone...',
     newTag: 'New tag...',
     save: 'Save',
@@ -321,7 +320,6 @@ const en = {
     required: 'required',
     // Export
     csv: 'CSV',
-    zoho: 'Zoho',
     preview: 'Preview',
     csvPreview: 'CSV Preview',
     firstRowsOf: 'First 5 rows of {{total}} total',
@@ -409,7 +407,7 @@ const en = {
     step2Desc: 'We find professional emails for your prospects through intelligent scraping.',
     step2Features: ['Verified and scored emails', 'Automatic quality scoring'],
     step3Title: 'Export to your CRM',
-    step3Desc: 'Download as standard CSV or Zoho CRM format, ready to import.',
+    step3Desc: 'Download as standard CSV format, ready to import.',
     step3Features: ['Advanced filters', 'Multi-select by batch', 'Folder organization'],
     readyTitle: 'Ready to prospect?',
     readyDesc: 'You can review this guide at any time from the settings.',
@@ -652,8 +650,8 @@ const en = {
       categoriesDesc: '12 B2B sectors and 3 co-ownership groups. The most complete database for prospecting in France — hospitality, healthcare, construction, auto, tech, legal...',
       departments: '101 departments covered',
       departmentsDesc: 'All of France: 96 metropolitan departments + 5 overseas. Selection by region, department, or one click.',
-      exportFeature: 'CSV & Zoho CRM export',
-      exportDesc: 'Export as standard CSV or Zoho CRM format (Last Name, Company, Email, Phone). Ready for your outreach campaign in 1 click.',
+      exportFeature: 'CSV export',
+      exportDesc: 'Export as standard CSV format (Last Name, Company, Email, Phone). Ready for your outreach campaign in 1 click.',
     },
     // How it works
     howItWorks: {
@@ -665,7 +663,7 @@ const en = {
       step2: 'Automatic waterfall enrichment',
       step2Desc: 'Prospectia scrapes the website and searches Google to find the email. Stops at the first email found, with a confidence score.',
       step3: 'Export and prospect',
-      step3Desc: 'Filter by score, department or category. Export as CSV or Zoho CRM format. Your leads are ready for outreach in seconds.',
+      step3Desc: 'Filter by score, department or category. Export as CSV format. Your leads are ready for outreach in seconds.',
     },
     // Waterfall visual
     waterfall: {
@@ -722,7 +720,6 @@ const en = {
       deptsFR: '101 French departments',
       b2bCategories: 'B2B categories',
       googlePlaces: 'Google Places integrated',
-      exportZoho: 'Zoho CRM export',
       monthlyPrice: 'Monthly price',
       sevenSources: '2 sources',
       calcTitle: 'The math is simple',
@@ -761,7 +758,7 @@ const en = {
         'Unlimited exports',
         'Unlimited folders',
         'Full enrichment (scraping + Google)',
-        'CSV + Zoho CRM export',
+        'CSV export',
         'Priority support',
       ],
       enterprise: [

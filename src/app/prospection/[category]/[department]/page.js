@@ -108,7 +108,7 @@ export default async function CategoryDepartmentPage({ params }) {
     },
     {
       question: `Puis-je exporter les ${category.labelPlural} du ${dept.name} en CSV ?`,
-      answer: `Oui, exports illimités en CSV standard ou format Zoho CRM (Last Name, Company, Email, Phone). Inclus dans tous les plans Prospectia.`,
+      answer: `Oui, exports illimités en CSV standard (Last Name, Company, Email, Phone). Inclus dans tous les plans Prospectia.`,
     },
     {
       question: `Le démarchage des ${category.labelPlural} du ${dept.name} est-il légal ?`,

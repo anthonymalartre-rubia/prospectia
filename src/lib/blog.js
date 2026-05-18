@@ -565,7 +565,7 @@ Dans ce comparatif, je vais aller au-delà du marketing : tableau de 15 critère
 | DOM-TOM | Non | Non | Oui |
 | Séquences email | Non | Oui (basique) | Non |
 | Extension Chrome | Oui | Oui | Non (web app) |
-| Export CSV | Oui | Oui | Oui (+ Zoho format) |
+| Export CSV | Oui | Oui | Oui (illimité) |
 | Page opt-out RGPD | Non | Non | Oui (intégrée) |
 | Interface FR | Non | Non | Oui |
 | Support FR | Non | Non | Oui |

@@ -565,7 +565,7 @@ Quelques arguments concrets sur l'apport d'un outil comme [Prospectia](/) sur ce
 - **Sourcing par catégorie Google précise** : électricien, plombier, maçon, peintre, plaquiste, couvreur, menuisier, carreleur, etc.
 - **Enrichissement waterfall 7 sources** pour récupérer mobiles et emails pro
 - **Recherche en langage naturel** ("artisans BTP rénovation énergétique RGE en Auvergne-Rhône-Alpes")
-- **Export CSV ou Zoho CRM** direct pour alimenter votre cadenceur
+- **Export CSV** direct pour alimenter votre cadenceur
 
 Comparé à un Apollo ou un Lusha qui couvrent mal les TPE françaises, [Prospectia](/vs/apollo) est nettement plus pertinent sur ce segment. Voir aussi [Prospectia vs Lusha](/vs/lusha).
 

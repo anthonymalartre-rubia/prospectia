@@ -19,7 +19,7 @@ export default function Sidebar({ activeView, onViewChange, onClose, isOpen, pro
     { id: 'overview', label: t('sidebar.overview'), icon: LayoutDashboard, description: 'Tableau de bord' },
     { id: 'search', label: t('sidebar.search'), icon: Search, description: 'Google Places' },
     { id: 'results', label: t('sidebar.leads'), icon: Users, description: 'Prospects' },
-    { id: 'export', label: t('sidebar.export'), icon: Download, description: 'CSV & Zoho' },
+    { id: 'export', label: t('sidebar.export'), icon: Download, description: 'CSV' },
     { id: 'verify', label: t('sidebar.verify'), icon: ShieldCheck, description: t('sidebar.verifyDesc'), paid: true },
   ];
 

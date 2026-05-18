@@ -27,7 +27,7 @@ const FAQ_ITEMS = [
   {
     question: "Puis-je exporter vers mon CRM ?",
     answer:
-      "Oui, deux formats d'export sont disponibles : CSV standard (compatible avec tous les outils) et format Zoho CRM (avec les colonnes Last Name, Company, Email, Phone, etc.). Vous pouvez aussi filtrer vos leads avant l'export pour n'obtenir que les prospects pertinents.",
+      "Oui, l'export CSV standard est compatible avec tous les CRM (HubSpot, Salesforce, Zoho, Pipedrive, etc.) et tous les outils d'outreach (Lemlist, Apollo, Smartlead...). Vous pouvez aussi filtrer vos leads avant l'export pour n'obtenir que les prospects pertinents.",
   },
   {
     question: "Quelles sont les limites du plan gratuit ?",

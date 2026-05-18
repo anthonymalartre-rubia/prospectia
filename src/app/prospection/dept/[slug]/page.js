@@ -54,7 +54,7 @@ export default async function DepartmentPage({ params }) {
     }));
 
   const title = `Prospection B2B dans le ${dept.name} (${dept.code})`;
-  const intro = `Le département ${dept.name} (${dept.code}) en région ${dept.region} regroupe des milliers d'entreprises B2B : restaurants, commerces, artisans du BTP, professions libérales, services aux entreprises. Prospectia vous permet de trouver leur email professionnel en quelques secondes grâce à notre moteur de scraping et recherche Google. Exportez ensuite vos prospects en CSV ou directement dans Zoho CRM.`;
+  const intro = `Le département ${dept.name} (${dept.code}) en région ${dept.region} regroupe des milliers d'entreprises B2B : restaurants, commerces, artisans du BTP, professions libérales, services aux entreprises. Prospectia vous permet de trouver leur email professionnel en quelques secondes grâce à notre moteur de scraping et recherche Google. Exportez ensuite vos prospects en CSV.`;
 
   const faq = [
     {

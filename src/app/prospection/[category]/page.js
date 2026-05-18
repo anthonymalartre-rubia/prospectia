@@ -76,7 +76,7 @@ export default async function CategoryPage({ params }) {
     },
     {
       question: `Puis-je exporter les contacts en CSV ?`,
-      answer: `Oui, l'export CSV (format standard et Zoho CRM) est inclus dans tous nos plans. Vous récupérez en quelques secondes la liste complète des ${category.labelPlural} avec nom, adresse, téléphone, email, note Google et site web.`,
+      answer: `Oui, l'export CSV standard est inclus dans tous nos plans. Vous récupérez en quelques secondes la liste complète des ${category.labelPlural} avec nom, adresse, téléphone, email, note Google et site web — compatible avec n'importe quel CRM (HubSpot, Salesforce, Zoho, Pipedrive...) ou outil d'outreach.`,
     },
     {
       question: `La prospection des ${category.labelPlural} est-elle conforme au RGPD ?`,

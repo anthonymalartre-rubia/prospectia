@@ -99,7 +99,7 @@ export default async function CategoryCityPage({ params }) {
     },
     {
       question: `Puis-je exporter en CSV les ${category.labelPlural} de ${city.name} ?`,
-      answer: `Oui, exports illimités en CSV ou Zoho CRM. Inclus dans tous les plans.`,
+      answer: `Oui, exports illimités en CSV. Inclus dans tous les plans.`,
     },
     {
       question: `Le démarchage des ${category.labelPlural} à ${city.name} est-il légal ?`,

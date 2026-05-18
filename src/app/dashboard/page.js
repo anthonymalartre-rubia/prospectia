@@ -969,23 +969,12 @@ export default function Dashboard() {
       }
     }
 
-    const headers = format === 'zoho'
-      ? ['First Name', 'Last Name', 'Email', 'Phone', 'Company', 'Website', 'Address']
-      : ['nom', 'email', 'telephone', 'site_web', 'adresse', 'departement', 'category'];
+    // Note : on accepte encore le param `format` pour rétro-compat (anciens
+    // appels qui passent "standard"/"zoho"), mais on génère toujours le CSV
+    // standard maintenant. Le format Zoho a été retiré de l'UI.
+    const headers = ['nom', 'email', 'telephone', 'site_web', 'adresse', 'departement', 'category'];
 
     const rows = list.map((prospect) => {
-      if (format === 'zoho') {
-        const nameParts = (prospect.nom || '').split(' ');
-        return [
-          escapeCSV(nameParts[0] || ''),
-          escapeCSV(nameParts.slice(1).join(' ') || ''),
-          escapeCSV(prospect.email),
-          escapeCSV(prospect.telephone),
-          escapeCSV(prospect.nom),
-          escapeCSV(prospect.site_web),
-          escapeCSV(prospect.adresse),
-        ].join(',');
-      }
       return [
         escapeCSV(prospect.nom),
         escapeCSV(prospect.email),

@@ -324,7 +324,7 @@ export default function RGPDPage() {
             <ul className="list-disc pl-6 mt-3 space-y-2">
               <li>
                 <span className="text-content-primary font-medium">Export CSV</span> : depuis le tableau de leads,
-                exportez l&apos;ensemble de vos prospects au format CSV standard ou au format Zoho CRM
+                exportez l&apos;ensemble de vos prospects au format CSV standard
               </li>
               <li>
                 <span className="text-content-primary font-medium">Données de compte</span> : sur demande,

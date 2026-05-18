@@ -473,7 +473,6 @@ export default function LandingContent() {
                       { label: t('landing.competition.deptsFR'), prospectia: true, key: 'depts' },
                       { label: t('landing.competition.b2bCategories'), prospectia: '150+', key: 'categories' },
                       { label: t('landing.competition.googlePlaces'), prospectia: true, key: 'google', competitors: [false, false, false, false, false] },
-                      { label: t('landing.competition.exportZoho'), prospectia: true, key: 'zoho', competitors: [false, false, false, false, false] },
                     ].map((row) => (
                       <tr key={row.label} className="border-b border-white/[0.04]">
                         <td className="py-3.5 px-4 text-zinc-400">{row.label}</td>

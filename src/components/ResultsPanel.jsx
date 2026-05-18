@@ -14,7 +14,6 @@ import {
   Globe,
   ChevronLeft,
   ChevronRight,
-  FileSpreadsheet,
   Inbox,
   Radar,
   Copy,
@@ -1063,16 +1062,6 @@ export default memo(function ResultsPanel({
           <Download size={14} />
           <span className="hidden sm:inline">{t('results.csv')}</span>
         </button>
-        <button
-          onClick={() => handleExport("zoho")}
-          disabled={folderProspects.length === 0}
-          className="flex items-center gap-1.5 px-3 py-2 rounded-lg border border-line hover:bg-surface-elevated text-content-tertiary hover:text-content-primary text-xs font-medium transition disabled:opacity-30"
-          title={t('results.exportZoho')}
-        >
-          <FileSpreadsheet size={14} />
-          <span className="hidden sm:inline">{t('results.zoho')}</span>
-        </button>
-
         {/* Export Preview */}
         <div className="relative">
           <button

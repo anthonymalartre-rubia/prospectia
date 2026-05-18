@@ -24,8 +24,8 @@ export const metadata = {
     default: 'Prospectia.ai — Trouvez l\'email de n\'importe quelle entreprise en France',
     template: '%s | Prospectia.ai',
   },
-  description: 'Prospection B2B automatisée : scraping intelligent + recherche Google. 150+ catégories, 101 départements, scoring de confiance, export CSV et Zoho CRM. À partir de 49€/mois.',
-  keywords: ['prospection B2B', 'enrichissement email', 'scraping email', 'leads B2B France', 'Google Places', 'export CSV', 'Zoho CRM', 'email professionnel'],
+  description: 'Prospection B2B automatisée : scraping intelligent + recherche Google. 150+ catégories, 101 départements, scoring de confiance. À partir de 49€/mois.',
+  keywords: ['prospection B2B', 'enrichissement email', 'scraping email', 'leads B2B France', 'Google Places', 'export CSV', 'email professionnel'],
   authors: [{ name: 'Prospectia.ai' }],
   creator: 'Prospectia.ai',
   openGraph: {

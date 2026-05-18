@@ -332,7 +332,7 @@ v=DMARC1; p=quarantine; rua=mailto:dmarc@votre-domaine.com
 
 **Conseil** : commencez **simple**. Notion ou Pipedrive suffisent jusqu'à 10 commerciaux. Migrez vers HubSpot/Salesforce quand vraiment nécessaire.
 
-Prospectia exporte directement en **format Zoho CRM** (Last Name, Company, Email, Phone) — 1-clic depuis le dashboard.`,
+Prospectia exporte en **CSV standard** (nom, email, téléphone, site web, adresse, département, catégorie) — compatible avec **n'importe quel CRM** : HubSpot, Salesforce, Zoho, Pipedrive, Notion. 1-clic depuis le dashboard.`,
     related: ['b2b', 'icp', 'cold-emailing'],
     category: 'Outils',
   },

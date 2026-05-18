@@ -29,7 +29,7 @@ export default function CGUPage() {
             <p className="mt-3">
               Le Service permet aux utilisateurs de rechercher des prospects professionnels sur l&apos;ensemble
               du territoire français (101 départements), d&apos;enrichir ces prospects avec des informations
-              de contact professionnel (email d&apos;entreprise, téléphone), et de les exporter au format CSV ou Zoho CRM.
+              de contact professionnel (email d&apos;entreprise, téléphone), et de les exporter au format CSV.
             </p>
           </section>
 
@@ -85,7 +85,7 @@ export default function CGUPage() {
               <li>Déduplication automatique des résultats par identifiant Google Place</li>
               <li>Filtrage automatique des emails personnels (exclusion des domaines @gmail, @hotmail, @yahoo, etc.)</li>
               <li>Scoring de confiance des emails trouvés</li>
-              <li>Export des données au format CSV standard et Zoho CRM</li>
+              <li>Export des données au format CSV standard</li>
               <li>Organisation des leads par dossiers, filtres et tags</li>
             </ul>
           </section>
@@ -267,7 +267,7 @@ export default function CGUPage() {
                   <tr className="border-b border-line">
                     <td className="py-3 px-4 font-medium text-content-primary">Pro</td>
                     <td className="py-3 px-4">49&euro;/mois</td>
-                    <td className="py-3 px-4">Recherches illimitées, waterfall complet (7 sources), export CSV + Zoho CRM, support prioritaire</td>
+                    <td className="py-3 px-4">Prospects illimités, waterfall complet (7 sources), export CSV illimité, support prioritaire</td>
                   </tr>
                   <tr>
                     <td className="py-3 px-4 font-medium text-content-primary">Enterprise</td>

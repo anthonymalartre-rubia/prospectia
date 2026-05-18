@@ -19,7 +19,6 @@ export default function CompetitorVsPage({ competitor }) {
     { feature: 'Scoring de confiance IA', prospectia: true, competitor: competitor.slug === 'apollo', prospectiaWins: competitor.slug !== 'apollo' },
     { feature: 'Vérification SMTP (MillionVerifier)', prospectia: true, competitor: true, prospectiaWins: null },
     { feature: 'Export CSV illimité', prospectia: true, competitor: competitor.slug === 'snov', prospectiaWins: competitor.slug !== 'snov' },
-    { feature: 'Export Zoho CRM natif', prospectia: true, competitor: false, prospectiaWins: true },
     { feature: 'Interface 100% en français', prospectia: true, competitor: false, prospectiaWins: true },
     { feature: 'Conforme RGPD (opt-out auto)', prospectia: true, competitor: false, prospectiaWins: true },
     { feature: 'Support client français', prospectia: true, competitor: false, prospectiaWins: true },
@@ -203,7 +202,7 @@ export default function CompetitorVsPage({ competitor }) {
                 <li>• Vous voulez un prix fixe sans crédits cachés</li>
                 <li>• Vous avez besoin de recherche par catégorie + département</li>
                 <li>• Vous voulez une interface française et un support local</li>
-                <li>• Vous cherchez à exporter vers Zoho CRM</li>
+                <li>• Vous voulez un export CSV sans limite, compatible avec n'importe quel CRM</li>
               </ul>
             </div>
             <div className="rounded-xl border border-zinc-500/20 bg-zinc-500/[0.04] p-5">

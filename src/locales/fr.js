@@ -215,7 +215,6 @@ const fr = {
     deleteProspects: 'Supprimer les prospects',
     exportPreview: "Apercu de l'export",
     exportCSV: 'Exporter en CSV standard',
-    exportZoho: 'Exporter au format Zoho CRM',
     searchPlaceholder: 'Rechercher par nom, email, telephone...',
     newTag: 'Nouveau tag...',
     save: 'Sauvegarder',
@@ -321,7 +320,6 @@ const fr = {
     required: 'requis',
     // Export
     csv: 'CSV',
-    zoho: 'Zoho',
     preview: 'Apercu',
     csvPreview: 'Apercu CSV',
     firstRowsOf: '5 premieres lignes sur {{total}} total',
@@ -409,7 +407,7 @@ const fr = {
     step2Desc: 'Nous trouvons les emails professionnels de vos prospects par scraping intelligent.',
     step2Features: ['Emails verifies et scores', 'Scoring de qualite automatique'],
     step3Title: 'Exportez vers votre CRM',
-    step3Desc: 'Telechargez en CSV standard ou format Zoho CRM, pret a importer.',
+    step3Desc: 'Telechargez en CSV standard, pret a importer.',
     step3Features: ['Filtres avances', 'Multi-selection par lots', 'Organisation en dossiers'],
     readyTitle: 'Pret a prospecter ?',
     readyDesc: 'Vous pouvez revoir ce guide a tout moment depuis les parametres.',
@@ -652,8 +650,8 @@ const fr = {
       categoriesDesc: '12 secteurs B2B et 3 groupes copropriete. La base de donnees la plus complete pour la prospection en France — hotellerie, sante, BTP, auto, tech, juridique...',
       departments: '101 departements couverts',
       departmentsDesc: 'France entiere : 96 departements metropolitains + 5 outre-mer. Selection par region, par departement, ou en un clic.',
-      exportFeature: 'Export CSV & Zoho CRM',
-      exportDesc: 'Exportez en CSV standard ou au format Zoho CRM (Last Name, Company, Email, Phone). Pret pour votre campagne d\'outreach en 1 clic.',
+      exportFeature: 'Export CSV',
+      exportDesc: 'Exportez en CSV standard, compatible avec n\'importe quel CRM (HubSpot, Salesforce, Zoho, Pipedrive) et tous les outils d\'outreach (Lemlist, Apollo, Smartlead). Pret en 1 clic.',
     },
     // How it works
     howItWorks: {
@@ -665,7 +663,7 @@ const fr = {
       step2: 'Enrichissement waterfall automatique',
       step2Desc: 'Prospectia scrape le site web et cherche sur Google pour trouver l\'email. S\'arrete au premier email trouve, avec un score de confiance.',
       step3: 'Exportez et prospectez',
-      step3Desc: 'Filtrez par score, departement ou categorie. Exportez en CSV ou format Zoho CRM. Vos leads sont prets pour l\'outreach en quelques secondes.',
+      step3Desc: 'Filtrez par score, departement ou categorie. Exportez en CSV. Vos leads sont prets pour l\'outreach en quelques secondes.',
     },
     // Waterfall visual
     waterfall: {
@@ -722,7 +720,6 @@ const fr = {
       deptsFR: '101 departements FR',
       b2bCategories: 'Categories B2B',
       googlePlaces: 'Google Places integre',
-      exportZoho: 'Export Zoho CRM',
       monthlyPrice: 'Prix mensuel',
       sevenSources: '2 sources',
       calcTitle: 'Le calcul est simple',
@@ -761,7 +758,7 @@ const fr = {
         'Exports illimites',
         'Dossiers illimites',
         'Enrichissement complet (scraping + Google)',
-        'Export CSV + Zoho CRM',
+        'Export CSV',
         'Support prioritaire',
       ],
       enterprise: [
