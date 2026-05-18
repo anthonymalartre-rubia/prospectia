@@ -38,7 +38,7 @@ export default async function Image({ params }) {
             Prospectia <span style={{ color: '#71717a', margin: '0 16px' }}>vs</span> {c.name}
           </div>
           <div style={{ fontSize: '28px', color: '#a1a1aa', lineHeight: 1.3 }}>
-            Économisez {savings}% en passant à Prospectia. 49€/mois, recherches illimitées.
+            Économisez {savings}% en passant à Prospectia. 49€/mois, prospects illimités.
           </div>
         </div>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '24px', borderTop: '1px solid rgba(255,255,255,0.1)' }}>

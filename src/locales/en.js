@@ -419,7 +419,7 @@ const en = {
 
   // ─── Upgrade Banner ────────────────────────────────────────
   upgrade: {
-    searches: 'searches',
+    searches: 'prospects',
     enrichments: 'enrichments',
     exports: 'exports',
     limitReached: '{{type}} limit reached',
@@ -437,7 +437,7 @@ const en = {
     gdpr: 'GDPR',
     theme: 'Theme',
     // Usage
-    searches: 'Searches',
+    searches: 'Prospects',
     enrichments: 'Enrichments',
     exports: 'Exports',
     // Password
@@ -510,7 +510,7 @@ const en = {
     // Plan & Billing section
     planAndBilling: 'Plan & Billing',
     planAndBillingDesc: 'Manage your subscription and limits',
-    searchesPerMonth: 'Searches/month',
+    searchesPerMonth: 'Prospects/month',
     enrichmentsPerMonth: 'Enrichments/month',
     folders: 'Folders',
     exportsPerMonth: 'Exports/month',
@@ -604,7 +604,7 @@ const en = {
       badge: 'Find the email of any business in France',
       title: 'Prospect with',
       subtitle: 'Prospectia scrapes websites and searches Google to find the professional email of every business. <strong class="text-zinc-200">150+ categories, 101 departments</strong>, confidence scoring.',
-      price: 'Starting at €49/month — unlimited searches, automatic enrichment.',
+      price: 'Starting at €49/month — unlimited prospects, automatic enrichment.',
       compare: 'Compare with competition',
       sourcesLabel: 'Integrated sources:',
     },
@@ -727,7 +727,7 @@ const en = {
     // Plan features
     planFeatures: {
       free: [
-        '100 searches/month',
+        '100 prospects/month',
         '20 enrichments/month',
         '5 exports/month',
         '3 folders',
@@ -736,7 +736,7 @@ const en = {
         '101 departments (all of France)',
       ],
       pro: [
-        'Unlimited searches',
+        'Unlimited prospects',
         '500 enrichments/month',
         'Unlimited exports',
         'Unlimited folders',

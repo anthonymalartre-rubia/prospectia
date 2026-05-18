@@ -80,7 +80,7 @@ Bases de données B2B mondiales avec des contacts pré-collectés. Très utilis�
 Le résultat : on trouve les emails là où Apollo, Hunter et Lusha échouent.
 
 **Avantages** :
-- 49€/mois recherches illimitées (vs 99$/mo Apollo)
+- 49€/mois prospects illimités (vs 99$/mo Apollo)
 - Optimisé pour les PME françaises et commerces locaux
 - Google Places intégré (recherche par catégorie + département)
 - Conforme RGPD (opt-out automatique)
@@ -802,7 +802,7 @@ Aucun de ces outils ne dépasse **40% de taux de succès** sur les PME français
 Si tu veux un outil avec un vrai plan gratuit utilisable pour démarrer :
 
 ### Prospectia (plan Free)
-- **100 recherches/mois** (vs 25 pour Hunter)
+- **100 prospects/mois** (vs 25 pour Hunter)
 - Waterfall 7 sources actif sur le plan gratuit aussi
 - Couverture France (101 départements + DOM-TOM)
 - Filtrage RGPD automatique
@@ -1222,7 +1222,7 @@ Combiné à un outil d'envoi propre (Lemlist, Instantly, Mailshake), tu auras un
 
 Pour aller plus loin, lis aussi notre guide [Cold emailing 2026 : ce qui marche encore](/blog/cold-emailing-2026) qui complète celui-ci avec les meilleurs templates et la stratégie de séquencement.
 
-[Inscris-toi gratuitement sur Prospectia](/signup) — pas de carte requise, 100 recherches/mois offertes.
+[Inscris-toi gratuitement sur Prospectia](/signup) — pas de carte requise, 100 prospects/mois offertes.
 `,
   },
 
@@ -1512,7 +1512,7 @@ Tous ces templates supposent que tu as :
 
 [Prospectia](/) te trouve les emails pros vérifiés de PME françaises (waterfall 7 sources), avec contexte d'entreprise et catégorie métier inclus. Tu peux exporter directement vers Lemlist ou Instantly pour envoyer ces templates.
 
-[Inscris-toi gratuitement ici](/signup) — 100 recherches/mois offertes, pas de carte requise.
+[Inscris-toi gratuitement ici](/signup) — 100 prospects/mois offertes, pas de carte requise.
 
 ## Conclusion : les templates ne font pas tout
 
@@ -1748,7 +1748,7 @@ Un ICP précis et validé multiplie tes taux de conversion par 3 à 5x. C'est l'
 4. Remplis la fiche ICP
 5. Valide sur 20 prospects
 
-Pour trouver les prospects qui matchent ton ICP en France, [Prospectia](/) te permet de filtrer par catégorie métier (150+ catégories), localisation (101 départements) et déclencheurs récents. [Inscription gratuite ici](/signup), 100 recherches/mois offertes.
+Pour trouver les prospects qui matchent ton ICP en France, [Prospectia](/) te permet de filtrer par catégorie métier (150+ catégories), localisation (101 départements) et déclencheurs récents. [Inscription gratuite ici](/signup), 100 prospects/mois offertes.
 
 Et pour transformer ton ICP en outbound efficace, lis nos [10 templates cold email B2B en français qui convertissent en 2026](/blog/templates-cold-email-francais-2026).
 `,

@@ -261,7 +261,7 @@ export default function ProspectionSeoPage({
               Trouvez vos prospects en quelques clics
             </h2>
             <p className="text-zinc-400 mb-6 max-w-xl mx-auto">
-              Prospectia trouve les emails B2B que vos concurrents ratent. 49€/mois, recherches illimitées, scoring IA inclus.
+              Prospectia trouve les emails B2B que vos concurrents ratent. 49€/mois, prospects illimités, scoring IA inclus.
             </p>
             <Link
               href="/signup"

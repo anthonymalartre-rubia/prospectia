@@ -88,7 +88,7 @@ export default function LandingContent() {
 
           {/* Sous-titre court */}
           <p className="text-base sm:text-lg text-zinc-400 max-w-2xl mx-auto mb-8 leading-relaxed">
-            Scraping intelligent + recherche Google. <strong className="text-white">150+ secteurs, 101 départements.</strong> 49€/mois, recherches illimitées.
+            Scraping intelligent + recherche Google. <strong className="text-white">150+ secteurs, 101 départements.</strong> 49€/mois, prospects illimités.
           </p>
 
           {/* Widget de recherche fonctionnel */}

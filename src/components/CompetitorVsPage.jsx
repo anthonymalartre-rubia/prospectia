@@ -58,7 +58,7 @@ export default function CompetitorVsPage({ competitor }) {
           </h1>
           <p className="text-lg text-zinc-400 leading-relaxed max-w-3xl mx-auto mb-8">
             {competitor.description} <strong className="text-white">Prospectia est l&apos;alternative française à {competitor.name}</strong> :
-            recherches illimitées, scraping intelligent, prix 50% moins cher, et meilleure couverture des PME françaises.
+            prospects illimités, scraping intelligent, prix 50% moins cher, et meilleure couverture des PME françaises.
           </p>
 
           {/* Quick verdict */}
@@ -166,7 +166,7 @@ export default function CompetitorVsPage({ competitor }) {
                 {Math.round((competitor.pricing - 49) / competitor.pricing * 100)}% moins cher
               </h3>
               <p className="text-sm text-zinc-400 leading-relaxed">
-                Prospectia coûte 49€/mois pour des recherches illimitées. {competitor.name} coûte {competitor.pricing}{competitor.pricingUnit} avec des crédits limités.
+                Prospectia coûte 49€/mois pour des prospects illimités. {competitor.name} coûte {competitor.pricing}{competitor.pricingUnit} avec des crédits limités.
               </p>
             </div>
             <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-6">

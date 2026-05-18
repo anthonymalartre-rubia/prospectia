@@ -23,7 +23,7 @@ export async function POST(request) {
     const limitCheck = await checkLimit(supabase, user.id, 'searches');
     if (!limitCheck.allowed) {
       return Response.json(
-        { error: 'Limite de recherches atteinte pour ce mois. Passez au plan Pro pour continuer.', limitReached: true, ...limitCheck },
+        { error: 'Limite de prospects atteinte pour ce mois. Passez au plan Pro pour continuer.', limitReached: true, ...limitCheck },
         { status: 429 }
       );
     }
@@ -110,7 +110,12 @@ export async function POST(request) {
       nb_avis: place.userRatingCount || 0,
     }));
 
-    await incrementUsage(supabase, user.id, 'searches');
+    // Comptage par prospect ramené (et non plus par appel API).
+    // Un appel Google Places peut retourner jusqu'à 20 résultats : on
+    // facture la valeur (les prospects obtenus), pas l'API call.
+    if (places.length > 0) {
+      await incrementUsage(supabase, user.id, 'searches', places.length);
+    }
     return Response.json({ places });
   } catch (error) {
     console.error('Places API route error:', error);

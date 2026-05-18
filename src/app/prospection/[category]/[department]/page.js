@@ -116,7 +116,7 @@ export default async function CategoryDepartmentPage({ params }) {
     },
     {
       question: `Combien coûte la prospection des ${category.labelPlural} dans le ${dept.name} ?`,
-      answer: `49€/mois pour le plan Pro avec recherches illimitées dans le ${dept.name} et tous les autres départements. Aucun crédit caché, aucun supplément par catégorie ou département.`,
+      answer: `49€/mois pour le plan Pro avec prospects illimités dans le ${dept.name} et tous les autres départements. Aucun crédit caché, aucun supplément par catégorie ou département.`,
     },
   ];
 

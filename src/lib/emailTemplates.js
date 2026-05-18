@@ -114,7 +114,7 @@ export function welcomeEmail(userName) {
  */
 export function usageWarningEmail(userName, usagePercent, planName, limitType) {
   const name = userName || 'there';
-  const limitLabel = limitType === 'searches' ? 'recherches' : limitType === 'enrichments' ? 'enrichissements' : 'exports';
+  const limitLabel = limitType === 'searches' ? 'prospects' : limitType === 'enrichments' ? 'enrichissements' : 'exports';
   return {
     subject: `Vous avez utilis\u00e9 ${usagePercent}% de vos ${limitLabel}`,
     html: layout(`
@@ -146,7 +146,7 @@ export function usageWarningEmail(userName, usagePercent, planName, limitType) {
  */
 export function usageLimitReachedEmail(userName, planName, limitType) {
   const name = userName || 'there';
-  const limitLabel = limitType === 'searches' ? 'recherches' : limitType === 'enrichments' ? 'enrichissements' : 'exports';
+  const limitLabel = limitType === 'searches' ? 'prospects' : limitType === 'enrichments' ? 'enrichissements' : 'exports';
   return {
     subject: `Limite de ${limitLabel} atteinte`,
     html: layout(`

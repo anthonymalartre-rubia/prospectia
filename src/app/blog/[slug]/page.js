@@ -244,7 +244,7 @@ export default async function BlogPost({ params }) {
             <Zap size={32} className="text-violet-400 mx-auto mb-4" />
             <h2 className="text-2xl font-bold mb-3">Trouvez vos prospects en quelques clics</h2>
             <p className="text-content-secondary mb-6 max-w-xl mx-auto">
-              Prospectia trouve les emails B2B que vos concurrents ratent. 49€/mois, recherches illimitées.
+              Prospectia trouve les emails B2B que vos concurrents ratent. 49€/mois, prospects illimités.
             </p>
             <Link
               href="/signup"

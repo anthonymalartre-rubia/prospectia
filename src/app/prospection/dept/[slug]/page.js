@@ -75,7 +75,7 @@ export default async function DepartmentPage({ params }) {
     },
     {
       question: `Quel est le prix pour prospecter dans le ${dept.name} ?`,
-      answer: `49€/mois pour le plan Pro avec recherches illimitées (toutes catégories, tous départements). Aucun crédit caché, aucune limite par département.`,
+      answer: `49€/mois pour le plan Pro avec prospects illimités (toutes catégories, tous départements). Aucun crédit caché, aucune limite par département.`,
     },
   ];
 

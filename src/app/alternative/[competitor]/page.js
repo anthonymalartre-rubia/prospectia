@@ -13,11 +13,11 @@ export async function generateMetadata({ params }) {
 
   return {
     title: `Meilleure alternative à ${c.name} en 2026 — Prospectia (49€/mois)`,
-    description: `Cherche une alternative à ${c.name} ? Prospectia est l'alternative française : recherches illimitées, scraping intelligent, ${Math.round((c.pricing - 49) / c.pricing * 100)}% moins cher. Conforme RGPD.`,
+    description: `Cherche une alternative à ${c.name} ? Prospectia est l'alternative française : prospects illimités, scraping intelligent, ${Math.round((c.pricing - 49) / c.pricing * 100)}% moins cher. Conforme RGPD.`,
     alternates: { canonical: `https://prospectia.cloud/alternative/${slug}` },
     openGraph: {
       title: `Alternative à ${c.name} en 2026 — Prospectia`,
-      description: `L'alternative française à ${c.name} : recherches illimitées, 49€/mois, scraping + Google.`,
+      description: `L'alternative française à ${c.name} : prospects illimités, 49€/mois, scraping + Google.`,
       url: `https://prospectia.cloud/alternative/${slug}`,
     },
   };

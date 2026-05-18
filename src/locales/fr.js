@@ -419,7 +419,7 @@ const fr = {
 
   // ─── Upgrade Banner ────────────────────────────────────────
   upgrade: {
-    searches: 'recherches',
+    searches: 'prospects',
     enrichments: 'enrichissements',
     exports: 'exports',
     limitReached: 'Limite de {{type}} atteinte',
@@ -437,7 +437,7 @@ const fr = {
     gdpr: 'RGPD',
     theme: 'Theme',
     // Usage
-    searches: 'Recherches',
+    searches: 'Prospects',
     enrichments: 'Enrichissements',
     exports: 'Exports',
     // Password
@@ -510,7 +510,7 @@ const fr = {
     // Plan & Billing section
     planAndBilling: 'Plan & Facturation',
     planAndBillingDesc: 'Gerez votre abonnement et vos limites',
-    searchesPerMonth: 'Recherches/mois',
+    searchesPerMonth: 'Prospects/mois',
     enrichmentsPerMonth: 'Enrichissements/mois',
     folders: 'Dossiers',
     exportsPerMonth: 'Exports/mois',
@@ -604,7 +604,7 @@ const fr = {
       badge: 'Trouvez l\'email de n\'importe quelle entreprise en France',
       title: 'Prospectez avec',
       subtitle: 'Prospectia scrape les sites web et cherche sur Google pour trouver l\'email professionnel de chaque entreprise. <strong class="text-zinc-200">150+ categories, 101 departements</strong>, scoring de confiance.',
-      price: 'A partir de 49€/mois — recherches illimitees, enrichissement automatique.',
+      price: 'A partir de 49€/mois — prospects illimites, enrichissement automatique.',
       compare: 'Comparer avec la concurrence',
       sourcesLabel: 'Sources integrees :',
     },
@@ -727,7 +727,7 @@ const fr = {
     // Plan features
     planFeatures: {
       free: [
-        '100 recherches/mois',
+        '100 prospects/mois',
         '20 enrichissements/mois',
         '5 exports/mois',
         '3 dossiers',
@@ -736,7 +736,7 @@ const fr = {
         '101 departements (France entiere)',
       ],
       pro: [
-        'Recherches illimitees',
+        'Prospects illimites',
         '500 enrichissements/mois',
         'Exports illimites',
         'Dossiers illimites',

@@ -105,7 +105,7 @@ export default function ProspectionIndexPage() {
         <section className="max-w-3xl mx-auto px-4 sm:px-6">
           <div className="rounded-2xl bg-gradient-to-br from-violet-600/20 to-indigo-600/20 border border-violet-500/30 p-8 text-center">
             <h2 className="text-2xl font-bold mb-3">Prêt à prospecter ?</h2>
-            <p className="text-zinc-400 mb-6">Accédez à tous les emails B2B en quelques clics. 49€/mois, recherches illimitées.</p>
+            <p className="text-zinc-400 mb-6">Accédez à tous les emails B2B en quelques clics. 49€/mois, prospects illimités.</p>
             <Link
               href="/signup"
               className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-violet-600 hover:bg-violet-500 text-white text-sm font-semibold transition shadow-lg shadow-violet-500/30"
