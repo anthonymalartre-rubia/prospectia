@@ -2,6 +2,7 @@ import { getAllSeoUrls } from '@/lib/slugs';
 import { getAllCompetitors } from '@/lib/competitors';
 import { getAllPosts } from '@/lib/blog';
 import { getAllGlossaryTerms } from '@/lib/glossary';
+import { getAllGuides } from '@/lib/guides';
 
 /**
  * Dynamic sitemap generated at build time + ISR.
@@ -56,5 +57,19 @@ export default async function sitemap() {
     lastModified: now,
   }));
 
-  return [...staticPages, ...seoUrls, ...vsUrls, ...blogIndex, ...blogPosts, ...glossaryIndex, ...glossaryTerms];
+  // Guides (long-form, high-authority)
+  const guideIndex = [{ url: `${baseUrl}/guide`, priority: 0.8, changeFrequency: 'weekly', lastModified: now }];
+  const guidePages = getAllGuides().map((g) => ({
+    url: `${baseUrl}/guide/${g.slug}`,
+    priority: 0.7,
+    changeFrequency: 'monthly',
+    lastModified: new Date(g.publishedAt),
+  }));
+
+  return [
+    ...staticPages, ...seoUrls, ...vsUrls,
+    ...blogIndex, ...blogPosts,
+    ...glossaryIndex, ...glossaryTerms,
+    ...guideIndex, ...guidePages,
+  ];
 }

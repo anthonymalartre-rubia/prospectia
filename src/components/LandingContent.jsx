@@ -700,7 +700,8 @@ export default function LandingContent() {
               <h3 className="text-xs font-semibold text-zinc-300 uppercase tracking-wider mb-3">Ressources</h3>
               <ul className="space-y-2 text-sm">
                 <li><Link href="/blog" className="text-zinc-500 hover:text-violet-400 transition">Blog</Link></li>
-                <li><Link href="/blog/trouver-email-entreprise-france" className="text-zinc-500 hover:text-violet-400 transition">Trouver un email B2B</Link></li>
+                <li><Link href="/guide" className="text-zinc-500 hover:text-violet-400 transition">Guides sectoriels</Link></li>
+                <li><Link href="/glossaire" className="text-zinc-500 hover:text-violet-400 transition">Glossaire B2B</Link></li>
                 <li><Link href="/blog/rgpd-prospection-b2b" className="text-zinc-500 hover:text-violet-400 transition">Guide RGPD</Link></li>
                 <li><Link href="/blog/cold-emailing-2026" className="text-zinc-500 hover:text-violet-400 transition">Cold emailing 2026</Link></li>
               </ul>
