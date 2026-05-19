@@ -33,11 +33,26 @@ export async function GET() {
     return NextResponse.json({ error: 'authenticated only' }, { status: 401 });
   }
 
-  // 1. Env vars présence et format
-  const secretKey = process.env.STRIPE_SECRET_KEY;
-  const proPriceId = process.env.STRIPE_PRO_PRICE_ID;
-  const entPriceId = process.env.STRIPE_ENTERPRISE_PRICE_ID;
-  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+  // 1. Env vars présence et format — on note les bytes RAW pour détecter
+  // les caractères invisibles (\n, espaces, etc.) qui causent des
+  // ConnectionErrors opaques.
+  const rawSecret = process.env.STRIPE_SECRET_KEY;
+  const rawPro = process.env.STRIPE_PRO_PRICE_ID;
+  const rawEnt = process.env.STRIPE_ENTERPRISE_PRICE_ID;
+  const rawWh = process.env.STRIPE_WEBHOOK_SECRET;
+  const secretKey = rawSecret?.trim();
+  const proPriceId = rawPro?.trim();
+  const entPriceId = rawEnt?.trim();
+  const webhookSecret = rawWh?.trim();
+
+  const hasTrailingWhitespace = (s) => s && s !== s.trim();
+  result.checks.envHygiene = {
+    STRIPE_SECRET_KEY_hasTrailingWhitespace: hasTrailingWhitespace(rawSecret),
+    STRIPE_PRO_PRICE_ID_hasTrailingWhitespace: hasTrailingWhitespace(rawPro),
+    STRIPE_ENTERPRISE_PRICE_ID_hasTrailingWhitespace: hasTrailingWhitespace(rawEnt),
+    STRIPE_WEBHOOK_SECRET_hasTrailingWhitespace: hasTrailingWhitespace(rawWh),
+    note: 'Trailing whitespace (\\n, espaces) cause des StripeConnectionError opaques. Le code trim désormais à la lecture, mais nettoyer les env vars sur Vercel reste une bonne pratique.',
+  };
 
   result.checks.env = {
     STRIPE_SECRET_KEY: secretKey ? `${secretKey.slice(0, 8)}…${secretKey.slice(-4)} (${secretKey.length} chars)` : 'MISSING',

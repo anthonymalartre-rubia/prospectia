@@ -3,7 +3,9 @@ import Stripe from 'stripe';
 import { getAuthenticatedUser } from '@/lib/auth';
 
 function getStripe() {
-  return new Stripe(process.env.STRIPE_SECRET_KEY, {
+  // .trim() critique cf. /api/stripe/checkout : un \n résiduel dans la clé
+  // collée depuis le dashboard Vercel cause "StripeConnectionError" opaque.
+  return new Stripe(process.env.STRIPE_SECRET_KEY?.trim(), {
     maxNetworkRetries: 1,
     timeout: 15000,
   });

@@ -6,7 +6,8 @@ import { paymentSuccessEmail, subscriptionCancelledEmail } from '@/lib/emailTemp
 import { PLANS } from '@/lib/plans';
 
 function getStripe() {
-  return new Stripe(process.env.STRIPE_SECRET_KEY);
+  // .trim() critique : voir /api/stripe/checkout pour le contexte.
+  return new Stripe(process.env.STRIPE_SECRET_KEY?.trim());
 }
 
 function getSupabaseAdmin() {
@@ -24,7 +25,7 @@ export async function POST(request) {
 
   let event;
   try {
-    event = stripe.webhooks.constructEvent(body, sig, process.env.STRIPE_WEBHOOK_SECRET);
+    event = stripe.webhooks.constructEvent(body, sig, process.env.STRIPE_WEBHOOK_SECRET?.trim());
   } catch (err) {
     console.error('Webhook signature verification failed:', err.message);
     return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });

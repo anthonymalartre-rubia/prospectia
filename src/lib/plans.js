@@ -14,7 +14,7 @@ export const PLANS = {
     id: 'pro',
     name: 'Pro',
     price: 4900, // cents
-    stripePriceId: process.env.STRIPE_PRO_PRICE_ID || '',
+    stripePriceId: (process.env.STRIPE_PRO_PRICE_ID || '').trim(),
     limits: {
       searches_per_month: -1, // unlimited
       enrichments_per_month: 500,
@@ -30,7 +30,7 @@ export const PLANS = {
     id: 'enterprise',
     name: 'Enterprise',
     price: 14900, // cents
-    stripePriceId: process.env.STRIPE_ENTERPRISE_PRICE_ID || '',
+    stripePriceId: (process.env.STRIPE_ENTERPRISE_PRICE_ID || '').trim(),
     limits: {
       searches_per_month: -1,
       enrichments_per_month: -1,

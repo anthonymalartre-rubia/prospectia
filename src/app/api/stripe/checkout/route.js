@@ -4,11 +4,10 @@ import { getAuthenticatedUser } from '@/lib/auth';
 import { PLANS } from '@/lib/plans';
 
 function getStripe() {
-  // Config :
-  //  - maxNetworkRetries: 1 → on évite que la fonction tourne 30s+ en cas
-  //    de problème réseau persistant (Vercel a un timeout limité).
-  //  - timeout: 15000 → 15s par requête, suffisant pour Stripe normal.
-  return new Stripe(process.env.STRIPE_SECRET_KEY, {
+  // .trim() est CRITIQUE : si l'env var a été collée avec un \n final dans
+  // le dashboard Vercel (très facile à faire), le SDK envoie ce \n dans le
+  // header Authorization → HTTP malformé → "StripeConnectionError" opaque.
+  return new Stripe(process.env.STRIPE_SECRET_KEY?.trim(), {
     maxNetworkRetries: 1,
     timeout: 15000,
   });
@@ -36,6 +35,9 @@ export async function POST(request) {
     if (!plan) {
       return NextResponse.json({ error: `Plan inconnu : ${planId}` }, { status: 400 });
     }
+    // Trim défensif : même fix que pour la clé secrète, le price ID peut
+    // aussi avoir un \n résiduel collé depuis Stripe Dashboard.
+    plan.stripePriceId = plan.stripePriceId?.trim();
     if (!plan.stripePriceId) {
       console.error(`[stripe/checkout] Missing STRIPE_${planId.toUpperCase()}_PRICE_ID env var for plan ${planId}`);
       return NextResponse.json(
