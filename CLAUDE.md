@@ -1,6 +1,8 @@
 # Prospectia.ai — Agrégateur de prospection B2B en France
 
-Plateforme SaaS de prospection B2B automatisée couvrant la France entière (101 départements). Agrège 7 sources d'enrichissement email (Apollo, Serper, Enrichly, Anymail, Findymail, Scraping, Fallback) en une seule recherche waterfall avec scoring de confiance.
+Plateforme SaaS de prospection B2B automatisée couvrant la France entière (101 départements). Combine recherche Google Places + cascade waterfall multi-sources (scraping intelligent du site web → recherche Google via Serper → fallback patterns) avec scoring de confiance.
+
+Tarification : Starter gratuit (100 prospects) · Solo 19€/mois (1k) · Pro 49€/mois (5k) · Business 99€/mois (10k) — facturation mensuelle ou annuelle (-2 mois).
 
 ## Stack technique
 
@@ -43,8 +45,7 @@ src/
 │   └── api/
 │       ├── places/route.js        # Proxy Google Places API (New)
 │       ├── enrich/route.js        # Enrichissement email simple (scraping)
-│       ├── enrich-waterfall/route.js # Enrichissement waterfall 7 sources
-│       ├── enrich-apollo/route.js # Enrichissement Apollo direct
+│       ├── enrich-waterfall/route.js # Cascade scraping + Serper + fallback patterns
 │       ├── enrich-deep/route.js   # Enrichissement deep
 │       ├── parse-search/route.js  # LLM parsing recherche naturelle (Anthropic)
 │       ├── opt-out/route.js       # API opt-out RGPD (service role)
@@ -126,8 +127,8 @@ RESEND_API_KEY=                  # Resend (emails transactionnels)
 - **101 départements** : métropole (96) + outre-mer (5), organisés en 14 régions
 - **150+ catégories B2B** : 12 secteurs (B2B_GROUPS) + 3 groupes copropriété (COPRO_GROUPS)
 - **Recherche en langage naturel** : via Anthropic Claude, convertit une description en termes Google Places
-- **Enrichissement waterfall 7 sources** : Scraping → Serper → Apollo → Enrichly → Anymail → Findymail → Fallback
-- **Scoring de confiance** : Vérifié (domain match), Apollo (base de données), Probable (pattern deviné)
+- **Enrichissement waterfall multi-sources** : Scraping intelligent du site → recherche Google via Serper → fallback patterns (contact@, info@…). S'arrête dès qu'un email est trouvé.
+- **Scoring de confiance** : Vérifié (trouvé sur le site), Google (extrait d'une recherche), Probable (pattern deviné)
 - **Filtrage RGPD emails personnels** : 28 domaines bloqués (@gmail, @hotmail, etc.), activable/désactivable par utilisateur avec avertissement juridique
 - **Opt-out RGPD** : page publique /opt-out, suppression automatique + blocklist permanente
 - **Export CSV** : format standard ou Zoho CRM

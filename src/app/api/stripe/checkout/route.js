@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { getAuthenticatedUser } from '@/lib/auth';
-import { PLANS } from '@/lib/plans';
+import { PLANS, getStripePriceId } from '@/lib/plans';
 import { cleanEnv } from '@/lib/envClean';
 
 function getStripe() {
@@ -30,17 +30,24 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Non autorise' }, { status: 401 });
     }
 
-    const { planId } = await request.json();
+    const { planId, period: rawPeriod } = await request.json();
+    const period = rawPeriod === 'yearly' ? 'yearly' : 'monthly';
     const plan = PLANS[planId];
     if (!plan) {
       return NextResponse.json({ error: `Plan inconnu : ${planId}` }, { status: 400 });
     }
-    // On ne mute pas PLANS (objet partagé). cleanEnv idempotent → variable locale.
-    const stripePriceId = cleanEnv(plan.stripePriceId);
+    if (planId === 'free') {
+      return NextResponse.json({ error: 'Le plan Starter est gratuit, pas besoin de checkout.' }, { status: 400 });
+    }
+    // Pick price ID selon la période (monthly = price, yearly = priceYearly)
+    const stripePriceId = cleanEnv(getStripePriceId(planId, period));
     if (!stripePriceId) {
-      console.error(`[stripe/checkout] Missing STRIPE_${planId.toUpperCase()}_PRICE_ID env var for plan ${planId}`);
+      const envVar = period === 'yearly'
+        ? `STRIPE_${planId.toUpperCase()}_YEARLY_PRICE_ID`
+        : `STRIPE_${planId.toUpperCase()}_PRICE_ID`;
+      console.error(`[stripe/checkout] Missing ${envVar} for plan ${planId} (${period})`);
       return NextResponse.json(
-        { error: `ID de prix Stripe manquant pour le plan ${plan.name}. Variable STRIPE_${planId.toUpperCase()}_PRICE_ID à configurer sur Vercel.` },
+        { error: `Tarif Stripe indisponible pour ${plan.name} (${period}). Variable ${envVar} à configurer.` },
         { status: 500 }
       );
     }
@@ -88,12 +95,12 @@ export async function POST(request) {
       success_url: `${origin}/dashboard?upgrade=success&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/dashboard?upgrade=cancelled`,
       // metadata sur la session : disponible dans checkout.session.completed
-      metadata: { supabase_user_id: user.id, plan_id: planId },
+      metadata: { supabase_user_id: user.id, plan_id: planId, period },
       // subscription_data.metadata : ATTACHÉ À LA SUBSCRIPTION elle-même
       // → retrouvable dans tous les futurs events subscription.updated /
       //   subscription.deleted / invoice.payment_failed sans dépendre de la DB.
       subscription_data: {
-        metadata: { supabase_user_id: user.id, plan_id: planId },
+        metadata: { supabase_user_id: user.id, plan_id: planId, period },
       },
       allow_promotion_codes: true,
       // Email de facturation Stripe directement à l'user

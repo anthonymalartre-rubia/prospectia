@@ -140,6 +140,8 @@ export default function SettingsPage() {
 
   // UX refonte : scrollspy + sticky nav
   const [activeSection, setActiveSection] = useState('preferences');
+  // Toggle Mensuel/Annuel pour le pricing dans la section Plan & Usage
+  const [upgradePeriod, setUpgradePeriod] = useState('monthly');
 
   useEffect(() => {
     loadUserData();
@@ -308,13 +310,18 @@ export default function SettingsPage() {
     setBillingLoading(false);
   }
 
-  async function handleUpgradePro() {
+  /**
+   * Lance le checkout Stripe pour un plan donné.
+   * @param {'solo'|'pro'|'business'} targetPlan
+   * @param {'monthly'|'yearly'} [targetPeriod='monthly']
+   */
+  async function handleCheckout(targetPlan = 'pro', targetPeriod = 'monthly') {
     setBillingLoading(true);
     try {
       const res = await fetch('/api/stripe/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ planId: 'pro' }),
+        body: JSON.stringify({ planId: targetPlan, period: targetPeriod }),
       });
       const data = await res.json();
       if (res.ok && data.url) {
@@ -327,6 +334,9 @@ export default function SettingsPage() {
     }
     setBillingLoading(false);
   }
+
+  // Compat avec le code existant qui appelait handleUpgradePro()
+  const handleUpgradePro = () => handleCheckout('pro', 'monthly');
 
   async function handleDeleteAccount() {
     if (deleteConfirmText !== 'SUPPRIMER') return;
@@ -830,24 +840,9 @@ export default function SettingsPage() {
                   })}
                 </div>
 
-                {/* CTA upgrade or portal */}
-                <div className="mt-5 pt-4 border-t border-line flex flex-wrap items-center justify-between gap-3">
-                  {planId === 'free' ? (
-                    <>
-                      <p className="text-sm text-content-secondary flex items-center gap-1.5">
-                        <Zap className="h-4 w-4 text-violet-500" />
-                        {t('settings.upgradeProPrompt')}
-                      </p>
-                      <button
-                        onClick={handleUpgradePro}
-                        disabled={billingLoading}
-                        className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-gradient-to-r from-violet-600 to-indigo-600 text-white hover:from-violet-500 hover:to-indigo-500 shadow-lg shadow-violet-500/20 transition disabled:opacity-40"
-                      >
-                        {billingLoading ? <RefreshCw className="h-4 w-4 animate-spin" /> : <ArrowUpRight className="h-4 w-4" />}
-                        {t('settings.upgradeToPro')}
-                      </button>
-                    </>
-                  ) : (
+                {/* Portail Stripe pour les users déjà payants (gestion abo, factures) */}
+                {planId !== 'free' && (
+                  <div className="mt-5 pt-4 border-t border-line flex justify-end">
                     <button
                       onClick={handleManageBilling}
                       disabled={billingLoading}
@@ -856,7 +851,96 @@ export default function SettingsPage() {
                       {billingLoading ? <RefreshCw className="h-4 w-4 animate-spin" /> : <CreditCard className="h-4 w-4" />}
                       {t('settings.manageSubscription')}
                     </button>
-                  )}
+                  </div>
+                )}
+              </div>
+
+              {/* ─── Choisir un plan (3 cards Solo/Pro/Business + toggle period) ─── */}
+              <div className="mt-6 rounded-xl border border-line bg-surface-card p-5">
+                <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
+                  <div>
+                    <h3 className="text-sm font-semibold text-content-primary">
+                      {planId === 'free' ? '⚡ Choisir un plan' : 'Changer de plan'}
+                    </h3>
+                    <p className="text-xs text-content-tertiary mt-0.5">
+                      {planId === 'free'
+                        ? 'A partir de 19€/mois. Annulez à tout moment.'
+                        : 'Upgrade ou downgrade à tout moment.'}
+                    </p>
+                  </div>
+                  {/* Toggle Mensuel / Annuel */}
+                  <div className="inline-flex items-center gap-1 p-1 rounded-lg border border-line bg-surface-base">
+                    <button
+                      onClick={() => setUpgradePeriod('monthly')}
+                      className={`px-3 py-1.5 rounded-md text-xs font-medium transition ${
+                        upgradePeriod === 'monthly' ? 'bg-violet-500/15 text-violet-600' : 'text-content-tertiary'
+                      }`}
+                    >
+                      Mensuel
+                    </button>
+                    <button
+                      onClick={() => setUpgradePeriod('yearly')}
+                      className={`px-3 py-1.5 rounded-md text-xs font-medium transition flex items-center gap-1.5 ${
+                        upgradePeriod === 'yearly' ? 'bg-violet-500/15 text-violet-600' : 'text-content-tertiary'
+                      }`}
+                    >
+                      Annuel
+                      <span className="px-1.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-600 text-[9px] font-bold uppercase">−17%</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  {['solo', 'pro', 'business'].map((pid) => {
+                    const plan = PLANS[pid];
+                    const isCurrent = planId === pid;
+                    const price = upgradePeriod === 'yearly' ? plan.priceYearly : plan.price;
+                    const isRecommended = pid === 'pro';
+                    return (
+                      <div
+                        key={pid}
+                        className={`relative p-4 rounded-xl border ${
+                          isRecommended ? 'border-violet-500/40 bg-violet-500/[0.04]' : 'border-line bg-surface-base'
+                        } ${isCurrent ? 'opacity-75' : ''}`}
+                      >
+                        {isRecommended && (
+                          <span className="absolute -top-2 right-3 px-2 py-0.5 rounded-full bg-violet-600 text-white text-[9px] font-bold uppercase tracking-wider">
+                            Recommandé
+                          </span>
+                        )}
+                        <h4 className="text-sm font-semibold text-content-primary">{plan.name}</h4>
+                        <div className="mt-1 flex items-baseline gap-1">
+                          <span className="text-xl font-bold text-content-primary">{Math.round(price / 100)}€</span>
+                          <span className="text-[10px] text-content-muted">
+                            {upgradePeriod === 'yearly' ? '/an' : '/mois'}
+                          </span>
+                        </div>
+                        <p className="text-[10px] text-content-tertiary mb-3 min-h-[28px]">
+                          {plan.limits.searches_per_month.toLocaleString('fr-FR')} prospects · {plan.limits.enrichments_per_month.toLocaleString('fr-FR')} enrich.
+                        </p>
+                        {isCurrent ? (
+                          <button
+                            disabled
+                            className="w-full py-2 rounded-lg text-xs font-medium border border-line text-content-muted bg-surface-elevated cursor-not-allowed"
+                          >
+                            ✓ Plan actuel
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => handleCheckout(pid, upgradePeriod)}
+                            disabled={billingLoading}
+                            className={`w-full py-2 rounded-lg text-xs font-semibold transition disabled:opacity-40 ${
+                              isRecommended
+                                ? 'bg-gradient-to-r from-violet-600 to-indigo-600 text-white hover:from-violet-500 hover:to-indigo-500 shadow shadow-violet-500/20'
+                                : 'border border-line bg-surface-card hover:bg-surface-elevated text-content-primary'
+                            }`}
+                          >
+                            {billingLoading ? <RefreshCw className="h-3 w-3 animate-spin mx-auto" /> : `Choisir ${plan.name}`}
+                          </button>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             </section>

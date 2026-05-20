@@ -335,16 +335,30 @@ export function usageLimitReachedEmail(userName, planName, limitType) {
 }
 
 /**
- * Payment success (premier paiement)
+ * Payment success (premier paiement).
+ * @param {string} userName
+ * @param {string} planName - 'Solo' | 'Pro' | 'Business'
+ * @param {number} amount - montant payé en centimes
+ * @param {'monthly'|'yearly'} [period='monthly']
+ * @param {string[]} [features] - features débloqués (sinon liste générique)
  */
-export function paymentSuccessEmail(userName, planName, amount) {
+export function paymentSuccessEmail(userName, planName, amount, period = 'monthly', features = null) {
   const name = userName || 'là';
   const formattedAmount = (amount / 100).toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' });
   const date = new Date().toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+  const periodLabel = period === 'yearly' ? '/ an' : '/ mois';
+  const defaultFeatures = [
+    'Tous les départements de France (101)',
+    'Cascade multi-sources (scraping intelligent + recherche Google)',
+    'Exports CSV sans limite',
+    'Dossiers et tags illimités',
+    'Support email prioritaire',
+  ];
+  const featureList = features && features.length > 0 ? features : defaultFeatures;
   return {
     subject: `✅ Bienvenue sur le plan ${planName} !`,
     html: layout({
-      preheader: `Votre paiement de ${formattedAmount} est confirmé. Profitez de toutes les fonctionnalités Pro immédiatement.`,
+      preheader: `Votre paiement de ${formattedAmount} est confirmé. Toutes les fonctionnalités ${planName} sont actives.`,
       accent: COLORS.success,
       content: `
         ${hero({
@@ -355,18 +369,15 @@ export function paymentSuccessEmail(userName, planName, amount) {
 
         ${receiptCard([
           { label: 'Plan', value: planName, color: COLORS.brand },
-          { label: 'Montant', value: `${formattedAmount} / mois` },
+          { label: 'Montant', value: `${formattedAmount} ${periodLabel}` },
+          { label: 'Facturation', value: period === 'yearly' ? 'Annuelle' : 'Mensuelle' },
           { label: 'Date', value: date },
           { label: 'Statut', value: '✓ Actif', color: COLORS.success },
         ])}
 
         <p style="margin:24px 0 16px;font-size:13px;font-weight:600;color:${COLORS.text};">Ce qui est maintenant débloqué :</p>
         <ul style="margin:0 0 24px;padding:0 0 0 20px;color:${COLORS.textMuted};font-size:14px;line-height:1.8;">
-          <li>Prospects illimités sur tous les 101 départements</li>
-          <li>Cascade waterfall complète (7 sources email)</li>
-          <li>Exports CSV sans limite</li>
-          <li>Dossiers et tags illimités</li>
-          <li>Support prioritaire</li>
+          ${featureList.map((f) => `<li>${f}</li>`).join('\n          ')}
         </ul>
 
         <div align="center">${ctaPrimary('Accéder au dashboard', DASHBOARD_URL)}</div>

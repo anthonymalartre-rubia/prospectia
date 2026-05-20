@@ -22,7 +22,7 @@ const FAQ_ITEMS = [
   {
     question: "Comment fonctionne l'enrichissement email ?",
     answer:
-      "Notre enrichissement en cascade (waterfall) teste jusqu'a 7 sources dans l'ordre : scraping du site web, recherche Google (Serper), Apollo.io, Enrichly, Anymail Finder, Findymail, puis un fallback intelligent (contact@domaine.com). Le processus s'arrete des qu'un email est trouve, pour minimiser les couts.",
+      "Notre enrichissement en cascade (waterfall) combine plusieurs methodes : scraping intelligent du site web de l'entreprise, recherche Google pour identifier les emails publics, puis un fallback sur les patterns courants (contact@, info@). Le processus s'arrete des qu'un email est trouve et vous donne un score de confiance (verifie, probable, devine).",
   },
   {
     question: "Puis-je exporter vers mon CRM ?",
@@ -32,7 +32,7 @@ const FAQ_ITEMS = [
   {
     question: "Quelles sont les limites du plan gratuit ?",
     answer:
-      "Le plan gratuit vous permet de tester la plateforme avec un nombre limite de recherches, enrichissements et exports par mois. Le scraping email basique est inclus gratuitement et sans limite. Pour debloquer les sources payantes (Apollo, Enrichly, etc.) et les volumes plus importants, passez au plan Pro.",
+      "Le plan Starter (gratuit) vous offre 100 prospects, 20 enrichissements et 5 exports par mois pour decouvrir la plateforme. Pour passer a 1 000 prospects + 400 enrichissements, le plan Solo est a seulement 19€/mois — le ticket d'entree le moins cher du marche. Plans Pro (49€) et Business (99€) disponibles pour volumes plus eleves.",
   },
   {
     question: "Mes donnees sont-elles securisees ?",
@@ -47,7 +47,7 @@ const FAQ_ITEMS = [
   {
     question: "Quelle est la difference avec Apollo.io, Hunter ou Lusha ?",
     answer:
-      "Ces outils ne proposent qu'une seule source d'enrichissement et facturent entre 36€ et 99€/mois. Prospectia est un agregateur : nous combinons 7 sources (dont Apollo lui-meme) en une recherche unique, avec scoring de confiance, pour 49€/mois. En plus, nous proposons la recherche Google Places integree, 150+ categories et la couverture des 101 departements francais — des fonctionnalites absentes chez Apollo, Hunter, Lusha, Snov.io et Dropcontact.",
+      "Apollo, Hunter et Lusha sont des bases de donnees d'enrichissement : vous devez deja avoir une liste de prospects a enrichir. Prospectia fait les DEUX en un : decouverte des prospects via Google Places (150+ categories, 101 departements francais) + enrichissement email automatique. A partir de 19€/mois avec Solo (vs 39€ Snov, 49€ Hunter, 99€ Apollo), c'est le ticket d'entree le moins cher du marche francais.",
   },
   {
     question: "Comment fonctionne la recherche en langage naturel ?",

@@ -38,14 +38,18 @@ async function getUserContact(supabaseAdmin, userId) {
 }
 
 /**
- * Match un price.id Stripe avec un plan local (free/pro/enterprise).
- * Renvoie 'free' si aucun match (sécurité : on ne grant pas un plan inconnu).
+ * Match un price.id Stripe avec un plan local (free/solo/pro/business).
+ * Vérifie monthly ET yearly. Renvoie 'free' si aucun match (sécurité).
  */
 function planIdFromPriceId(priceId) {
   if (!priceId) return 'free';
   for (const [id, plan] of Object.entries(PLANS)) {
+    if (id === 'enterprise') continue; // skip alias
     if (plan.stripePriceId && plan.stripePriceId === priceId) return id;
+    if (plan.stripePriceIdYearly && plan.stripePriceIdYearly === priceId) return id;
   }
+  // Fallback compat : si on hit le vieux price_id Enterprise
+  if (PLANS.enterprise?.stripePriceId === priceId) return 'business';
   return 'free';
 }
 
@@ -111,11 +115,14 @@ export async function POST(request) {
           break;
         }
 
-        // Email de confirmation
+        // Email de confirmation (features personnalisées par plan + period)
         const { email, fullName } = await getUserContact(supabaseAdmin, userId);
         if (email) {
-          const plan = PLANS[planId] || { name: planId, price: 0 };
-          const tpl = paymentSuccessEmail(fullName, plan.name, session.amount_total || plan.price);
+          const plan = PLANS[planId] || { name: planId, price: 0, features: [] };
+          const period = session.metadata?.period === 'yearly' ? 'yearly' : 'monthly';
+          const amount = session.amount_total
+            || (period === 'yearly' ? plan.priceYearly : plan.price);
+          const tpl = paymentSuccessEmail(fullName, plan.name, amount, period, plan.features);
           sendEmail({ to: email, subject: tpl.subject, html: tpl.html })
             .catch((err) => console.error('[webhook] Payment email failed:', err));
         }

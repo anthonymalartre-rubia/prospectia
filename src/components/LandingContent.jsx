@@ -1,7 +1,8 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
-import { ArrowRight, Check, Zap, Search, Mail, MapPin, Shield, Layers, Download, Crown, Star, Tag, Brain, TrendingDown, Database, X, Globe, BarChart3 } from 'lucide-react';
+import { ArrowRight, Check, Zap, Search, Mail, MapPin, Shield, Layers, Download, Crown, Star, Tag, Brain, TrendingDown, Database, X, Globe, BarChart3, Sparkles } from 'lucide-react';
 import { NavAuth, HeroCTA, FooterCTA } from '@/components/AuthCTA';
 import { PLANS } from '@/lib/plans';
 import FAQSection from '@/components/FAQSection';
@@ -13,8 +14,80 @@ function formatPrice(cents) {
   return Math.round(cents / 100).toString();
 }
 
+/**
+ * Pricing card pour la landing.
+ * Gère monthly/yearly + badge (Recommandé, Le moins cher) + highlighting.
+ */
+function PricingCard({ plan, tagline, features, cta, ctaHref, badge, highlighted, isYearly, t }) {
+  const price = isYearly ? plan.priceYearly : plan.price;
+  const isFree = plan.price === 0;
+
+  // Badge colors mapping (Tailwind safe-list ne marche pas avec strings dynamiques)
+  const badgeColors = {
+    violet: 'bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-violet-500/20',
+    emerald: 'bg-gradient-to-r from-emerald-600 to-green-600 text-white shadow-emerald-500/20',
+  };
+
+  return (
+    <div className={`relative p-7 rounded-2xl backdrop-blur-sm ${
+      highlighted
+        ? 'border border-violet-500/30 bg-gradient-to-b from-violet-500/[0.08] to-[#111114]/80'
+        : 'border border-white/[0.06] bg-[#111114]/80'
+    }`}>
+      {badge && (
+        <div className={`absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 text-[11px] font-semibold rounded-full shadow-lg flex items-center gap-1.5 whitespace-nowrap ${badgeColors[badge.color] || badgeColors.violet}`}>
+          {badge.icon && <badge.icon size={11} />}
+          {badge.label}
+        </div>
+      )}
+
+      <h3 className="text-lg font-semibold mb-1">{plan.name}</h3>
+      <p className="text-xs text-zinc-500 mb-5 min-h-[32px]">{tagline}</p>
+
+      <div className="flex items-baseline gap-1 mb-1">
+        <span className="text-4xl font-bold">{formatPrice(price)}<span className="text-2xl text-zinc-400">&euro;</span></span>
+        <span className="text-zinc-600 text-sm">{isYearly ? t('landing.pricing.perYear') : t('landing.pricing.perMonth')}</span>
+      </div>
+      {isYearly && !isFree && (
+        <p className="text-[11px] text-emerald-400 font-medium mb-5">
+          ~{Math.round(plan.priceYearly / 1200)}&euro;/mois en facturation annuelle
+        </p>
+      )}
+      {!isYearly && !isFree && (
+        <p className="text-[11px] text-zinc-500 mb-5">
+          ou {formatPrice(plan.priceYearly)}&euro;/an ({t('landing.pricing.savePercent')})
+        </p>
+      )}
+      {isFree && <p className="mb-5">&nbsp;</p>}
+
+      <Link
+        href={ctaHref}
+        className={`block w-full py-3 text-center text-sm font-semibold rounded-xl transition mb-6 ${
+          highlighted
+            ? 'bg-gradient-to-r from-violet-600 to-indigo-600 text-white hover:from-violet-500 hover:to-indigo-500 shadow-lg shadow-violet-500/20'
+            : 'border border-white/[0.1] hover:bg-white/[0.05] text-zinc-300'
+        }`}
+      >
+        {cta}{highlighted ? ' →' : ''}
+      </Link>
+
+      <div className="space-y-2.5">
+        {(Array.isArray(features) ? features : []).map((f) => (
+          <div key={f} className="flex items-start gap-2">
+            <Check size={15} className="text-violet-400 mt-0.5 flex-shrink-0" />
+            <span className="text-xs text-zinc-400 leading-relaxed">{f}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function LandingContent() {
   const { t } = useI18n();
+  // Pricing toggle Monthly / Yearly (UX 2026 standard)
+  const [pricingPeriod, setPricingPeriod] = useState('monthly');
+  const isYearly = pricingPeriod === 'yearly';
 
   function formatLimit(value) {
     if (value === -1) return t('landing.unlimited');
@@ -23,8 +96,9 @@ export default function LandingContent() {
 
   const PLAN_FEATURES = {
     free: t('landing.planFeatures.free'),
+    solo: t('landing.planFeatures.solo'),
     pro: t('landing.planFeatures.pro'),
-    enterprise: t('landing.planFeatures.enterprise'),
+    business: t('landing.planFeatures.business'),
   };
 
   const COMPETITORS = [
@@ -534,95 +608,103 @@ export default function LandingContent() {
 
       {/* Pricing */}
       <section id="pricing" className="py-24 px-4 sm:px-6 border-t border-white/[0.06]">
-        <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-16">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-12">
             <p className="text-sm font-semibold text-violet-400 mb-3">{t('landing.pricing.label')}</p>
             <h2 className="text-3xl sm:text-4xl font-bold mb-4">
               {t('landing.pricing.title')}
             </h2>
-            <p className="text-zinc-500 text-lg max-w-xl mx-auto">
+            <p className="text-zinc-500 text-lg max-w-2xl mx-auto mb-8">
               {t('landing.pricing.desc')}
             </p>
-          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Starter */}
-            <div className="p-8 rounded-2xl border border-white/[0.06] bg-[#111114]/80 backdrop-blur-sm">
-              <h3 className="text-lg font-semibold mb-1">{PLANS.free.name}</h3>
-              <p className="text-sm text-zinc-500 mb-6">{t('landing.pricing.starterDesc')}</p>
-              <div className="flex items-baseline gap-1 mb-6">
-                <span className="text-4xl font-bold">{formatPrice(PLANS.free.price)}&euro;</span>
-                <span className="text-zinc-600 text-sm">{t('landing.pricing.perMonth')}</span>
-              </div>
-              <Link
-                href="/signup"
-                className="block w-full py-3 text-center text-sm font-semibold rounded-xl border border-white/[0.1] hover:bg-white/[0.05] transition mb-8 text-zinc-300"
+            {/* Toggle Monthly / Yearly */}
+            <div className="inline-flex items-center gap-2 p-1 rounded-xl border border-white/[0.08] bg-white/[0.02]">
+              <button
+                onClick={() => setPricingPeriod('monthly')}
+                className={`px-5 py-2 rounded-lg text-sm font-medium transition ${
+                  !isYearly ? 'bg-white/[0.08] text-white' : 'text-zinc-500 hover:text-zinc-300'
+                }`}
               >
-                {t('landing.pricing.startFree')}
-              </Link>
-              <div className="space-y-3">
-                {(Array.isArray(PLAN_FEATURES.free) ? PLAN_FEATURES.free : []).map((f) => (
-                  <div key={f} className="flex items-start gap-2">
-                    <Check size={16} className="text-violet-400 mt-0.5 flex-shrink-0" />
-                    <span className="text-sm text-zinc-400">{f}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Pro -- Recommended */}
-            <div className="relative p-8 rounded-2xl border border-violet-500/30 bg-gradient-to-b from-violet-500/[0.08] to-[#111114]/80 backdrop-blur-sm">
-              <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-4 py-1 bg-gradient-to-r from-violet-600 to-indigo-600 text-white text-xs font-semibold rounded-full shadow-lg shadow-violet-500/20 flex items-center gap-1.5">
-                <Crown size={12} />
-                {t('landing.pricing.popular')}
-              </div>
-              <h3 className="text-lg font-semibold mb-1">{PLANS.pro.name}</h3>
-              <p className="text-sm text-zinc-500 mb-2">{t('landing.pricing.proDesc')}</p>
-              <p className="text-xs text-green-400 font-medium mb-4">{t('landing.pricing.proCheaper')}</p>
-              <div className="flex items-baseline gap-1 mb-6">
-                <span className="text-4xl font-bold">{formatPrice(PLANS.pro.price)}&euro;</span>
-                <span className="text-zinc-600 text-sm">{t('landing.pricing.perMonth')}</span>
-              </div>
-              <Link
-                href="/signup"
-                className="block w-full py-3 text-center text-sm font-semibold rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 text-white hover:from-violet-500 hover:to-indigo-500 transition shadow-lg shadow-violet-500/20 mb-8"
+                {t('landing.pricing.monthly')}
+              </button>
+              <button
+                onClick={() => setPricingPeriod('yearly')}
+                className={`px-5 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2 ${
+                  isYearly ? 'bg-white/[0.08] text-white' : 'text-zinc-500 hover:text-zinc-300'
+                }`}
               >
-                {t('landing.pricing.choosePro')} &rarr;
-              </Link>
-              <div className="space-y-3">
-                {(Array.isArray(PLAN_FEATURES.pro) ? PLAN_FEATURES.pro : []).map((f) => (
-                  <div key={f} className="flex items-start gap-2">
-                    <Check size={16} className="text-violet-400 mt-0.5 flex-shrink-0" />
-                    <span className="text-sm text-zinc-400">{f}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Enterprise */}
-            <div className="p-8 rounded-2xl border border-white/[0.06] bg-[#111114]/80 backdrop-blur-sm">
-              <h3 className="text-lg font-semibold mb-1">{PLANS.enterprise.name}</h3>
-              <p className="text-sm text-zinc-500 mb-6">{t('landing.pricing.enterpriseDesc')}</p>
-              <div className="flex items-baseline gap-1 mb-6">
-                <span className="text-4xl font-bold">{formatPrice(PLANS.enterprise.price)}&euro;</span>
-                <span className="text-zinc-600 text-sm">{t('landing.pricing.perMonth')}</span>
-              </div>
-              <Link
-                href="/signup"
-                className="block w-full py-3 text-center text-sm font-semibold rounded-xl border border-white/[0.1] hover:bg-white/[0.05] transition mb-8 text-zinc-300"
-              >
-                {t('landing.pricing.contactTeam')}
-              </Link>
-              <div className="space-y-3">
-                {(Array.isArray(PLAN_FEATURES.enterprise) ? PLAN_FEATURES.enterprise : []).map((f) => (
-                  <div key={f} className="flex items-start gap-2">
-                    <Check size={16} className="text-violet-400 mt-0.5 flex-shrink-0" />
-                    <span className="text-sm text-zinc-400">{f}</span>
-                  </div>
-                ))}
-              </div>
+                {t('landing.pricing.yearly')}
+                <span className="px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 text-[10px] font-bold uppercase tracking-wider">
+                  {t('landing.pricing.savePercent')}
+                </span>
+              </button>
             </div>
           </div>
+
+          {/* 4 cards : Starter / Solo / Pro (recommended) / Business */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+
+            {/* Starter (free) */}
+            <PricingCard
+              plan={PLANS.free}
+              tagline={t('landing.pricing.freeTagline')}
+              features={PLAN_FEATURES.free}
+              cta={t('landing.pricing.startFree')}
+              ctaHref="/signup"
+              isYearly={isYearly}
+              t={t}
+            />
+
+            {/* Solo (cheapest paid) */}
+            <PricingCard
+              plan={PLANS.solo}
+              tagline={t('landing.pricing.soloTagline')}
+              features={PLAN_FEATURES.solo}
+              cta={t('landing.pricing.chooseSolo')}
+              ctaHref={`/signup?plan=solo&period=${pricingPeriod}`}
+              badge={{ label: t('landing.pricing.cheapest'), icon: TrendingDown, color: 'emerald' }}
+              isYearly={isYearly}
+              t={t}
+            />
+
+            {/* Pro (recommended) */}
+            <PricingCard
+              plan={PLANS.pro}
+              tagline={t('landing.pricing.proTagline')}
+              features={PLAN_FEATURES.pro}
+              cta={t('landing.pricing.choosePro')}
+              ctaHref={`/signup?plan=pro&period=${pricingPeriod}`}
+              highlighted
+              badge={{ label: t('landing.pricing.mostPopular'), icon: Crown, color: 'violet' }}
+              isYearly={isYearly}
+              t={t}
+            />
+
+            {/* Business */}
+            <PricingCard
+              plan={PLANS.business}
+              tagline={t('landing.pricing.businessTagline')}
+              features={PLAN_FEATURES.business}
+              cta={t('landing.pricing.chooseBusiness')}
+              ctaHref={`/signup?plan=business&period=${pricingPeriod}`}
+              isYearly={isYearly}
+              t={t}
+            />
+
+          </div>
+
+          {/* Footer note */}
+          <p className="mt-10 text-center text-sm text-zinc-500">
+            {isYearly ? t('landing.pricing.yearlySave') : (
+              <>
+                {t('landing.pricing.questions')}{' '}
+                <a href="mailto:hello@prospectia.cloud" className="text-violet-400 hover:underline">
+                  {t('landing.pricing.contactSupport')}
+                </a>
+              </>
+            )}
+          </p>
         </div>
       </section>
 
