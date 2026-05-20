@@ -101,12 +101,14 @@ export default function LandingContent() {
     business: t('landing.planFeatures.business'),
   };
 
+  // entryPrice = ticket d'entrée payant (pour comparer avec Solo à 19€)
+  // proPrice   = leur plan équivalent à Pro (49€)
   const COMPETITORS = [
-    { name: 'Apollo.io', price: '99', enrichments: '1 source', scoring: false, ai: false, depts: false, categories: '~30' },
-    { name: 'Hunter.io', price: '49', enrichments: '1 source', scoring: false, ai: false, depts: false, categories: '0' },
-    { name: 'Lusha', price: '36', enrichments: '1 source', scoring: false, ai: false, depts: false, categories: '0' },
-    { name: 'Snov.io', price: '39', enrichments: '1 source', scoring: false, ai: false, depts: false, categories: '~20' },
-    { name: 'Dropcontact', price: '24', enrichments: '1 source', scoring: false, ai: false, depts: false, categories: '0' },
+    { name: 'Apollo.io',   entryPrice: '49 $',  proPrice: '99 $',  enrichments: '1 source', scoring: false, ai: false, depts: false, categories: '~30' },
+    { name: 'Hunter.io',   entryPrice: '49 €',  proPrice: '99 €',  enrichments: '1 source', scoring: false, ai: false, depts: false, categories: '0' },
+    { name: 'Lusha',       entryPrice: '36 $',  proPrice: '79 $',  enrichments: '1 source', scoring: false, ai: false, depts: false, categories: '0' },
+    { name: 'Snov.io',     entryPrice: '39 €',  proPrice: '69 €',  enrichments: '1 source', scoring: false, ai: false, depts: false, categories: '~20' },
+    { name: 'Dropcontact', entryPrice: '24 €',  proPrice: '53 €',  enrichments: '1 source', scoring: false, ai: false, depts: false, categories: '0' },
   ];
 
   return (
@@ -145,10 +147,12 @@ export default function LandingContent() {
         <div className="absolute top-60 left-[5%] w-64 h-64 bg-indigo-500/8 rounded-full blur-3xl pointer-events-none" />
 
         <div className="max-w-5xl mx-auto text-center relative z-10">
-          {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/[0.05] border border-white/[0.08] text-xs text-zinc-400 mb-6 backdrop-blur-sm">
-            <div className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
-            {t('landing.hero.badge')}
+          {/* Badge "Le moins cher" — claim accrocheur */}
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-emerald-500/15 to-violet-500/15 border border-emerald-500/30 text-xs text-emerald-300 mb-6 backdrop-blur-sm font-medium">
+            <TrendingDown size={12} className="text-emerald-400" />
+            <span className="text-emerald-400 font-bold">LE MOINS CHER DU MARCHÉ FRANÇAIS</span>
+            <span className="text-zinc-500">·</span>
+            <span>À partir de 19 €/mois</span>
           </div>
 
           {/* H1 simplifié — direct */}
@@ -160,10 +164,20 @@ export default function LandingContent() {
             </span>
           </h1>
 
-          {/* Sous-titre court */}
-          <p className="text-base sm:text-lg text-zinc-400 max-w-2xl mx-auto mb-8 leading-relaxed">
-            Scraping intelligent + recherche Google. <strong className="text-white">150+ secteurs, 101 départements.</strong> 49€/mois, prospects illimités.
+          {/* Sous-titre orienté économies — message "le moins cher du marché" */}
+          <p className="text-base sm:text-lg text-zinc-400 max-w-2xl mx-auto mb-4 leading-relaxed">
+            Scraping intelligent + recherche Google. <strong className="text-white">150+ secteurs, 101 départements.</strong>
           </p>
+          {/* Banderole de prix — argument de vente principal */}
+          <div className="inline-flex items-center flex-wrap justify-center gap-x-3 gap-y-2 mb-8 text-sm">
+            <span className="text-emerald-400 font-semibold">À partir de 19 €/mois</span>
+            <span className="text-zinc-700">·</span>
+            <span className="text-zinc-400">vs Hunter 49 €</span>
+            <span className="text-zinc-700">·</span>
+            <span className="text-zinc-400">vs Apollo 99 $</span>
+            <span className="text-zinc-700">·</span>
+            <span className="text-zinc-400">vs Lemlist 39 €</span>
+          </div>
 
           {/* Widget de recherche fonctionnel */}
           <div className="max-w-3xl mx-auto text-left">
@@ -528,13 +542,16 @@ export default function LandingContent() {
                     <tr className="border-b border-white/[0.08]">
                       <th className="text-left py-4 px-4 font-medium text-zinc-600 min-w-[140px]"></th>
                       <th className="text-center py-4 px-4 min-w-[120px]">
+                        <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 text-[10px] font-bold uppercase tracking-wider mb-1">
+                          <TrendingDown size={10} /> Le moins cher
+                        </div>
                         <div className="font-bold text-violet-400 text-base">Prospectia</div>
-                        <div className="text-violet-400/60 text-xs mt-0.5">49&euro;/{t('landing.competition.month')}</div>
+                        <div className="text-violet-400/60 text-xs mt-0.5">dès 19&euro;/{t('landing.competition.month')}</div>
                       </th>
                       {COMPETITORS.map((c) => (
                         <th key={c.name} className="text-center py-4 px-4 font-medium text-zinc-600 min-w-[100px]">
                           <div>{c.name}</div>
-                          <div className="text-zinc-700 text-xs mt-0.5">{c.price}&euro;/{t('landing.competition.month')}</div>
+                          <div className="text-zinc-700 text-xs mt-0.5">dès {c.entryPrice}/{t('landing.competition.month')}</div>
                         </th>
                       ))}
                     </tr>
@@ -573,15 +590,28 @@ export default function LandingContent() {
                         })}
                       </tr>
                     ))}
-                    {/* Price row highlighted */}
+                    {/* Price rows : Entry tier (Solo) + Pro tier */}
                     <tr className="border-t-2 border-white/[0.08]">
-                      <td className="py-4 px-4 text-zinc-300 font-semibold">{t('landing.competition.monthlyPrice')}</td>
+                      <td className="py-4 px-4 text-zinc-300 font-semibold">Ticket d'entrée</td>
                       <td className="py-4 px-4 text-center">
-                        <span className="text-2xl font-bold text-violet-400">49&euro;</span>
+                        <span className="text-2xl font-bold text-emerald-400">19&euro;</span>
+                        <div className="text-[10px] text-emerald-400/60 mt-0.5 uppercase tracking-wider font-bold">Solo</div>
                       </td>
                       {COMPETITORS.map((c) => (
                         <td key={c.name} className="py-4 px-4 text-center">
-                          <span className="text-lg text-zinc-600">{c.price}&euro;</span>
+                          <span className="text-lg text-zinc-600">{c.entryPrice}</span>
+                        </td>
+                      ))}
+                    </tr>
+                    <tr className="border-t border-white/[0.04]">
+                      <td className="py-4 px-4 text-zinc-300 font-semibold">Plan Pro</td>
+                      <td className="py-4 px-4 text-center">
+                        <span className="text-2xl font-bold text-violet-400">49&euro;</span>
+                        <div className="text-[10px] text-violet-400/60 mt-0.5 uppercase tracking-wider font-bold">Recommandé</div>
+                      </td>
+                      {COMPETITORS.map((c) => (
+                        <td key={c.name} className="py-4 px-4 text-center">
+                          <span className="text-lg text-zinc-600">{c.proPrice}</span>
                         </td>
                       ))}
                     </tr>
@@ -614,9 +644,14 @@ export default function LandingContent() {
             <h2 className="text-3xl sm:text-4xl font-bold mb-4">
               {t('landing.pricing.title')}
             </h2>
-            <p className="text-zinc-500 text-lg max-w-2xl mx-auto mb-8">
+            <p className="text-zinc-500 text-lg max-w-2xl mx-auto mb-6">
               {t('landing.pricing.desc')}
             </p>
+            {/* Banderole économies vs concurrents */}
+            <div className="inline-flex items-center gap-2 px-4 py-2 mb-6 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm font-medium">
+              <TrendingDown size={14} />
+              Économisez jusqu'à <strong className="font-bold">80 €/mois</strong> vs Apollo, <strong className="font-bold">30 €/mois</strong> vs Hunter
+            </div>
 
             {/* Toggle Monthly / Yearly */}
             <div className="inline-flex items-center gap-2 p-1 rounded-xl border border-white/[0.08] bg-white/[0.02]">

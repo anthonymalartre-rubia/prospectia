@@ -640,10 +640,10 @@ const en = {
     },
     // Hero
     hero: {
-      badge: 'Find the email of any business in France',
+      badge: 'Cheapest on the French market - Solo at EUR 19/month - unlimited prospects',
       title: 'Prospect with',
       subtitle: 'Prospectia scrapes websites and searches Google to find the professional email of every business. <strong class="text-zinc-200">150+ categories, 101 departments</strong>, confidence scoring.',
-      price: 'Starting at €49/month — unlimited prospects, automatic enrichment.',
+      price: 'Starting at EUR 19/month - cheapest in France. Cancel anytime.',
       compare: 'Compare with competition',
       sourcesLabel: 'Integrated sources:',
     },
@@ -731,9 +731,9 @@ const en = {
     },
     // Competition
     competition: {
-      label: 'Detailed comparison',
-      title: 'Prospectia vs. the competition',
-      desc: 'Prospectia combines scraping + Google search at an unbeatable price.',
+      label: 'Pricing comparison',
+      title: 'Cheapest on the market, proven by the numbers',
+      desc: 'Prospectia <strong class="text-emerald-400">starts at EUR 19/month</strong> \u2014 the cheapest entry ticket on the French market. Our Pro plan at EUR 49/month is <strong class="text-emerald-400">2x cheaper than Apollo</strong> with built-in Google Places discovery.',
       month: 'month',
       enrichSources: 'Enrichment sources',
       confidenceScoring: 'Confidence scoring',
@@ -742,10 +742,10 @@ const en = {
       b2bCategories: 'B2B categories',
       googlePlaces: 'Google Places integrated',
       monthlyPrice: 'Monthly price',
-      sevenSources: '2 sources',
+      sevenSources: 'Multi-source',
       calcTitle: 'The math is simple',
-      calcDesc: 'Tools like Apollo (\u20AC99), Hunter (\u20AC49) or Snov.io (\u20AC39) sell credits. Prospectia Pro = <strong class="text-violet-400">\u20AC49/month</strong> with unlimited scraping + Google search, AI confidence scoring, and 150+ categories.<br /><span class="text-green-400 font-semibold">No hidden credits, no surprises.</span>',
-      savings: 'Savings: \u20AC138/month, or \u20AC1,656/year.',
+      calcDesc: 'Apollo costs EUR 99/month, Hunter EUR 49, Snov.io EUR 39 \u2014 and you must already have a prospect list. Prospectia Solo at <strong class="text-emerald-400">EUR 19/month</strong> does discovery + enrichment in one tool. Pro at <strong class="text-violet-400">EUR 49/month</strong> = 5x cheaper than Apollo Basic equivalent.<br /><span class="text-emerald-400 font-semibold">No hidden credits, cancel anytime.</span>',
+      savings: 'Save up to EUR 80/month (EUR 960/year) vs Apollo.',
     },
     // Pricing
     pricing: {
