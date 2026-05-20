@@ -95,6 +95,8 @@ export async function middleware(request) {
     pathname === '/' ||
     pathname === '/sitemap.xml' ||
     pathname === '/robots.txt' ||
+    pathname === '/llms.txt' ||
+    pathname === '/llms-full.txt' ||
     pathname === '/favicon.ico' ||
     pathname === '/opengraph-image' ||
     pathname.startsWith('/icon') ||
@@ -109,6 +111,7 @@ export async function middleware(request) {
     pathname.startsWith('/prospection') ||
     pathname.startsWith('/vs') ||
     pathname.startsWith('/alternative') ||
+    pathname.startsWith('/comparatif') ||
     pathname.startsWith('/blog') ||
     pathname.startsWith('/glossaire') ||
     pathname.startsWith('/outils') ||
