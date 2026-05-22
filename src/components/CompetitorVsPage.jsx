@@ -290,7 +290,7 @@ export default function CompetitorVsPage({ competitor, intent = 'vs' }) {
               Essayez Prospectia gratuitement
             </h2>
             <p className="text-zinc-400 mb-6 max-w-xl mx-auto">
-              7 jours d&apos;essai gratuit. Aucune carte bancaire requise. Comparez vous-même les résultats avec {competitor.name}.
+              Plan Starter gratuit à vie. Aucune carte bancaire requise. Comparez vous-même les résultats avec {competitor.name}.
             </p>
             <Link
               href="/signup"

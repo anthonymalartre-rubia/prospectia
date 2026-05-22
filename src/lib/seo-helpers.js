@@ -54,12 +54,15 @@ export function estimateStats(department, category) {
 }
 
 /**
- * Génère un Service schema complet avec Offer + AggregateRating.
- * Used: rich snippets Google avec prix + étoiles dans SERP.
+ * Génère un Service schema complet avec Offer.
+ * Used: rich snippets Google avec prix dans SERP.
  *
- * Note pour l'AggregateRating : Prospectia n'a pas (encore) de système de
- * reviews vérifié type Trustpilot. Les chiffres ici reflètent le NPS interne
- * (4.7/5 sur 234 utilisateurs payants au 2026-05). Update au fur et à mesure.
+ * aggregateRating volontairement omis : sans collecteur d'avis public et
+ * vérifiable (Trustpilot, G2, Capterra…), publier une note moyenne expose
+ * à 2 risques :
+ *  1) DGCCRF — code de la consommation art. L.121-2, avis trompeurs.
+ *  2) Google "Manipulative review snippets" → désindexation.
+ * À réactiver dès qu'un collecteur tiers est branché.
  */
 export function serviceSchema({ name, description, url, areaName = 'France', priceFrom = 19, currency = 'EUR' }) {
   return {
@@ -89,19 +92,13 @@ export function serviceSchema({ name, description, url, areaName = 'France', pri
         referenceQuantity: { '@type': 'QuantitativeValue', value: 1, unitCode: 'MON' },
       },
     },
-    aggregateRating: {
-      '@type': 'AggregateRating',
-      ratingValue: '4.7',
-      bestRating: '5',
-      worstRating: '1',
-      reviewCount: '234',
-    },
   };
 }
 
 /**
  * Génère un Product schema simplifié (alternatif à Service pour les pages
  * cat sans territoire — Google accepte mieux Product que Service standalone).
+ * aggregateRating omis volontairement (voir commentaire serviceSchema).
  */
 export function productSchema({ name, description, url, priceFrom = 19, currency = 'EUR' }) {
   return {
@@ -116,13 +113,6 @@ export function productSchema({ name, description, url, priceFrom = 19, currency
       priceCurrency: currency,
       availability: 'https://schema.org/InStock',
       url: `${BASE_URL}/signup`,
-    },
-    aggregateRating: {
-      '@type': 'AggregateRating',
-      ratingValue: '4.7',
-      bestRating: '5',
-      worstRating: '1',
-      reviewCount: '234',
     },
   };
 }

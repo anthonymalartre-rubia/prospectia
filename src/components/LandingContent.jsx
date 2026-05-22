@@ -192,7 +192,7 @@ export default function LandingContent() {
               Aucune carte bancaire requise
             </span>
             <span>·</span>
-            <span>7 jours d&apos;essai gratuit</span>
+            <span>Starter gratuit à vie · 100 prospects/mois</span>
             <span>·</span>
             <span>Conforme RGPD</span>
           </div>

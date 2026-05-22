@@ -136,7 +136,7 @@ export default function PersonaPage({ persona }) {
                     Voir les autres plans
                   </Link>
                 </div>
-                <p className="text-xs text-zinc-500 mt-4">7 jours d&apos;essai · sans carte bancaire · annulation 1 clic</p>
+                <p className="text-xs text-zinc-500 mt-4">Plan Starter gratuit à vie · sans carte bancaire · 100 prospects/mois</p>
               </div>
             </div>
           </section>
@@ -185,7 +185,7 @@ export default function PersonaPage({ persona }) {
           <div className="rounded-2xl bg-gradient-to-br from-violet-600/20 to-indigo-600/20 border border-violet-500/30 p-8 text-center">
             <h2 className="text-2xl font-bold mb-3">Prêt à essayer ?</h2>
             <p className="text-zinc-400 mb-6 max-w-xl mx-auto">
-              7 jours d&apos;essai gratuit. Aucune carte bancaire. Démarrez vos campagnes en 5 min.
+              Plan Starter gratuit à vie. 100 prospects offerts chaque mois sans carte bancaire. Démarrez vos campagnes en 5 min.
             </p>
             <Link href="/signup" className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-violet-600 hover:bg-violet-500 text-white text-sm font-semibold transition shadow-lg shadow-violet-500/30">
               <Zap size={16} />

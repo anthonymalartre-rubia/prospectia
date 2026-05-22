@@ -70,7 +70,6 @@ function InfoTooltip({ text, wide }) {
       <Info size={11} className="text-content-faint hover:text-content-tertiary transition-colors" />
       {show && mounted && createPortal(
         <div
-          ref={tipRef}
           style={style}
           className={`px-2.5 py-1.5 bg-zinc-900 border border-zinc-700 rounded-lg text-[10px] text-zinc-200 leading-relaxed pointer-events-none z-[99999] shadow-2xl whitespace-normal ${wide ? 'w-56' : 'w-44'}`}
         >

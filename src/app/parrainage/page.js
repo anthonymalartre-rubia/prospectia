@@ -388,7 +388,7 @@ function GuestScreen() {
             </Link>
           </div>
           <p className="text-xs text-zinc-500 mt-4">
-            7 jours d&apos;essai gratuit · pas de carte bancaire · le lien apparaît après connexion
+            Plan Starter gratuit à vie · 100 prospects offerts chaque mois sans carte bancaire · le lien apparaît après connexion
           </p>
         </section>
 

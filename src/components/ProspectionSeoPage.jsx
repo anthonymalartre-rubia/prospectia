@@ -439,7 +439,7 @@ export default function ProspectionSeoPage({
               <Zap size={16} />
               Démarrer gratuitement
             </Link>
-            <p className="text-xs text-zinc-500 mt-4">Aucune carte bancaire requise · 7 jours d'essai</p>
+            <p className="text-xs text-zinc-500 mt-4">Aucune carte bancaire requise · plan Starter gratuit à vie</p>
           </div>
         </section>
         </article>

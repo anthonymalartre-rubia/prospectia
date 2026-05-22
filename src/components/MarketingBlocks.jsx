@@ -16,14 +16,9 @@ export function TestimonialsBlock({ sector = null, limit = 6, title = 'Ce que di
           {title}
         </h2>
         <p className="text-sm text-zinc-400 max-w-2xl mx-auto">{subtitle}</p>
-        <div className="inline-flex items-center gap-1.5 mt-4">
-          {Array.from({ length: 5 }).map((_, i) => (
-            <Star key={i} size={14} className="text-amber-300 fill-amber-300" />
-          ))}
-          <span className="text-sm text-zinc-300 ml-2 tabular-nums">
-            <strong className="text-white">4,7 / 5</strong> sur <strong>234 avis</strong>
-          </span>
-        </div>
+        {/* Strip étoiles + nb d'avis volontairement retiré tant qu'aucun
+            collecteur d'avis tiers vérifiable (Trustpilot, G2…) n'est
+            branché. Reaffichez-le dès que la donnée est sourçable. */}
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {items.map((t, i) => (

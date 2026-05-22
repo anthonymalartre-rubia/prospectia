@@ -47,6 +47,10 @@ const MOCK_RESULTS = {
     },
   },
   company: {
+    // Aperçu démo : on n'affiche PAS de vrais noms de dirigeants ni de
+    // vrais emails (risque juridique : usurpation, RGPD, atteinte à la vie
+    // privée). On montre la STRUCTURE typique d'une fiche enrichie avec
+    // des emails génériques et des libellés de rôle.
     default: {
       name: 'OpenAI',
       domain: 'openai.com',
@@ -54,9 +58,9 @@ const MOCK_RESULTS = {
       foundedYear: 2015,
       industry: 'AI Research',
       emails: [
-        { person: 'Sam Altman', role: 'CEO', email: 'sam@openai.com', verified: true },
-        { person: 'Brad Lightcap', role: 'COO', email: 'brad@openai.com', verified: true },
-        { person: 'Mira Murati', role: 'CTO (ex)', email: 'mira@openai.com', verified: false },
+        { person: 'Direction', role: 'CEO', email: 'ceo@openai.com', verified: true },
+        { person: 'Direction', role: 'COO', email: 'contact@openai.com', verified: true },
+        { person: 'Direction', role: 'CTO', email: 'press@openai.com', verified: false },
       ],
     },
   },
@@ -339,11 +343,16 @@ function CompanyResult({ result }) {
   return (
     <div>
       <div className="rounded-lg bg-white/[0.03] border border-white/[0.04] p-4 mb-3">
-        <div className="flex items-center justify-between mb-3">
+        <div className="flex items-start justify-between gap-3 mb-3">
           <div>
             <h3 className="text-lg font-bold text-white">{data.name}</h3>
             <div className="text-xs text-zinc-500">{data.domain} · {data.industry} · {data.employees} employés · Fondée en {data.foundedYear}</div>
           </div>
+          {/* Badge "Exemple démo" — obligatoire pour ne pas laisser croire
+              que les emails affichés sont réels. RGPD + intégrité. */}
+          <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-amber-500/15 border border-amber-500/30 text-[10px] font-semibold text-amber-300 uppercase tracking-wider whitespace-nowrap">
+            Exemple démo
+          </span>
         </div>
         <div className="space-y-2">
           {data.emails.map((e, i) => (

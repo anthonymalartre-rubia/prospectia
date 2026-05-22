@@ -116,13 +116,11 @@ const softwareApplicationSchema = {
       },
     },
   ],
-  aggregateRating: {
-    '@type': 'AggregateRating',
-    ratingValue: '4.8',
-    ratingCount: '50',
-    bestRating: '5',
-    worstRating: '1',
-  },
+  // aggregateRating retiré : sans système d'avis public et vérifiable
+  // (Trustpilot, G2…), publier une note inventée enfreint le code de la
+  // consommation (avis trompeurs, DGCCRF) et risque la pénalisation
+  // Google "Manipulative review snippets". À réactiver dès qu'on a un
+  // collecteur d'avis tiers branché.
   publisher: {
     '@type': 'Organization',
     name: 'Prospectia',
