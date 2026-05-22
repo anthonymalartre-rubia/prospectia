@@ -105,7 +105,7 @@ export async function trackReferralSignup({ referrerCode, referredUserId, referr
 
 /**
  * Qualifie une referral quand le filleul devient payant (webhook Stripe).
- * Accorde 1 mois bonus au parrain.
+ * Accorde 1 mois bonus au parrain ET au filleul (double-side incentive).
  *
  * Appelé depuis /api/stripe/webhook après checkout.session.completed.
  */
@@ -132,19 +132,38 @@ export async function qualifyReferral(referredUserId) {
     .update({ status: 'qualified', qualified_at: now })
     .eq('id', ref.id);
 
-  // 2. Incrémente le compteur bonus_months du parrain
-  // (utilise RPC ou fetch + update)
+  // 2. Crédit PARRAIN (+rewardMonths)
   const { data: referrer } = await supabase
     .from('user_profiles')
     .select('referral_bonus_months')
     .eq('id', ref.referrer_id)
     .maybeSingle();
 
-  const newBonus = (referrer?.referral_bonus_months || 0) + rewardMonths;
+  const referrerBonus = (referrer?.referral_bonus_months || 0) + rewardMonths;
   await supabase
     .from('user_profiles')
-    .update({ referral_bonus_months: newBonus })
+    .update({ referral_bonus_months: referrerBonus })
     .eq('id', ref.referrer_id);
 
-  return { ok: true, referrer_id: ref.referrer_id, new_bonus: newBonus, referral_id: ref.id };
+  // 3. Crédit FILLEUL (+1 mois en bonus de bienvenue — double-side incentive)
+  const { data: referred } = await supabase
+    .from('user_profiles')
+    .select('referral_bonus_months')
+    .eq('id', referredUserId)
+    .maybeSingle();
+
+  const referredBonus = (referred?.referral_bonus_months || 0) + 1;
+  await supabase
+    .from('user_profiles')
+    .update({ referral_bonus_months: referredBonus })
+    .eq('id', referredUserId);
+
+  return {
+    ok: true,
+    referrer_id: ref.referrer_id,
+    referred_id: referredUserId,
+    referrer_new_bonus: referrerBonus,
+    referred_new_bonus: referredBonus,
+    referral_id: ref.id,
+  };
 }

@@ -494,6 +494,8 @@ export default function ProspectionSeoPage({
                 <li><Link href="/etude/prospection-b2b-france-2026" className="text-zinc-400 hover:text-violet-300 transition">Étude marché 2026</Link></li>
                 <li><Link href="/newsletter" className="text-zinc-400 hover:text-violet-300 transition">📬 Newsletter mensuelle</Link></li>
                 <li><Link href="/parrainage" className="text-zinc-400 hover:text-violet-300 transition">🎁 Parrainage</Link></li>
+                <li><Link href="/changelog" className="text-zinc-400 hover:text-violet-300 transition">📋 Changelog</Link></li>
+                <li><Link href="/status" className="text-zinc-400 hover:text-violet-300 transition">⚡ Status</Link></li>
               </ul>
             </div>
 

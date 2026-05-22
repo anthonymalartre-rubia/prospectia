@@ -136,25 +136,34 @@ export async function POST(request) {
           metadata: { plan_id: planId, session_id: session.id },
         }).catch((err) => console.error('[webhook] Notif success failed:', err));
 
-        // Programme de parrainage : qualifier la referral + accorder 1 mois bonus au parrain
+        // Programme de parrainage : qualifier la referral + double-side incentive
+        // (parrain +N mois, filleul +1 mois de bienvenue)
         try {
           const { qualifyReferral } = require('@/lib/referrals');
           const qualResult = await qualifyReferral(userId);
           if (qualResult.referrer_id) {
-            // Notif + email pour le parrain
+            // ─ Notif + email PARRAIN ─
             createNotification(qualResult.referrer_id, {
               type: NOTIF_TYPES.PAYMENT_SUCCESS,
               title: '🎉 Vous avez gagné 1 mois gratuit !',
-              body: `Un de vos filleuls vient de devenir client payant. Total de bonus accumulés : ${qualResult.new_bonus} mois.`,
+              body: `Un de vos filleuls vient de devenir client payant. Total de bonus accumulés : ${qualResult.referrer_new_bonus} mois.`,
               link: '/parrainage',
               metadata: { referral_id: qualResult.referral_id },
             }).catch(() => {});
             const { email: refEmail, fullName: refName } = await getUserContact(supabaseAdmin, qualResult.referrer_id);
             if (refEmail) {
               const { referralRewardEmail } = require('@/lib/emailTemplates');
-              const tplRef = referralRewardEmail(refName, qualResult.new_bonus);
+              const tplRef = referralRewardEmail(refName, qualResult.referrer_new_bonus);
               sendEmail({ to: refEmail, subject: tplRef.subject, html: tplRef.html }).catch(() => {});
             }
+
+            // ─ Notif FILLEUL (bonus de bienvenue) ─
+            createNotification(userId, {
+              type: NOTIF_TYPES.PAYMENT_SUCCESS,
+              title: '🎁 Bonus de bienvenue : 1 mois offert',
+              body: `Vous êtes arrivé via un parrainage. Profitez d'1 mois bonus crédité automatiquement (total : ${qualResult.referred_new_bonus} mois).`,
+              link: '/parrainage',
+            }).catch(() => {});
           }
         } catch (err) {
           console.error('[webhook] Referral qualify failed:', err);

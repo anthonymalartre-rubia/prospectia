@@ -100,6 +100,11 @@ export default function ParrainagePage() {
           </div>
         </section>
 
+        {/* Apply bonus CTA — visible uniquement si bonus disponible */}
+        {stats?.bonus_months_earned > 0 && (
+          <ApplyBonusCard bonus={stats.bonus_months_earned} onApplied={() => window.location.reload()} />
+        )}
+
         {/* Mon lien de parrainage */}
         <section className="max-w-3xl mx-auto px-4 sm:px-6 mb-8">
           <div className="rounded-2xl border border-violet-500/30 bg-gradient-to-br from-violet-500/[0.06] to-indigo-500/[0.06] p-6">
@@ -200,6 +205,57 @@ export default function ParrainagePage() {
         </section>
       </main>
     </div>
+  );
+}
+
+function ApplyBonusCard({ bonus, onApplied }) {
+  const [applying, setApplying] = useState(false);
+  const [error, setError] = useState('');
+  async function handleApply() {
+    if (applying) return;
+    setApplying(true);
+    setError('');
+    try {
+      const res = await fetch('/api/referrals/apply-bonus', { method: 'POST' });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error || 'Erreur — réessayez');
+        setApplying(false);
+        return;
+      }
+      onApplied?.();
+    } catch {
+      setError('Erreur réseau');
+      setApplying(false);
+    }
+  }
+  return (
+    <section className="max-w-3xl mx-auto px-4 sm:px-6 mb-8">
+      <div className="rounded-2xl border border-pink-500/30 bg-gradient-to-br from-pink-500/[0.08] to-violet-500/[0.08] p-6">
+        <div className="flex items-start gap-3">
+          <div className="w-10 h-10 rounded-xl bg-pink-500/20 border border-pink-500/30 flex items-center justify-center flex-shrink-0">
+            <Gift size={18} className="text-pink-300" />
+          </div>
+          <div className="flex-1">
+            <h3 className="text-lg font-bold mb-1">
+              Vous avez <span className="text-pink-300">{bonus} mois bonus</span> disponibles
+            </h3>
+            <p className="text-sm text-zinc-400 leading-relaxed mb-3">
+              Appliquez 1 mois bonus sur votre prochaine facture (100% off via coupon Stripe). Vous pouvez répéter l&apos;opération chaque mois jusqu&apos;à épuisement.
+            </p>
+            <button
+              onClick={handleApply}
+              disabled={applying}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-pink-600 to-violet-600 hover:from-pink-500 hover:to-violet-500 disabled:opacity-50 text-white text-sm font-semibold transition shadow-lg"
+            >
+              {applying ? <Loader2 size={14} className="animate-spin" /> : <Gift size={14} />}
+              {applying ? 'Application...' : `Appliquer 1 mois bonus (${bonus - 1} restant)`}
+            </button>
+            {error && <p className="text-xs text-red-300 mt-2">⚠ {error}</p>}
+          </div>
+        </div>
+      </div>
+    </section>
   );
 }
 

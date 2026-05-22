@@ -7,8 +7,9 @@ import TopBar from '@/components/TopBar';
 import Sidebar from '@/components/Sidebar';
 import UsageBanner from '@/components/UsageBanner';
 import UpgradeBanner from '@/components/UpgradeBanner';
-// OnboardingChecklist : lazy load (widget non-critique, ne bloque pas le FCP)
+// OnboardingChecklist + ReferralBanner : lazy load (widgets non-critiques)
 const OnboardingChecklist = lazy(() => import('@/components/OnboardingChecklist'));
+const ReferralBanner = lazy(() => import('@/components/ReferralBanner'));
 import LimitReachedModal from '@/components/LimitReachedModal';
 import { useRouter, useSearchParams } from 'next/navigation';
 
@@ -1319,6 +1320,10 @@ export default function Dashboard() {
             usage={userUsage}
             onUpgrade={(targetPlan) => handleUpgrade(targetPlan || 'pro')}
           />
+          {/* Banner parrainage (dismissable 7 jours, lazy) */}
+          <Suspense fallback={null}>
+            <ReferralBanner />
+          </Suspense>
           <div className="p-3 sm:p-4 md:p-6">
           <div className="max-w-6xl mx-auto">
             <Suspense fallback={panelFallback}>

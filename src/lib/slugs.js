@@ -192,6 +192,12 @@ export function getAllSeoUrls(baseUrl = 'https://prospectia.cloud') {
     }
   }
 
+  // ─── Pages utilitaires publiques ───────────────────────────────
+  urls.push({ loc: `${baseUrl}/changelog`, priority: 0.5, changefreq: 'weekly' });
+  urls.push({ loc: `${baseUrl}/status`, priority: 0.4, changefreq: 'daily' });
+  urls.push({ loc: `${baseUrl}/parrainage`, priority: 0.5, changefreq: 'monthly' });
+  urls.push({ loc: `${baseUrl}/newsletter`, priority: 0.6, changefreq: 'monthly' });
+
   // ─── Pages personas /pour/[persona] ────────────────────────────
   try {
     const { getAllPersonas } = require('./personas');

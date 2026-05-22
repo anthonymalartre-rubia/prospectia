@@ -112,6 +112,8 @@ export async function middleware(request) {
     pathname.startsWith('/pour') ||           // Pages personas
     pathname.startsWith('/parrainage') ||     // Programme parrainage (a son propre auth check côté client)
     pathname.startsWith('/newsletter') ||     // Page landing newsletter + désabonnement
+    pathname.startsWith('/changelog') ||      // Changelog public
+    pathname.startsWith('/status') ||         // Status page publique
     pathname.startsWith('/vs') ||
     pathname.startsWith('/alternative') ||
     pathname.startsWith('/comparatif') ||
