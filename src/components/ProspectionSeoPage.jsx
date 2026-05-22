@@ -4,7 +4,9 @@ import {
   MarketSizeBlock, KpiBlock, PersonaBlock, SeasonalityBlock, BestApproachBlock,
   PitchBlock, ObjectionBlock, GlossaryBlock, PainPointsBlock, TopRegionsBlock,
   DeptContextBlock, RegionContextBlock, DeptOverviewBlock, SiblingCitiesBlock,
+  SocialProofBlock, CompetitorInlineBlock,
 } from './ProspectionContentBlocks';
+import { LeadMagnetBlock, StickyCtaBar } from './ProspectionClientBlocks';
 
 /**
  * Reusable component for programmatic SEO pages.
@@ -127,7 +129,7 @@ export default function ProspectionSeoPage({
         </section>
 
         {/* Stats grid */}
-        <section className="max-w-5xl mx-auto px-4 sm:px-6 mb-16">
+        <section className="max-w-5xl mx-auto px-4 sm:px-6 mb-12">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <StatCard icon={Search} label="Entreprises" value={stats.total} color="text-violet-400" />
             <StatCard icon={Mail} label="Avec email" value={stats.withEmail} color="text-green-400" />
@@ -135,6 +137,9 @@ export default function ProspectionSeoPage({
             <StatCard icon={CheckCircle2} label="Note moyenne" value={`${stats.avgRating}/5`} color="text-amber-400" />
           </div>
         </section>
+
+        {/* Social proof juste après les stats — moment de confiance */}
+        <SocialProofBlock department={department} region={region} category={category} />
 
         {/* Why Prospectia (3 features) */}
         <section className="max-w-5xl mx-auto px-4 sm:px-6 mb-16">
@@ -196,6 +201,12 @@ export default function ProspectionSeoPage({
 
         {/* Pitch hook */}
         <PitchBlock data={categoryData} category={category} />
+
+        {/* Lead magnet contextuel (capture email — milieu de page, le hot spot) */}
+        {category && <LeadMagnetBlock category={category} />}
+
+        {/* Comparatif vs Apollo/Hunter — différenciation visuelle */}
+        {category && <CompetitorInlineBlock category={category} />}
 
         {/* Objections */}
         <ObjectionBlock data={categoryData} category={category} />
@@ -355,6 +366,9 @@ export default function ProspectionSeoPage({
           </div>
         </div>
       </footer>
+
+      {/* Sticky CTA bottom bar — apparaît après scroll, contextualisé */}
+      <StickyCtaBar category={category} department={department} region={region} stats={stats} />
     </div>
   );
 }
