@@ -8,7 +8,7 @@ import { PLANS } from '@/lib/plans';
 import FAQSection from '@/components/FAQSection';
 import HeroSearchWidget from '@/components/HeroSearchWidget';
 import { useI18n } from '@/lib/i18n';
-import { TestimonialsBlock, ClientLogosStrip, ResourceTeaserBlock } from '@/components/MarketingBlocks';
+import { TestimonialsBlock, BuiltForProfilesBlock, ResourceTeaserBlock } from '@/components/MarketingBlocks';
 
 function formatPrice(cents) {
   if (cents === 0) return '0';
@@ -199,8 +199,11 @@ export default function LandingContent() {
         </div>
       </section>
 
-      {/* Strip logos clients — social proof immédiat post-hero */}
-      <ClientLogosStrip title="Ils prospectent déjà avec Prospectia (profils anonymisés)" />
+      {/* Bloc "Pensé pour ces profils" — remplace les anciens chips
+          "profils anonymisés". Plus honnête (on ne prétend pas avoir des
+          clients qu'on n'a pas), plus utile (lien vers 6 pages persona),
+          meilleur SEO (maillage interne /pour/[slug]). */}
+      <BuiltForProfilesBlock />
 
       {/* Why an aggregator */}
       <section className="py-24 px-4 sm:px-6 border-t border-white/[0.06]">

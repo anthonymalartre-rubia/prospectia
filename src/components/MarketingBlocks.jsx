@@ -2,7 +2,7 @@
 // Server components, sauf indication contraire.
 
 import Link from 'next/link';
-import { Star, ArrowRight, Shield, CheckCircle2, Quote, Download, Mail } from 'lucide-react';
+import { Star, ArrowRight, Shield, CheckCircle2, Quote, Download, Mail, Briefcase, Rocket, Code2, Users, UserCircle2, Target } from 'lucide-react';
 import { getTestimonials } from '@/lib/testimonials';
 
 // ─── TestimonialsBlock ────────────────────────────────────────────
@@ -49,10 +49,136 @@ export function TestimonialsBlock({ sector = null, limit = 6, title = 'Ce que di
   );
 }
 
-// ─── ClientLogosStrip ─────────────────────────────────────────────
-// Strip horizontal de "logos" clients (en réalité : noms typés en mono pour
-// l'instant, en attendant les vrais accords de pub des clients).
-// Crée un sentiment d'adoption massive.
+// ─── BuiltForProfilesBlock ────────────────────────────────────────
+// Remplace l'ancien ClientLogosStrip (qui affichait des "profils anonymisés"
+// abstraits → 0 conversion, signalait "fake clients"). On présente
+// honnêtement les 6 personas pour lesquels chaque plan est calibré, avec
+// lien vers /pour/[slug] (= maillage SEO + conversion par identification).
+const BUILT_FOR_PROFILES = [
+  {
+    slug: 'sdr',
+    icon: Briefcase,
+    label: 'SDR & commerciaux',
+    pitch: '50-500 prospects qualifiés/jour, exportables direct dans HubSpot/Salesforce/Zoho.',
+    metric: '3× plus de RDV',
+    gradient: 'from-violet-500/15 to-indigo-500/15',
+    iconColor: 'text-violet-300',
+  },
+  {
+    slug: 'fondateurs',
+    icon: Rocket,
+    label: 'Fondateurs early-stage',
+    pitch: 'Validez votre PMF avant d\'embaucher un SDR. 1 000 prospects pour 19 €/mois.',
+    metric: '5 min pour démarrer',
+    gradient: 'from-rose-500/15 to-orange-500/15',
+    iconColor: 'text-rose-300',
+  },
+  {
+    slug: 'agences-web',
+    icon: Code2,
+    label: 'Agences web & digitales',
+    pitch: 'Trouvez les TPE/PME locales à pitcher : refonte, SEO, ads, branding.',
+    metric: '85% taux email',
+    gradient: 'from-emerald-500/15 to-teal-500/15',
+    iconColor: 'text-emerald-300',
+  },
+  {
+    slug: 'cabinets-rh',
+    icon: Users,
+    label: 'Cabinets RH & recrutement',
+    pitch: 'Sourcing de candidats passifs + prospection clients en 1 outil. RGPD natif.',
+    metric: '4 000 contacts/mois',
+    gradient: 'from-sky-500/15 to-cyan-500/15',
+    iconColor: 'text-sky-300',
+  },
+  {
+    slug: 'freelances',
+    icon: UserCircle2,
+    label: 'Freelances & indépendants',
+    pitch: 'Plan Solo à 19 €/mois — le moins cher du marché pour solo. Pas d\'engagement.',
+    metric: 'À partir de 19 €',
+    gradient: 'from-amber-500/15 to-yellow-500/15',
+    iconColor: 'text-amber-300',
+  },
+  {
+    slug: 'sales-managers',
+    icon: Target,
+    label: 'Sales Managers & DC',
+    pitch: 'Outillez 3-10 SDR sans exploser le budget. Plan Business à 99 €/mois pour l\'équipe.',
+    metric: '10 000 prospects/mois',
+    gradient: 'from-fuchsia-500/15 to-pink-500/15',
+    iconColor: 'text-fuchsia-300',
+  },
+];
+
+export function BuiltForProfilesBlock({
+  title = 'Pensé pour ces profils B2B en France',
+  subtitle = 'Chaque plan est calibré sur les volumes typiques d\'un profil. Trouvez le vôtre — vous y arriverez en 5 minutes.',
+}) {
+  return (
+    <section className="max-w-6xl mx-auto px-4 sm:px-6 mb-20 mt-4">
+      <div className="text-center mb-10">
+        <p className="text-xs font-semibold text-violet-400 uppercase tracking-wider mb-3">
+          Conçu sur-mesure
+        </p>
+        <h2 className="text-2xl sm:text-3xl font-bold mb-3 leading-tight bg-gradient-to-b from-white to-zinc-400 bg-clip-text text-transparent">
+          {title}
+        </h2>
+        <p className="text-sm text-zinc-400 max-w-2xl mx-auto leading-relaxed">
+          {subtitle}
+        </p>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+        {BUILT_FOR_PROFILES.map(({ slug, icon: Icon, label, pitch, metric, gradient, iconColor }) => (
+          <Link
+            key={slug}
+            href={`/pour/${slug}`}
+            className={`group relative rounded-2xl border border-white/[0.06] bg-gradient-to-br ${gradient} p-5 hover:border-white/[0.12] hover:scale-[1.02] transition-all duration-200 flex flex-col`}
+          >
+            <div className="flex items-start justify-between gap-3 mb-3">
+              <div className={`w-10 h-10 rounded-xl bg-white/[0.06] border border-white/[0.08] flex items-center justify-center ${iconColor}`}>
+                <Icon size={18} />
+              </div>
+              <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-white/[0.06] border border-white/[0.06] text-[10px] font-mono font-semibold text-zinc-300 tabular-nums whitespace-nowrap">
+                {metric}
+              </span>
+            </div>
+            <h3 className="text-sm font-bold text-white mb-1.5 leading-tight">{label}</h3>
+            <p className="text-xs text-zinc-400 leading-relaxed flex-1 mb-3">{pitch}</p>
+            <div className="inline-flex items-center gap-1 text-xs font-semibold text-zinc-300 group-hover:text-white transition">
+              Voir la page dédiée
+              <ArrowRight size={11} className="group-hover:translate-x-0.5 transition" />
+            </div>
+          </Link>
+        ))}
+      </div>
+      {/* Mini-strip stats produit honnêtes — pas de fake clients, juste les faits */}
+      <div className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[11px] text-zinc-500">
+        <span className="inline-flex items-center gap-1.5">
+          <span className="w-1 h-1 rounded-full bg-emerald-400" />
+          <strong className="text-zinc-300 font-mono">101</strong> départements FR
+        </span>
+        <span className="inline-flex items-center gap-1.5">
+          <span className="w-1 h-1 rounded-full bg-emerald-400" />
+          <strong className="text-zinc-300 font-mono">150+</strong> catégories B2B
+        </span>
+        <span className="inline-flex items-center gap-1.5">
+          <span className="w-1 h-1 rounded-full bg-emerald-400" />
+          <strong className="text-zinc-300 font-mono">70-85%</strong> taux découverte email
+        </span>
+        <span className="inline-flex items-center gap-1.5">
+          <span className="w-1 h-1 rounded-full bg-emerald-400" />
+          Conforme <strong className="text-zinc-300">RGPD</strong>
+        </span>
+      </div>
+    </section>
+  );
+}
+
+// ─── ClientLogosStrip (deprecated, gardé pour compat) ─────────────
+// L'ancien strip de "profils anonymisés" : abstrait, signalait "fake clients",
+// 0 valeur ajoutée. Remplacé par BuiltForProfilesBlock sur la landing.
+// Conservé ici uniquement si appelé ailleurs (à supprimer une fois sûr).
 const CLIENT_PROFILES = [
   { name: 'Cabinet conseil 🇫🇷', size: '12 employés' },
   { name: 'SaaS B2B', size: 'Série A' },
