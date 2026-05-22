@@ -108,7 +108,10 @@ export async function middleware(request) {
     pathname.startsWith('/confidentialite') ||
     pathname.startsWith('/rgpd') ||
     pathname.startsWith('/opt-out') ||
-    pathname.startsWith('/prospection') ||
+    pathname.startsWith('/prospection') ||  // FR (matche aussi /prospection-be et /prospection-ch grâce au startsWith)
+    pathname.startsWith('/pour') ||           // Pages personas
+    pathname.startsWith('/parrainage') ||     // Programme parrainage (a son propre auth check côté client)
+    pathname.startsWith('/newsletter') ||     // Page landing newsletter + désabonnement
     pathname.startsWith('/vs') ||
     pathname.startsWith('/alternative') ||
     pathname.startsWith('/comparatif') ||
@@ -118,6 +121,8 @@ export async function middleware(request) {
     pathname.startsWith('/glossaire') ||
     pathname.startsWith('/outils') ||
     pathname.startsWith('/guide') ||
+    pathname.startsWith('/manifest') ||       // manifest.webmanifest généré par Next
+    pathname.startsWith('/apple-icon') ||
     pathname.startsWith('/api') ||
     pathname.startsWith('/auth');
 
