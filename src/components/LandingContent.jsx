@@ -9,6 +9,8 @@ import FAQSection from '@/components/FAQSection';
 import HeroSearchWidget from '@/components/HeroSearchWidget';
 import { useI18n } from '@/lib/i18n';
 import { TestimonialsBlock, BuiltForProfilesBlock, ResourceTeaserBlock } from '@/components/MarketingBlocks';
+import TrustpilotReviewsBlock from '@/components/TrustpilotReviewsBlock';
+import TrustpilotBadge from '@/components/TrustpilotBadge';
 
 function formatPrice(cents) {
   if (cents === 0) return '0';
@@ -195,6 +197,13 @@ export default function LandingContent() {
             <span>Starter gratuit à vie · 100 prospects/mois</span>
             <span>·</span>
             <span>Conforme RGPD</span>
+          </div>
+
+          {/* Badge Trustpilot — affiché sous le hero si activé (étoiles
+              cliquables vers le profil Trustpilot, preuve d'authenticité
+              pour Google + visiteurs). Inert tant que pas d'avis. */}
+          <div className="mt-4 flex items-center justify-center">
+            <TrustpilotBadge size="sm" />
           </div>
         </div>
       </section>
@@ -647,6 +656,10 @@ export default function LandingContent() {
       {/* Testimonials — rassure avant la décision d'achat */}
       <section className="py-24 px-4 sm:px-6 border-t border-white/[0.06]">
         <TestimonialsBlock />
+        {/* Bloc Trustpilot — affiché uniquement si activé (Business Unit
+            ID set + au moins 1 avis dans trustpilot-data.js). En attendant,
+            les TestimonialsBlock ci-dessus prennent le relais. */}
+        <TrustpilotReviewsBlock />
       </section>
 
       {/* Lead magnet teaser — capture les hésitants sur le PDF gratuit */}

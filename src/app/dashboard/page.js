@@ -7,9 +7,11 @@ import TopBar from '@/components/TopBar';
 import Sidebar from '@/components/Sidebar';
 import UsageBanner from '@/components/UsageBanner';
 import UpgradeBanner from '@/components/UpgradeBanner';
-// OnboardingChecklist + ReferralBanner : lazy load (widgets non-critiques)
+// OnboardingChecklist + ReferralBanner + ReviewSolicitationBanner :
+// lazy load (widgets non-critiques)
 const OnboardingChecklist = lazy(() => import('@/components/OnboardingChecklist'));
 const ReferralBanner = lazy(() => import('@/components/ReferralBanner'));
+const ReviewSolicitationBanner = lazy(() => import('@/components/ReviewSolicitationBanner'));
 import LimitReachedModal from '@/components/LimitReachedModal';
 import { useRouter, useSearchParams } from 'next/navigation';
 
@@ -1432,6 +1434,13 @@ export default function Dashboard() {
       {/* Checklist persistante (bottom-right, dismissable session) — lazy */}
       <Suspense fallback={null}>
         <OnboardingChecklist isAdmin={isAdmin} />
+      </Suspense>
+
+      {/* Sollicitation avis Trustpilot (bottom-left, dismissable 30j) —
+          n'apparaît que si Trustpilot configuré + user a fait au moins
+          1 export CSV ("strike when the iron is hot"). Inert sinon. */}
+      <Suspense fallback={null}>
+        <ReviewSolicitationBanner exportsCount={userUsage?.exports || 0} />
       </Suspense>
 
       {limitModal && (

@@ -1,5 +1,7 @@
 // Shared SEO helpers — JSON-LD generators
 
+import { getTrustpilotData } from './trustpilot-data';
+
 const BASE_URL = 'https://prospectia.cloud';
 
 /**
@@ -57,15 +59,13 @@ export function estimateStats(department, category) {
  * Génère un Service schema complet avec Offer.
  * Used: rich snippets Google avec prix dans SERP.
  *
- * aggregateRating volontairement omis : sans collecteur d'avis public et
- * vérifiable (Trustpilot, G2, Capterra…), publier une note moyenne expose
- * à 2 risques :
- *  1) DGCCRF — code de la consommation art. L.121-2, avis trompeurs.
- *  2) Google "Manipulative review snippets" → désindexation.
- * À réactiver dès qu'un collecteur tiers est branché.
+ * aggregateRating injecté uniquement si Trustpilot est activé ET qu'on
+ * a au moins 1 avis (voir lib/trustpilot-data.js). Sans collecteur
+ * d'avis public et vérifiable, on ne publie RIEN — pénalité DGCCRF
+ * (avis trompeurs) + Google "Manipulative review snippets".
  */
 export function serviceSchema({ name, description, url, areaName = 'France', priceFrom = 19, currency = 'EUR' }) {
-  return {
+  const schema = {
     '@type': 'Service',
     name,
     description,
@@ -93,15 +93,20 @@ export function serviceSchema({ name, description, url, areaName = 'France', pri
       },
     },
   };
+
+  const aggregateRating = trustpilotAggregateRatingSchema();
+  if (aggregateRating) schema.aggregateRating = aggregateRating;
+
+  return schema;
 }
 
 /**
  * Génère un Product schema simplifié (alternatif à Service pour les pages
  * cat sans territoire — Google accepte mieux Product que Service standalone).
- * aggregateRating omis volontairement (voir commentaire serviceSchema).
+ * aggregateRating conditionnel à Trustpilot activé (voir serviceSchema).
  */
 export function productSchema({ name, description, url, priceFrom = 19, currency = 'EUR' }) {
-  return {
+  const schema = {
     '@type': 'Product',
     name,
     description,
@@ -114,6 +119,37 @@ export function productSchema({ name, description, url, priceFrom = 19, currency
       availability: 'https://schema.org/InStock',
       url: `${BASE_URL}/signup`,
     },
+  };
+
+  const aggregateRating = trustpilotAggregateRatingSchema();
+  if (aggregateRating) schema.aggregateRating = aggregateRating;
+
+  return schema;
+}
+
+/**
+ * Helper interne : renvoie le sous-schéma aggregateRating Trustpilot
+ * si activé (ID + au moins 1 avis), sinon null.
+ *
+ * Le itemReviewed est laissé au parent qui consomme le schema (Service,
+ * Product, SoftwareApplication...) car aggregateRating est toujours
+ * nested dans un item parent — c'était la cause de l'erreur GSC
+ * "Type d'objet non valide pour <parent_node>".
+ *
+ * Ratio: la source (Trustpilot) est référencée dans `publisher` pour
+ * que Google sache d'où viennent les avis (rich snippet validé).
+ */
+function trustpilotAggregateRatingSchema() {
+  const t = getTrustpilotData();
+  if (!t) return null;
+  return {
+    '@type': 'AggregateRating',
+    ratingValue: String(t.rating),
+    reviewCount: String(t.reviewCount),
+    bestRating: '5',
+    worstRating: '1',
+    // Trustpilot référencé comme source des avis (best practice Google)
+    itemReviewed: { '@type': 'Thing', name: 'Prospectia' },
   };
 }
 

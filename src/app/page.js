@@ -1,7 +1,21 @@
 import LandingContent from '@/components/LandingContent';
 import { FAQ_ITEMS } from '@/lib/faq-data';
+import { getTrustpilotData, TRUSTPILOT_PROFILE_URL } from '@/lib/trustpilot-data';
 
 const SITE_URL = 'https://prospectia.cloud';
+
+// aggregateRating Trustpilot — injecté uniquement si configuré + au moins
+// 1 avis. Sinon vaut undefined et est omis du schema (Object.assign skip).
+const trustpilotData = getTrustpilotData();
+const trustpilotAggregateRating = trustpilotData
+  ? {
+      '@type': 'AggregateRating',
+      ratingValue: String(trustpilotData.rating),
+      reviewCount: String(trustpilotData.reviewCount),
+      bestRating: '5',
+      worstRating: '1',
+    }
+  : null;
 
 export const metadata = {
   title: 'Prospectia — Prospection B2B France : trouvez emails & entreprises (à partir de 19 €/mois)',
@@ -116,15 +130,16 @@ const softwareApplicationSchema = {
       },
     },
   ],
-  // aggregateRating retiré : sans système d'avis public et vérifiable
-  // (Trustpilot, G2…), publier une note inventée enfreint le code de la
-  // consommation (avis trompeurs, DGCCRF) et risque la pénalisation
-  // Google "Manipulative review snippets". À réactiver dès qu'on a un
-  // collecteur d'avis tiers branché.
+  // aggregateRating Trustpilot — injecté conditionnellement via le spread
+  // ci-dessous. Sans collecteur tiers vérifié, aucune note publiée
+  // (DGCCRF art L.121-2 + Google "Manipulative review snippets").
+  ...(trustpilotAggregateRating ? { aggregateRating: trustpilotAggregateRating } : {}),
   publisher: {
     '@type': 'Organization',
     name: 'Prospectia',
     url: SITE_URL,
+    // Lien vers Trustpilot pour permettre à Google de vérifier la source
+    ...(trustpilotData ? { sameAs: [TRUSTPILOT_PROFILE_URL] } : {}),
   },
 };
 
