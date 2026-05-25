@@ -61,7 +61,7 @@ export async function POST(request) {
           return NextResponse.json({ error: 'Utilisateur non trouve' }, { status: 404 });
         }
         const { error } = await admin.auth.resetPasswordForEmail(targetUser.user.email, {
-          redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://scraping-dom-ezdrive.vercel.app'}/login`,
+          redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://volia.fr'}/login`,
         });
         if (error) return NextResponse.json({ error: error.message }, { status: 500 });
         return NextResponse.json({ success: true, message: 'Email de reinitialisation envoye' });

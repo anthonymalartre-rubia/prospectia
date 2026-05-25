@@ -24,7 +24,7 @@ export default function CGUPage() {
             <p>
               Volia.fr (ci-après « le Service ») est une plateforme d&apos;agrégation de données B2B
               éditée et exploitée par Volia.fr. Le Service est accessible à l&apos;adresse
-              <span className="text-content-primary font-medium"> scraping-dom-ezdrive.vercel.app</span>.
+              <span className="text-content-primary font-medium"> volia.fr</span>.
             </p>
             <p className="mt-3">
               Le Service permet aux utilisateurs de rechercher des prospects professionnels sur l&apos;ensemble
