@@ -12,6 +12,7 @@ import { TestimonialsBlock, BuiltForProfilesBlock, ResourceTeaserBlock } from '@
 import TrustpilotReviewsBlock from '@/components/TrustpilotReviewsBlock';
 import { LogoIcon } from '@/components/ui';
 import TrustpilotBadge from '@/components/TrustpilotBadge';
+import MotionInView from '@/components/MotionInView';
 
 function formatPrice(cents) {
   if (cents === 0) return '0';
@@ -356,104 +357,181 @@ export default function LandingContent() {
           meilleur SEO (maillage interne /pour/[slug]). */}
       <BuiltForProfilesBlock />
 
-      {/* Why an aggregator */}
-      <section className="py-24 px-4 sm:px-6 border-t border-line">
-        <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-16">
-            <p className="text-sm font-semibold text-violet-400 mb-3">{t('landing.why.label')}</p>
-            <h2 className="text-3xl sm:text-4xl font-bold mb-4">
-              {t('landing.why.title')}
-            </h2>
-            <p className="text-content-tertiary text-lg max-w-2xl mx-auto" dangerouslySetInnerHTML={{ __html: t('landing.why.desc') }} />
-          </div>
+      {/* ──────────────────────────────────────────────────────────────
+          POWERED BY — stack technique (trust signal moderne)
+       */}
+      <section className="py-12 px-4 sm:px-6 border-t border-line">
+        <div className="max-w-6xl mx-auto">
+          <MotionInView>
+            <p className="text-center text-xs uppercase tracking-[0.2em] font-semibold text-content-tertiary mb-8">
+              Construit avec les outils de référence
+            </p>
+            <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-6 opacity-70">
+              {[
+                { name: 'Stripe', tag: 'Paiements' },
+                { name: 'Supabase', tag: 'Auth & DB' },
+                { name: 'Anthropic', tag: 'IA' },
+                { name: 'Resend', tag: 'Emails' },
+                { name: 'Vercel', tag: 'Hosting' },
+                { name: 'Google Places', tag: 'Data' },
+              ].map((tech, i) => (
+                <MotionInView key={tech.name} delay={i * 60} className="flex items-center gap-2">
+                  <span className="text-base font-bold text-content-secondary tracking-tight">{tech.name}</span>
+                  <span className="text-[10px] uppercase tracking-wider text-content-muted font-mono">{tech.tag}</span>
+                </MotionInView>
+              ))}
+            </div>
+          </MotionInView>
+        </div>
+      </section>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="p-6 rounded-2xl border border-line bg-surface-card/80 text-center">
-              <div className="text-5xl font-bold font-mono bg-gradient-to-b from-red-400 to-red-600 bg-clip-text text-transparent mb-2">~40%</div>
-              <p className="text-sm text-content-tertiary" dangerouslySetInnerHTML={{ __html: t('landing.why.stat1Label') }} />
+      {/* ──────────────────────────────────────────────────────────────
+          WHY AGGREGATOR — bento layout (center stat highlighted)
+       */}
+      <section className="py-24 px-4 sm:px-6 border-t border-line">
+        <div className="max-w-6xl mx-auto">
+          <MotionInView>
+            <div className="text-center mb-16">
+              <p className="text-sm font-semibold text-violet-600 mb-3">{t('landing.why.label')}</p>
+              <h2 className="text-3xl sm:text-5xl font-bold mb-4 bg-gradient-to-b from-zinc-900 to-zinc-600 bg-clip-text text-transparent">
+                {t('landing.why.title')}
+              </h2>
+              <p className="text-content-tertiary text-lg max-w-2xl mx-auto" dangerouslySetInnerHTML={{ __html: t('landing.why.desc') }} />
             </div>
-            <div className="p-6 rounded-2xl border border-violet-500/20 bg-gradient-to-br from-violet-500/[0.08] to-transparent text-center">
-              <div className="text-5xl font-bold font-mono bg-gradient-to-b from-violet-400 to-violet-600 bg-clip-text text-transparent mb-2">~85%</div>
-              <p className="text-sm text-content-tertiary" dangerouslySetInnerHTML={{ __html: t('landing.why.stat2Label') }} />
-            </div>
-            <div className="p-6 rounded-2xl border border-line bg-surface-card/80 text-center">
-              <div className="text-5xl font-bold font-mono bg-gradient-to-b from-green-400 to-green-600 bg-clip-text text-transparent mb-2">-80%</div>
-              <p className="text-sm text-content-tertiary" dangerouslySetInnerHTML={{ __html: t('landing.why.stat3Label') }} />
-            </div>
+          </MotionInView>
+
+          {/* Bento : carte centrale featured ~85%, 2 cards side */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 items-stretch">
+            {/* Card gauche — ~40% (problem) */}
+            <MotionInView delay={100}>
+              <div className="h-full p-7 rounded-2xl border border-rose-200 bg-gradient-to-br from-rose-50 to-white shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all flex flex-col">
+                <div className="text-xs font-semibold uppercase tracking-wider text-rose-600 mb-3">Problème</div>
+                <div className="text-6xl font-bold font-mono bg-gradient-to-br from-rose-500 to-rose-700 bg-clip-text text-transparent mb-3">~40%</div>
+                <p className="text-sm text-content-secondary mt-auto" dangerouslySetInnerHTML={{ __html: t('landing.why.stat1Label') }} />
+              </div>
+            </MotionInView>
+
+            {/* Card centrale — ~85% (Volia solution, mise en valeur) */}
+            <MotionInView delay={200}>
+              <div className="relative h-full p-8 rounded-2xl border-2 border-violet-300 bg-gradient-to-br from-violet-100 via-indigo-50 to-white shadow-xl shadow-violet-500/10 hover:shadow-2xl hover:shadow-violet-500/20 hover:-translate-y-1 transition-all flex flex-col">
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-gradient-to-r from-violet-600 to-indigo-600 text-white text-[10px] font-bold uppercase tracking-wider shadow-md">Volia</div>
+                <div className="text-xs font-semibold uppercase tracking-wider text-violet-700 mb-3 mt-2">Notre solution</div>
+                <div className="text-7xl font-bold font-mono bg-gradient-to-br from-violet-600 via-indigo-600 to-violet-700 bg-clip-text text-transparent mb-3">~85%</div>
+                <p className="text-sm text-content-primary font-medium mt-auto" dangerouslySetInnerHTML={{ __html: t('landing.why.stat2Label') }} />
+              </div>
+            </MotionInView>
+
+            {/* Card droite — -80% (économies) */}
+            <MotionInView delay={300}>
+              <div className="h-full p-7 rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-50 to-white shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all flex flex-col">
+                <div className="text-xs font-semibold uppercase tracking-wider text-emerald-700 mb-3">Bénéfice</div>
+                <div className="text-6xl font-bold font-mono bg-gradient-to-br from-emerald-500 to-emerald-700 bg-clip-text text-transparent mb-3">-80%</div>
+                <p className="text-sm text-content-secondary mt-auto" dangerouslySetInnerHTML={{ __html: t('landing.why.stat3Label') }} />
+              </div>
+            </MotionInView>
           </div>
         </div>
       </section>
 
-      {/* Features Grid */}
+      {/* ──────────────────────────────────────────────────────────────
+          FEATURES — bento layout (1 featured big + 5 medium/small)
+          Pattern : variation de tailles = look moderne 2026
+       */}
       <section id="features" className="py-24 px-4 sm:px-6 border-t border-line">
-        <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-16">
-            <p className="text-sm font-semibold text-violet-400 mb-3">{t('landing.features.label')}</p>
-            <h2 className="text-3xl sm:text-4xl font-bold mb-4">
-              {t('landing.features.title')}
-            </h2>
-            <p className="text-content-tertiary text-lg max-w-xl mx-auto">
-              {t('landing.features.desc')}
-            </p>
-          </div>
+        <div className="max-w-6xl mx-auto">
+          <MotionInView>
+            <div className="text-center mb-16">
+              <p className="text-sm font-semibold text-violet-600 mb-3">{t('landing.features.label')}</p>
+              <h2 className="text-3xl sm:text-5xl font-bold mb-4 bg-gradient-to-b from-zinc-900 to-zinc-600 bg-clip-text text-transparent">
+                {t('landing.features.title')}
+              </h2>
+              <p className="text-content-tertiary text-lg max-w-xl mx-auto">
+                {t('landing.features.desc')}
+              </p>
+            </div>
+          </MotionInView>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[
+          {(() => {
+            const features = [
               {
-                icon: Layers,
+                icon: Layers, featured: true,
                 title: t('landing.features.waterfall'),
                 desc: t('landing.features.waterfallDesc'),
-                gradient: 'from-violet-500/20 to-indigo-500/20',
                 iconBg: 'from-violet-500 to-indigo-600',
+                cardBg: 'from-violet-50 via-indigo-50 to-white',
+                border: 'border-violet-200',
               },
               {
                 icon: Brain,
                 title: t('landing.features.ai'),
                 desc: t('landing.features.aiDesc'),
-                gradient: 'from-indigo-500/20 to-blue-500/20',
                 iconBg: 'from-indigo-500 to-blue-600',
+                cardBg: 'from-indigo-50 to-white',
+                border: 'border-indigo-200',
               },
               {
                 icon: BarChart3,
                 title: t('landing.features.scoring'),
                 desc: t('landing.features.scoringDesc'),
-                gradient: 'from-blue-500/20 to-cyan-500/20',
                 iconBg: 'from-blue-500 to-cyan-600',
+                cardBg: 'from-blue-50 to-white',
+                border: 'border-blue-200',
               },
               {
                 icon: Database,
                 title: t('landing.features.categories'),
                 desc: t('landing.features.categoriesDesc'),
-                gradient: 'from-cyan-500/20 to-teal-500/20',
                 iconBg: 'from-cyan-500 to-teal-600',
+                cardBg: 'from-cyan-50 to-white',
+                border: 'border-cyan-200',
               },
               {
                 icon: Globe,
                 title: t('landing.features.departments'),
                 desc: t('landing.features.departmentsDesc'),
-                gradient: 'from-teal-500/20 to-green-500/20',
-                iconBg: 'from-teal-500 to-green-600',
+                iconBg: 'from-teal-500 to-emerald-600',
+                cardBg: 'from-teal-50 to-white',
+                border: 'border-teal-200',
               },
               {
-                icon: Download,
+                icon: Download, wide: true,
                 title: t('landing.features.exportFeature'),
                 desc: t('landing.features.exportDesc'),
-                gradient: 'from-green-500/20 to-emerald-500/20',
-                iconBg: 'from-green-500 to-emerald-600',
+                iconBg: 'from-emerald-500 to-green-600',
+                cardBg: 'from-emerald-50 to-white',
+                border: 'border-emerald-200',
               },
-            ].map((feature) => (
-              <div key={feature.title} className="group relative p-6 rounded-2xl border border-line bg-surface-card/80 backdrop-blur-sm hover:bg-surface-elevated/60 transition-colors">
-                <div className={`absolute inset-0 rounded-2xl bg-gradient-to-br ${feature.gradient} opacity-0 group-hover:opacity-100 transition-opacity`} />
-                <div className="relative">
-                  <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${feature.iconBg} flex items-center justify-center mb-4 shadow-lg`}>
-                    <feature.icon size={18} className="text-white" />
-                  </div>
-                  <h3 className="font-semibold text-lg mb-2">{feature.title}</h3>
-                  <p className="text-sm text-content-tertiary leading-relaxed">{feature.desc}</p>
-                </div>
+            ];
+            return (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                {features.map((feature, i) => {
+                  const Icon = feature.icon;
+                  const isWide = feature.featured || feature.wide;
+                  return (
+                    <MotionInView
+                      key={feature.title}
+                      delay={i * 80}
+                      className={isWide ? 'lg:col-span-2' : ''}
+                    >
+                      <div className={`group h-full p-7 rounded-2xl border-2 ${feature.border} bg-gradient-to-br ${feature.cardBg} shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300`}>
+                        <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${feature.iconBg} flex items-center justify-center mb-5 shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+                          <Icon size={22} className="text-white" />
+                        </div>
+                        <h3 className="font-bold text-lg mb-2 text-content-primary">{feature.title}</h3>
+                        <p className="text-sm text-content-secondary leading-relaxed">{feature.desc}</p>
+                        {feature.featured && (
+                          <div className="mt-5 inline-flex items-center gap-2 text-xs font-semibold text-violet-700">
+                            <Sparkles size={14} />
+                            La feature signature de Volia
+                          </div>
+                        )}
+                      </div>
+                    </MotionInView>
+                  );
+                })}
               </div>
-            ))}
-          </div>
+            );
+          })()}
         </div>
       </section>
 
