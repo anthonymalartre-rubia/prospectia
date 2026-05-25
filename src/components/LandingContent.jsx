@@ -141,69 +141,212 @@ export default function LandingContent() {
       </header>
 
       <main>
-      {/* Hero — version simplifiée avec widget interactif */}
-      <section className="relative pt-20 sm:pt-28 pb-16 px-4 sm:px-6 overflow-hidden">
-        {/* Background glow */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[600px] bg-gradient-to-b from-violet-600/15 via-indigo-600/10 to-transparent rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute top-40 right-[10%] w-72 h-72 bg-violet-500/8 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute top-60 left-[5%] w-64 h-64 bg-indigo-500/8 rounded-full blur-3xl pointer-events-none" />
+      {/* ──────────────────────────────────────────────────────────────
+          HERO — 2-col desktop (copy left, product mockup right)
+          ─────────────────────────────────────────────────────────────
+          Refonte mai 2026 inspiration Linear/Apollo/Cal.com :
+          - Typo massive (text-7xl xl:text-8xl) = "wow" instantané
+          - Product mockup à droite = on VOIT le produit, pas que la promesse
+          - Avatars stack + social proof = trust visuel
+          - Animations CSS fade-in + float = sensation "vivant"
+          - HeroSearchWidget descendu en section dédiée plus bas
+       */}
+      <section className="relative pt-16 sm:pt-24 pb-20 px-4 sm:px-6 overflow-hidden">
+        {/* Background gradient mesh — soft, colorful, moderne 2026 */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1200px] h-[700px] bg-gradient-to-br from-violet-200/40 via-indigo-100/30 to-pink-100/20 rounded-full blur-3xl pointer-events-none -z-0" />
+        <div className="absolute top-40 right-[5%] w-96 h-96 bg-violet-300/20 rounded-full blur-3xl pointer-events-none -z-0 animate-pulse" style={{ animationDuration: '6s' }} />
+        <div className="absolute top-60 left-[5%] w-80 h-80 bg-indigo-200/30 rounded-full blur-3xl pointer-events-none -z-0 animate-pulse" style={{ animationDuration: '8s' }} />
 
-        <div className="max-w-5xl mx-auto text-center relative z-10">
-          {/* Badge "Le moins cher" — claim accrocheur */}
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-emerald-500/15 to-violet-500/15 border border-emerald-500/30 text-xs text-emerald-300 mb-6 backdrop-blur-sm font-medium">
-            <TrendingDown size={12} className="text-emerald-400" />
-            <span className="text-emerald-400 font-bold">LE MOINS CHER DU MARCHÉ FRANÇAIS</span>
-            <span className="text-content-tertiary">·</span>
-            <span>À partir de 19 €/mois</span>
+        <div className="max-w-7xl mx-auto relative z-10">
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+
+            {/* ─── COLONNE GAUCHE : Copy ─── */}
+            <div className="text-left animate-in fade-in slide-in-from-bottom-4 duration-700">
+              {/* Badge "Le moins cher" */}
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-emerald-100 to-violet-100 border border-emerald-300 text-xs mb-6 font-medium shadow-sm">
+                <TrendingDown size={12} className="text-emerald-600" />
+                <span className="text-emerald-700 font-bold">LE MOINS CHER DU MARCHÉ FRANÇAIS</span>
+              </div>
+
+              {/* H1 MASSIVE */}
+              <h1 className="text-5xl sm:text-6xl lg:text-7xl xl:text-[80px] font-bold tracking-tight leading-[1.02] mb-6">
+                <span className="text-content-primary">L&apos;email de </span>
+                <span className="bg-gradient-to-br from-violet-600 via-indigo-600 to-violet-700 bg-clip-text text-transparent">toute entreprise</span>
+                <span className="text-content-primary"> française.</span>
+              </h1>
+
+              {/* Sous-titre */}
+              <p className="text-lg sm:text-xl text-content-secondary mb-8 leading-relaxed max-w-xl">
+                Scraping intelligent + recherche Google.{' '}
+                <strong className="text-content-primary font-semibold">150+ secteurs, 101 départements</strong>.
+                À partir de 19 €/mois.
+              </p>
+
+              {/* CTAs */}
+              <div className="flex flex-col sm:flex-row gap-3 mb-8">
+                <Link
+                  href="/signup"
+                  className="group inline-flex items-center justify-center gap-2 px-7 py-4 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-semibold shadow-lg shadow-violet-500/30 hover:shadow-xl hover:shadow-violet-500/40 hover:-translate-y-0.5 transition-all"
+                >
+                  Démarrer gratuitement
+                  <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+                </Link>
+                <Link
+                  href="#pricing"
+                  className="inline-flex items-center justify-center gap-2 px-7 py-4 rounded-xl border-2 border-line-hover hover:border-violet-400 hover:bg-violet-50 text-content-primary font-semibold transition-all"
+                >
+                  Voir les tarifs
+                </Link>
+              </div>
+
+              {/* Avatars stack + social proof */}
+              <div className="flex items-center gap-3 mb-6">
+                <div className="flex -space-x-2">
+                  {[
+                    { initials: 'AM', color: 'from-violet-500 to-indigo-500' },
+                    { initials: 'JD', color: 'from-emerald-500 to-teal-500' },
+                    { initials: 'SL', color: 'from-orange-500 to-rose-500' },
+                    { initials: 'CT', color: 'from-blue-500 to-cyan-500' },
+                    { initials: 'PR', color: 'from-pink-500 to-fuchsia-500' },
+                  ].map((a, i) => (
+                    <div
+                      key={i}
+                      className={`w-9 h-9 rounded-full bg-gradient-to-br ${a.color} ring-2 ring-white flex items-center justify-center text-white text-xs font-bold shadow-md`}
+                    >
+                      {a.initials}
+                    </div>
+                  ))}
+                </div>
+                <div className="text-sm">
+                  <div className="font-semibold text-content-primary">SDR, freelances, fondateurs</div>
+                  <div className="text-content-tertiary">utilisent Volia pour prospecter en France</div>
+                </div>
+              </div>
+
+              {/* Trust badges */}
+              <div className="flex items-center gap-4 text-xs text-content-tertiary flex-wrap">
+                <span className="inline-flex items-center gap-1.5">
+                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                  Sans carte bancaire
+                </span>
+                <span>·</span>
+                <span>Starter gratuit à vie</span>
+                <span>·</span>
+                <span className="font-medium">Conforme RGPD</span>
+              </div>
+            </div>
+
+            {/* ─── COLONNE DROITE : Product mockup ─── */}
+            <div className="relative animate-in fade-in slide-in-from-right-8 duration-1000 delay-150">
+              {/* Floating "live results" sticker */}
+              <div className="absolute -top-4 -left-4 z-20 px-3 py-1.5 rounded-full bg-emerald-100 border border-emerald-300 shadow-md flex items-center gap-2">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                </span>
+                <span className="text-xs font-semibold text-emerald-700">Recherche en direct</span>
+              </div>
+
+              {/* The mockup card */}
+              <div className="relative rounded-2xl bg-white border border-line shadow-2xl shadow-violet-500/10 overflow-hidden">
+                {/* Header */}
+                <div className="flex items-center justify-between px-5 py-3.5 border-b border-line bg-gradient-to-r from-violet-50 to-indigo-50">
+                  <div className="flex items-center gap-2">
+                    <div className="flex gap-1.5">
+                      <div className="w-2.5 h-2.5 rounded-full bg-rose-400" />
+                      <div className="w-2.5 h-2.5 rounded-full bg-amber-400" />
+                      <div className="w-2.5 h-2.5 rounded-full bg-emerald-400" />
+                    </div>
+                    <div className="ml-3 text-xs font-mono text-content-tertiary">volia.fr/dashboard</div>
+                  </div>
+                  <div className="text-xs px-2 py-1 rounded-md bg-violet-100 text-violet-700 font-semibold">234 résultats</div>
+                </div>
+
+                {/* Search bar mock */}
+                <div className="px-5 py-3 border-b border-line flex items-center gap-3">
+                  <Search size={14} className="text-violet-500" />
+                  <span className="text-sm text-content-secondary font-medium">Restaurants · Paris (75)</span>
+                </div>
+
+                {/* Results table */}
+                <div className="divide-y divide-line">
+                  {[
+                    { name: 'La Bonne Table', email: 'contact@labonnetable.fr', score: 'Vérifié', color: 'emerald', avatar: '🍽️' },
+                    { name: 'Pasta Roma', email: 'info@pastaroma.fr', score: 'Vérifié', color: 'emerald', avatar: '🍝' },
+                    { name: 'Boulangerie Maison', email: 'bonjour@boulangerie-m.fr', score: 'Google', color: 'amber', avatar: '🥖' },
+                    { name: 'Le Petit Bistrot', email: 'reservation@petitbistrot.fr', score: 'Vérifié', color: 'emerald', avatar: '🍷' },
+                    { name: 'Sushi Lounge Paris', email: 'contact@sushilounge.fr', score: 'Vérifié', color: 'emerald', avatar: '🍱' },
+                  ].map((row, i) => (
+                    <div
+                      key={i}
+                      className="flex items-center gap-3 px-5 py-3 hover:bg-violet-50/50 transition-colors animate-in fade-in slide-in-from-right-4"
+                      style={{ animationDelay: `${300 + i * 100}ms`, animationDuration: '600ms', animationFillMode: 'both' }}
+                    >
+                      <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-violet-100 to-indigo-100 flex items-center justify-center text-lg flex-shrink-0">
+                        {row.avatar}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-sm font-semibold text-content-primary truncate">{row.name}</div>
+                        <div className="text-xs text-content-tertiary font-mono truncate">{row.email}</div>
+                      </div>
+                      <div className={`text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-md flex-shrink-0 ${
+                        row.color === 'emerald'
+                          ? 'bg-emerald-100 text-emerald-700'
+                          : 'bg-amber-100 text-amber-700'
+                      }`}>
+                        {row.score}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Footer */}
+                <div className="flex items-center justify-between px-5 py-3 border-t border-line bg-surface-elevated/30">
+                  <span className="text-xs text-content-tertiary">+ 229 autres résultats</span>
+                  <div className="flex items-center gap-2 text-xs font-semibold text-violet-700">
+                    <Download size={12} />
+                    Export CSV
+                  </div>
+                </div>
+              </div>
+
+              {/* Floating decorative card "+ 12 found" — visual depth */}
+              <div className="hidden lg:flex absolute -bottom-6 -right-6 z-20 px-4 py-3 rounded-xl bg-white border border-line shadow-xl items-center gap-3 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-700">
+                <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center">
+                  <Mail size={18} className="text-white" />
+                </div>
+                <div>
+                  <div className="text-xs text-content-tertiary">Emails trouvés</div>
+                  <div className="text-lg font-bold text-content-primary tabular-nums">+ 192</div>
+                </div>
+              </div>
+            </div>
           </div>
 
-          {/* H1 simplifié — direct */}
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight leading-[1.08] mb-5">
-            <span className="bg-gradient-to-b from-zinc-900 via-zinc-700 to-zinc-500 bg-clip-text text-transparent">Trouvez l&apos;email de</span>
-            <br />
-            <span className="bg-gradient-to-r from-violet-400 via-indigo-400 to-violet-400 bg-clip-text text-transparent">
-              n&apos;importe quelle entreprise
-            </span>
-          </h1>
-
-          {/* Sous-titre orienté économies — message "le moins cher du marché" */}
-          <p className="text-base sm:text-lg text-content-secondary max-w-2xl mx-auto mb-4 leading-relaxed">
-            Scraping intelligent + recherche Google. <strong className="text-content-primary">150+ secteurs, 101 départements.</strong>
-          </p>
-          {/* Banderole de prix — argument de vente principal */}
-          <div className="inline-flex items-center flex-wrap justify-center gap-x-3 gap-y-2 mb-8 text-sm">
-            <span className="text-emerald-400 font-semibold">À partir de 19 €/mois</span>
-            <span className="text-content-muted">·</span>
-            <span className="text-content-secondary">vs Hunter 49 €</span>
-            <span className="text-content-muted">·</span>
-            <span className="text-content-secondary">vs Apollo 99 $</span>
-            <span className="text-content-muted">·</span>
-            <span className="text-content-secondary">vs Lemlist 39 €</span>
-          </div>
-
-          {/* Widget de recherche fonctionnel */}
-          <div className="max-w-3xl mx-auto text-left">
-            <HeroSearchWidget />
-          </div>
-
-          {/* Social proof rapide */}
-          <div className="mt-6 flex items-center justify-center gap-4 text-xs text-content-tertiary flex-wrap">
-            <span className="flex items-center gap-1.5">
-              <div className="w-1.5 h-1.5 rounded-full bg-green-400" />
-              Aucune carte bancaire requise
-            </span>
-            <span>·</span>
-            <span>Starter gratuit à vie · 100 prospects/mois</span>
-            <span>·</span>
-            <span>Conforme RGPD</span>
-          </div>
-
-          {/* Badge Trustpilot — affiché sous le hero si activé (étoiles
-              cliquables vers le profil Trustpilot, preuve d'authenticité
-              pour Google + visiteurs). Inert tant que pas d'avis. */}
-          <div className="mt-4 flex items-center justify-center">
+          {/* Badge Trustpilot — sous le hero si activé */}
+          <div className="mt-12 flex items-center justify-center">
             <TrustpilotBadge size="sm" />
           </div>
+        </div>
+      </section>
+
+      {/* ──────────────────────────────────────────────────────────────
+          Widget interactif — section dédiée propre
+          (descendu du hero pour laisser le hero respirer)
+       */}
+      <section className="relative pb-20 px-4 sm:px-6 overflow-hidden">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-6">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-violet-100 border border-violet-200 text-xs text-violet-700 font-semibold mb-3">
+              <Sparkles size={12} />
+              ESSAYEZ EN DIRECT
+            </div>
+            <h2 className="text-2xl sm:text-3xl font-bold text-content-primary mb-2">
+              Trouvez vos premiers prospects en 10 secondes
+            </h2>
+            <p className="text-content-tertiary">Aucune inscription requise.</p>
+          </div>
+          <HeroSearchWidget />
         </div>
       </section>
 
