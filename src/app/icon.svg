@@ -7,11 +7,11 @@
   </defs>
   <!-- Fond carré gradient indigo→violet, coins arrondis -->
   <rect width="32" height="32" rx="7" fill="url(#g)"/>
-  <!-- Symbole P stylisé avec viseur/cible intégré (rappel du logo brand) -->
-  <!-- Barre verticale du P -->
-  <rect x="7.2" y="6.5" width="3" height="19" fill="white"/>
-  <!-- Boucle du P (cercle radar) -->
-  <circle cx="17.5" cy="12.5" r="6.5" fill="none" stroke="white" stroke-width="3"/>
-  <!-- Viseur central (diamant rotated 45°) -->
-  <rect x="15.7" y="10.7" width="3.6" height="3.6" fill="white" transform="rotate(45 17.5 12.5)"/>
+  <!-- Symbole V : entonnoir de prospection (large en haut, focalisé en bas) -->
+  <!-- Branche gauche du V -->
+  <path d="M7 6.5 L 15.5 21" stroke="white" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <!-- Branche droite du V -->
+  <path d="M25 6.5 L 16.5 21" stroke="white" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <!-- Diamant au point de convergence (viseur / cible) — continuité brand -->
+  <rect x="13.5" y="22" width="5" height="5" fill="white" transform="rotate(45 16 24.5)"/>
 </svg>

@@ -23,10 +23,16 @@ export default async function Image({ params }) {
       >
         <div style={{ position: 'absolute', top: '-100px', right: '-100px', width: '500px', height: '500px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(99,102,241,0.18) 0%, transparent 70%)' }} />
         <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-          <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'linear-gradient(135deg, #6366f1, #8b5cf6)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px', fontWeight: 700, color: 'white' }}>P</div>
+          <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'linear-gradient(135deg, #6366f1, #8b5cf6)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <svg width="32" height="32" viewBox="0 0 32 32" style={{ display: 'block' }}>
+              <path d="M7 6.5 L 15.5 21" stroke="white" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+              <path d="M25 6.5 L 16.5 21" stroke="white" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+              <rect x="13.5" y="22" width="5" height="5" fill="white" transform="rotate(45 16 24.5)" />
+            </svg>
+          </div>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: '3px' }}>
             <span style={{ fontSize: '32px', fontWeight: 700, color: 'white' }}>Volia</span>
-            <span style={{ fontSize: '20px', fontWeight: 600, color: '#a78bfa' }}>.cloud</span>
+            <span style={{ fontSize: '20px', fontWeight: 600, color: '#a78bfa' }}>.fr</span>
           </div>
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', maxWidth: '900px' }}>

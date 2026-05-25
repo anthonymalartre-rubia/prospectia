@@ -1,18 +1,12 @@
 // Wordmark unifié Volia.
 //
-// Avant : 2 brand marks coexistaient — "Volia.fr" en rose (login,
-// signup, TopBar) vs "Volia.fr" en violet (footer, marketing,
-// auth shell). Schizophrénie complète alors que le domaine officiel
-// est volia.fr (cf CLAUDE.md).
-//
-// Maintenant : utilise le composant <Logo /> (vrai logo Volia avec
-// symbole P + viseur, intégré en mai 2026). Le placeholder "P" carré
-// dans un gradient a été remplacé partout.
+// Utilise le composant <Logo /> (vrai logo Volia avec symbole V + diamant
+// viseur, intégré en mai 2026 lors du rebrand depuis Prospectia).
 //
 // Variants conservés pour rétro-compat avec l'ancienne API :
 // - default : juste le wordmark "Volia" (image SVG)
-// - logo : symbole P + texte "Volia"
-// - compact : juste le symbole P (rare)
+// - logo : symbole V + texte "Volia"
+// - compact : juste le symbole V (rare)
 
 import Link from 'next/link';
 import Image from 'next/image';
@@ -40,7 +34,7 @@ export default function BrandWordmark({
     return <LogoIcon size={s.iconSize} className={className} asLink={asLink} href={href} />;
   }
 
-  // variant="logo" : symbole P + wordmark côte à côte
+  // variant="logo" : symbole V + wordmark côte à côte
   // variant="default" : juste wordmark
   // Note : 2 SVG en swap CSS via .light pour theme-awareness (voir Logo.jsx)
   const inner = (
@@ -48,20 +42,20 @@ export default function BrandWordmark({
       {variant === 'logo' && <LogoIcon size={s.iconSize} />}
       {/* Dark mode (par défaut, fill blanc) */}
       <Image
-        src="/logos/prospectia-wordmark-dark.svg"
+        src="/logos/volia-wordmark-dark.svg"
         alt="Volia"
-        width={367}
-        height={100}
+        width={480}
+        height={150}
         className={`w-auto block [.light_&]:hidden ${s.wordmarkH}`}
         priority={size === 'lg' || size === 'xl'}
       />
       {/* Light mode (fill noir) */}
       <Image
-        src="/logos/prospectia-wordmark-light.svg"
+        src="/logos/volia-wordmark-light.svg"
         alt=""
         aria-hidden="true"
-        width={367}
-        height={100}
+        width={480}
+        height={150}
         className={`w-auto hidden [.light_&]:block ${s.wordmarkH}`}
         priority={size === 'lg' || size === 'xl'}
       />

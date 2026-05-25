@@ -7,11 +7,11 @@
   </defs>
   <!-- Fond carré gradient indigo→violet, coins arrondis iOS-style -->
   <rect width="180" height="180" rx="40" fill="url(#g)"/>
-  <!-- Symbole P stylisé avec viseur/cible intégré -->
-  <!-- Barre verticale du P -->
-  <rect x="40" y="36" width="17" height="108" fill="white"/>
-  <!-- Boucle du P (cercle radar) -->
-  <circle cx="98" cy="70" r="36" fill="none" stroke="white" stroke-width="17"/>
-  <!-- Viseur central (diamant rotated 45°) -->
-  <rect x="88" y="60" width="20" height="20" fill="white" transform="rotate(45 98 70)"/>
+  <!-- Symbole V : entonnoir de prospection (large en haut, focalisé en bas) -->
+  <!-- Branche gauche du V -->
+  <path d="M39 36 L 87 118" stroke="white" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <!-- Branche droite du V -->
+  <path d="M141 36 L 93 118" stroke="white" stroke-width="18" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <!-- Diamant au point de convergence (viseur / cible) -->
+  <rect x="76" y="124" width="28" height="28" fill="white" transform="rotate(45 90 138)"/>
 </svg>

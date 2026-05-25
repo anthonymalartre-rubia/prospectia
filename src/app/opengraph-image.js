@@ -63,19 +63,20 @@ export default function Image() {
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              fontSize: '28px',
-              fontWeight: 700,
-              color: 'white',
             }}
           >
-            P
+            <svg width="38" height="38" viewBox="0 0 32 32" style={{ display: 'block' }}>
+              <path d="M7 6.5 L 15.5 21" stroke="white" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+              <path d="M25 6.5 L 16.5 21" stroke="white" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+              <rect x="13.5" y="22" width="5" height="5" fill="white" transform="rotate(45 16 24.5)" />
+            </svg>
           </div>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: '4px' }}>
             <span style={{ fontSize: '36px', fontWeight: 700, color: 'white' }}>
               Volia
             </span>
             <span style={{ fontSize: '24px', fontWeight: 600, color: '#a78bfa' }}>
-              .ai
+              .fr
             </span>
           </div>
         </div>

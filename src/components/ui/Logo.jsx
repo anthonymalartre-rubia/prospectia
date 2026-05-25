@@ -4,19 +4,19 @@
 //
 // 2 sous-composants :
 //
-// 1. <Logo /> — wordmark complet (symbole P + texte "Volia")
-//    Utilise le SVG public/logos/prospectia-wordmark.svg (à renommer Phase C), theme-aware
-//    via currentColor (le SVG hérite de la text color du parent).
+// 1. <Logo /> — wordmark complet (juste le texte "Volia")
+//    Utilise les SVG public/logos/volia-wordmark-{dark,light}.svg,
+//    swap CSS via la classe .light sur <html>.
 //
-// 2. <LogoIcon /> — symbole P seul (P + viseur intégré), fond gradient
+// 2. <LogoIcon /> — symbole V seul (V + diamant viseur), fond gradient
 //    indigo→violet. Pour favicon-like, sidebar, hero, OG images.
 //
 // Le symbole évoque la prospection ciblée :
-// - Le P : initiale Volia
-// - Le cercle dans le P : radar/cible
-// - Le diamant au centre : point de mire (justesse, focus)
+// - Le V : initiale Volia + métaphore entonnoir (large en haut → focus en bas)
+// - Le diamant au point de convergence : viseur / cible / décideur trouvé
+// - Continuité brand avec l'ancien logo "P + viseur" : on conserve le diamant
 //
-// Concept design : Concept Cible + Lettre P réinventée (Gemini, mai 2026).
+// Concept design : entonnoir de prospection (Volia, mai 2026).
 // ─────────────────────────────────────────────────────────────────────
 
 import Link from 'next/link';
@@ -31,7 +31,7 @@ const SIZES = {
 };
 
 // ─────────────────────────────────────────────────────────────────────
-// LogoIcon — symbole P seul avec fond gradient indigo→violet
+// LogoIcon — symbole V seul avec fond gradient indigo→violet
 // ─────────────────────────────────────────────────────────────────────
 export function LogoIcon({
   size = 'md',
@@ -52,12 +52,12 @@ export function LogoIcon({
         className="w-[70%] h-[70%]"
         aria-hidden="true"
       >
-        {/* Barre verticale du P */}
-        <rect x="7.2" y="6.5" width="3" height="19" fill="white" />
-        {/* Boucle du P (cercle radar) */}
-        <circle cx="17.5" cy="12.5" r="6.5" fill="none" stroke="white" strokeWidth="3" />
-        {/* Viseur central (diamant rotated 45°) */}
-        <rect x="15.7" y="10.7" width="3.6" height="3.6" fill="white" transform="rotate(45 17.5 12.5)" />
+        {/* Branche gauche du V */}
+        <path d="M7 6.5 L 15.5 21" stroke="white" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+        {/* Branche droite du V */}
+        <path d="M25 6.5 L 16.5 21" stroke="white" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+        {/* Diamant au point de convergence (viseur / cible) */}
+        <rect x="13.5" y="22" width="5" height="5" fill="white" transform="rotate(45 16 24.5)" />
       </svg>
     </span>
   );
@@ -73,22 +73,21 @@ export function LogoIcon({
 }
 
 // ─────────────────────────────────────────────────────────────────────
-// Logo — wordmark complet (symbole + texte "Volia")
+// Logo — wordmark complet (juste le texte "Volia")
 // ─────────────────────────────────────────────────────────────────────
 //
-// 2 SVG en swap CSS via la classe .light (qui est ajoutée sur <html>
-// par ThemeProvider en mode light) :
-// - prospectia-wordmark-dark.svg : fill blanc, visible sur fond sombre (à renommer Phase C)
-// - prospectia-wordmark-light.svg : fill noir, visible sur fond clair (à renommer Phase C)
+// 2 SVG en swap CSS via la classe .light (ajoutée sur <html> par
+// ThemeProvider en mode light) :
+// - volia-wordmark-dark.svg : fill blanc, visible sur fond sombre
+// - volia-wordmark-light.svg : fill noir, visible sur fond clair
 //
 // Pourquoi 2 fichiers et pas fill="currentColor" : <Image> de next/image
 // traite le SVG comme un raster et NE propage PAS currentColor. Les
 // alternatives (mask-image, inline SVG) sont plus lourdes à maintenir.
-// 2 fichiers de 7KB chacun reste tout à fait acceptable.
 //
 // Variants :
-// - "wordmark" : SVG complet symbole + texte
-// - "icon" : juste le symbole P (alias de LogoIcon)
+// - "wordmark" : SVG texte "Volia"
+// - "icon" : juste le symbole V (alias de LogoIcon)
 //
 export default function Logo({
   variant = 'wordmark',
@@ -109,19 +108,19 @@ export default function Logo({
     >
       {/* Version dark mode (par défaut, fill blanc) — masquée en .light */}
       <Image
-        src="/logos/prospectia-wordmark-dark.svg"
+        src="/logos/volia-wordmark-dark.svg"
         alt=""
-        width={367}
-        height={100}
+        width={480}
+        height={150}
         className={`w-auto block [.light_&]:hidden ${s.wordmark}`}
         priority={size === 'lg' || size === 'xl'}
       />
       {/* Version light mode (fill noir) — visible uniquement quand .light */}
       <Image
-        src="/logos/prospectia-wordmark-light.svg"
+        src="/logos/volia-wordmark-light.svg"
         alt=""
-        width={367}
-        height={100}
+        width={480}
+        height={150}
         className={`w-auto hidden [.light_&]:block ${s.wordmark}`}
         priority={size === 'lg' || size === 'xl'}
       />

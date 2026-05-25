@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 150" width="480" height="150">
+  <!--
+    Wordmark Volia — version dark mode (fill blanc).
+    Affichée sur fonds sombres (landing, dashboard, footer).
+
+    Pourquoi <text> et pas un path-traced : le texte "Volia" est court
+    (5 lettres), géré nativement par tous les renderers SVG modernes,
+    et reste éditable. Si rendu fragile sur certains environnements
+    (Vercel/sharp), bascule possible vers un path-traced ultérieur.
+
+    Stack font sans-serif système → rendu identique au reste de l'UI
+    (Tailwind utilise aussi system-ui par défaut).
+  -->
+  <text x="240" y="100" text-anchor="middle"
+        font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, Roboto, Helvetica, Arial, sans-serif"
+        font-size="120" font-weight="800" letter-spacing="-4"
+        fill="#ffffff">Volia</text>
+</svg>
