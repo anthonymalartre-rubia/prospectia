@@ -18,6 +18,7 @@ import { cleanEnv } from '@/lib/envClean';
 import { logEmailSentToCrm } from '@/lib/crm-activity-logger';
 import { buildCampaignReplyAddress } from '@/lib/inbound-domain';
 import { emitWebhookEvent } from '@/lib/webhooks/emitter';
+import { reportError } from '@/lib/errorReporting';
 import {
   calculateCurrentDay,
   getCurrentPhase,
@@ -32,6 +33,20 @@ export const maxDuration = 60; // Pro tier requis si > 10s sur free, mais 60 ici
 const BATCH_SIZE = 50;
 
 export async function GET(request) {
+  try {
+    return await handleCron(request);
+  } catch (err) {
+    // Capture Sentry + Vercel logs. Un cron qui crash silencieusement
+    // = email queue bloquée sans alerte → on remonte tout à Sentry.
+    reportError(err, { cron: 'process-email-campaigns' });
+    return NextResponse.json(
+      { error: err?.message || 'Internal error' },
+      { status: 500 }
+    );
+  }
+}
+
+async function handleCron(request) {
   // Auth via CRON_SECRET
   const expected = cleanEnv(process.env.CRON_SECRET);
   const provided = request.headers.get('authorization');

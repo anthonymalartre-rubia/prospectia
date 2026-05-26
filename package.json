@@ -8,10 +8,15 @@
     "start": "next start",
     "lint": "next lint",
     "test": "jest",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:debug": "playwright test --debug",
+    "test:e2e:smoke": "E2E_INCLUDE_SMOKE=1 playwright test smoke-prod.spec.js",
     "analyze": "ANALYZE=true next build"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.80.0",
+    "@sentry/nextjs": "^10.54.0",
     "@supabase/ssr": "^0.9.0",
     "@supabase/supabase-js": "^2.38.0",
     "@upstash/ratelimit": "^2.0.8",
@@ -32,6 +37,7 @@
   },
   "devDependencies": {
     "@next/bundle-analyzer": "^16.2.6",
+    "@playwright/test": "^1.60.0",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
     "eslint": "^8.0.0",

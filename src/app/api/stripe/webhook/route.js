@@ -12,6 +12,7 @@ import { cleanEnv } from '@/lib/envClean';
 import { getSupabaseAdmin } from '@/lib/supabase-admin';
 import { createNotification, NOTIF_TYPES } from '@/lib/notifications';
 import { ensureTeamForOwner, planAllowsTeams } from '@/lib/teams';
+import { reportError } from '@/lib/errorReporting';
 
 function getStripe() {
   return new Stripe(cleanEnv(process.env.STRIPE_SECRET_KEY));
@@ -360,6 +361,11 @@ export async function POST(request) {
     // On log mais on retourne 200 quand même pour ne pas faire retry Stripe
     // sur des erreurs métier (sinon on peut spammer le user d'emails).
     console.error(`[webhook] Handler crashed on ${event.type}:`, err);
+    reportError(err, {
+      webhook: 'stripe',
+      eventType: event.type,
+      eventId: event.id,
+    });
   }
 
   return NextResponse.json({ received: true });

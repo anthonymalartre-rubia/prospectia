@@ -703,27 +703,39 @@ export default function PricingContent() {
             </div>
 
             <div className="space-y-3">
-              {FAQ_PRICING.map((item, idx) => (
+              {FAQ_PRICING.map((item, idx) => {
+                const isOpen = openFaq === idx;
+                const panelId = `pricing-faq-panel-${idx}`;
+                const buttonId = `pricing-faq-button-${idx}`;
+                return (
                 <div
                   key={idx}
                   className="rounded-xl border border-line bg-surface-card overflow-hidden transition-colors hover:border-line-hover"
                 >
                   <button
                     type="button"
-                    onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
-                    className="w-full flex items-center justify-between gap-4 px-5 py-4 text-left"
+                    id={buttonId}
+                    onClick={() => setOpenFaq(isOpen ? null : idx)}
+                    aria-expanded={isOpen}
+                    aria-controls={panelId}
+                    className="w-full flex items-center justify-between gap-4 px-5 py-4 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/40 focus-visible:ring-inset"
                   >
                     <span className="text-sm font-medium text-content-primary">{item.q}</span>
                     <ChevronDown
                       size={16}
+                      aria-hidden="true"
                       className={`text-content-tertiary flex-shrink-0 transition-transform duration-300 ${
-                        openFaq === idx ? 'rotate-180' : ''
+                        isOpen ? 'rotate-180' : ''
                       }`}
                     />
                   </button>
                   <div
+                    id={panelId}
+                    role="region"
+                    aria-labelledby={buttonId}
+                    hidden={!isOpen}
                     className={`overflow-hidden transition-all duration-300 ${
-                      openFaq === idx ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+                      isOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
                     }`}
                   >
                     <div className="px-5 pb-4 pt-0">
@@ -731,7 +743,8 @@ export default function PricingContent() {
                     </div>
                   </div>
                 </div>
-              ))}
+                );
+              })}
             </div>
           </MotionInView>
         </section>

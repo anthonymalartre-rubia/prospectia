@@ -19,6 +19,7 @@ import { sendEmail } from '@/lib/email';
 import { applyTemplate, appendOptOutFooter } from '@/lib/campaign-templates';
 import { cleanEnv } from '@/lib/envClean';
 import { buildSequenceReplyAddress } from '@/lib/inbound-domain';
+import { reportError } from '@/lib/errorReporting';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
@@ -26,6 +27,18 @@ export const maxDuration = 60;
 const BATCH_SIZE = 50;
 
 export async function GET(request) {
+  try {
+    return await handleCron(request);
+  } catch (err) {
+    reportError(err, { cron: 'process-sequences' });
+    return NextResponse.json(
+      { error: err?.message || 'Internal error' },
+      { status: 500 }
+    );
+  }
+}
+
+async function handleCron(request) {
   const expected = cleanEnv(process.env.CRON_SECRET);
   const provided = request.headers.get('authorization');
   if (expected && provided !== `Bearer ${expected}`) {

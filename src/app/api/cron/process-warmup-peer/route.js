@@ -21,6 +21,7 @@ import { NextResponse } from 'next/server';
 import { getSupabaseAdmin } from '@/lib/supabase-admin';
 import { sendEmail } from '@/lib/email';
 import { cleanEnv } from '@/lib/envClean';
+import { reportError } from '@/lib/errorReporting';
 import {
   calculateCurrentDay,
   getCurrentPhase,
@@ -46,6 +47,18 @@ const MAX_TOTAL_SENDS_PER_CYCLE = 200;
 const CYCLES_PER_DAY = 4;
 
 export async function GET(request) {
+  try {
+    return await handleCron(request);
+  } catch (err) {
+    reportError(err, { cron: 'process-warmup-peer' });
+    return NextResponse.json(
+      { error: err?.message || 'Internal error' },
+      { status: 500 }
+    );
+  }
+}
+
+async function handleCron(request) {
   // Auth via CRON_SECRET
   const expected = cleanEnv(process.env.CRON_SECRET);
   const provided = request.headers.get('authorization');

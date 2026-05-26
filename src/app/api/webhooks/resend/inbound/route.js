@@ -21,6 +21,7 @@ import { autoCreateFromReply } from '@/lib/crm-auto-create';
 import { parseCampaignReplyAddress, parseSequenceReplyAddress, isInboundDomain } from '@/lib/inbound-domain';
 import { parsePeerEmailAddress } from '@/lib/warmup-peer';
 import { emitWebhookEvent } from '@/lib/webhooks/emitter';
+import { reportError } from '@/lib/errorReporting';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -47,6 +48,17 @@ function asFirst(value) {
 }
 
 export async function POST(request) {
+  try {
+    return await handleInbound(request);
+  } catch (err) {
+    // Endpoint TOUJOURS 200 (sinon Resend retry à l'infini, cf. note en tête
+    // de fichier). On capture l'erreur côté Sentry pour investigation.
+    reportError(err, { webhook: 'resend-inbound' });
+    return NextResponse.json({ received: true, error: 'internal' }, { status: 200 });
+  }
+}
+
+async function handleInbound(request) {
   let rawBody = '';
   try {
     rawBody = await request.text();

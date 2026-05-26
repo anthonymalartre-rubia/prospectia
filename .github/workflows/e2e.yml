@@ -1,0 +1,88 @@
+# ─────────────────────────────────────────────────────────────────────
+# E2E tests — Playwright sur push main + PRs
+# ─────────────────────────────────────────────────────────────────────
+# Build le Next, demarre le serveur en arriere-plan, attend qu'il
+# reponde, lance Playwright. Upload le report HTML en artifact si echec.
+#
+# Secrets requis (a configurer dans Settings > Secrets and variables) :
+#   NEXT_PUBLIC_SUPABASE_URL
+#   NEXT_PUBLIC_SUPABASE_ANON_KEY
+# Optionnel (sinon les builds de pages serveur qui touchent Stripe peuvent
+# failer silencieusement) :
+#   STRIPE_SECRET_KEY (peut etre une valeur dummy en CI)
+# ─────────────────────────────────────────────────────────────────────
+
+name: E2E Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# Une seule run en cours par ref (annule la precedente)
+concurrency:
+  group: e2e-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  e2e:
+    name: Playwright (chromium)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Build Next.js
+        run: npm run build
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          # Valeurs dummy pour eviter les erreurs au build si secret absent
+          STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY || 'sk_test_dummy_for_build' }}
+
+      - name: Start Next.js server (background)
+        run: npm run start &
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY || 'sk_test_dummy_for_build' }}
+          PORT: 3000
+
+      - name: Wait for server (max 60s)
+        run: npx wait-on http://localhost:3000 --timeout 60000
+
+      - name: Run Playwright tests
+        run: npx playwright test
+        env:
+          E2E_BASE_URL: http://localhost:3000
+          CI: 'true'
+
+      - name: Upload Playwright report (on failure)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30
+
+      - name: Upload test results (on failure)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: test-results/
+          retention-days: 7

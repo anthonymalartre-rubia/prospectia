@@ -5,6 +5,11 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true',
 });
 
+// Sentry — wrap final pour upload des source maps et injection des
+// hooks d'instrumentation. Graceful : si SENTRY_AUTH_TOKEN absent au
+// build, les source maps ne sont pas upload mais le build passe.
+const { withSentryConfig } = require('@sentry/nextjs');
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // Compress responses (gzip/brotli)
@@ -80,4 +85,26 @@ const nextConfig = {
   // - www.volia.fr → volia.fr (canonical apex, à configurer)
 };
 
-module.exports = withBundleAnalyzer(nextConfig);
+// Note : on chaîne d'abord withBundleAnalyzer (transforme la config Next)
+// puis withSentryConfig (instrumentation + source maps).
+// Doc Sentry : https://docs.sentry.io/platforms/javascript/guides/nextjs/manual-setup/
+module.exports = withSentryConfig(withBundleAnalyzer(nextConfig), {
+  // Silence les logs Sentry pendant le build sauf si SENTRY_DEBUG=true
+  silent: true,
+
+  org: process.env.SENTRY_ORG || 'volia',
+  project: process.env.SENTRY_PROJECT || 'volia-prod',
+
+  // Upload des source maps : permet d'avoir des stack traces lisibles
+  // en prod malgré la minification. Nécessite SENTRY_AUTH_TOKEN sur Vercel.
+  widenClientFileUpload: true,
+  sourcemaps: {
+    // Cache les source maps publiquement (équivalent ancien hideSourceMaps).
+    deleteSourcemapsAfterUpload: true,
+  },
+
+  // Tunnel /monitoring → contourne les adblockers qui bloquent
+  // sentry.io. Les events client sont POST sur /monitoring qui les
+  // forward au DSN côté serveur.
+  tunnelRoute: '/monitoring',
+});

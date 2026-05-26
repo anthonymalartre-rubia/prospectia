@@ -43,7 +43,8 @@ export async function generateMetadata({ params }) {
       description,
       url,
       type: 'article',
-      images: [{ url: `${SITE_URL}/og-comparatif.png`, width: 1200, height: 630, alt: `${c.competitor.name} vs Volia` }],
+      // Fallback automatique sur src/app/opengraph-image.js (asset
+      // /og-comparatif.png absent de /public — référence cassée).
     },
     twitter: {
       card: 'summary_large_image',

@@ -217,29 +217,44 @@ function FAQAccordion({ items }) {
   const [openIndex, setOpenIndex] = useState(null);
   return (
     <div className="space-y-3 max-w-3xl mx-auto">
-      {items.map((item, idx) => (
-        <div
-          key={idx}
-          className="rounded-2xl border border-line bg-surface-card overflow-hidden transition-colors hover:border-line-hover"
-        >
-          <button
-            type="button"
-            onClick={() => setOpenIndex(openIndex === idx ? null : idx)}
-            className="w-full flex items-center justify-between gap-4 px-6 py-5 text-left"
+      {items.map((item, idx) => {
+        const isOpen = openIndex === idx;
+        const panelId = `product-faq-panel-${idx}`;
+        const buttonId = `product-faq-button-${idx}`;
+        return (
+          <div
+            key={idx}
+            className="rounded-2xl border border-line bg-surface-card overflow-hidden transition-colors hover:border-line-hover"
           >
-            <span className="text-sm sm:text-base font-medium text-content-primary">{item.q}</span>
-            <ChevronDown
-              size={18}
-              className={`text-content-tertiary flex-shrink-0 transition-transform duration-300 ${openIndex === idx ? 'rotate-180' : ''}`}
-            />
-          </button>
-          <div className={`overflow-hidden transition-all duration-300 ease-in-out ${openIndex === idx ? 'max-h-[600px] opacity-100' : 'max-h-0 opacity-0'}`}>
-            <div className="px-6 pb-5 pt-0">
-              <p className="text-sm text-content-secondary leading-relaxed whitespace-pre-line">{item.a}</p>
+            <button
+              type="button"
+              id={buttonId}
+              onClick={() => setOpenIndex(isOpen ? null : idx)}
+              aria-expanded={isOpen}
+              aria-controls={panelId}
+              className="w-full flex items-center justify-between gap-4 px-6 py-5 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500/40 focus-visible:ring-inset"
+            >
+              <span className="text-sm sm:text-base font-medium text-content-primary">{item.q}</span>
+              <ChevronDown
+                size={18}
+                aria-hidden="true"
+                className={`text-content-tertiary flex-shrink-0 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}
+              />
+            </button>
+            <div
+              id={panelId}
+              role="region"
+              aria-labelledby={buttonId}
+              hidden={!isOpen}
+              className={`overflow-hidden transition-all duration-300 ease-in-out ${isOpen ? 'max-h-[600px] opacity-100' : 'max-h-0 opacity-0'}`}
+            >
+              <div className="px-6 pb-5 pt-0">
+                <p className="text-sm text-content-secondary leading-relaxed whitespace-pre-line">{item.a}</p>
+              </div>
             </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }

@@ -59,7 +59,9 @@ export const metadata = {
       "287 000+ entreprises françaises avec emails + téléphones vérifiés. À partir de 19 €/mois. RGPD inclus. L'alternative française à Apollo, Hunter, Lemlist.",
     url: PAGE_URL,
     type: 'website',
-    images: [{ url: `${SITE_URL}/og-prospection.png`, width: 1200, height: 630, alt: 'Volia Prospection' }],
+    // Pas de `images` ici : Next.js sert automatiquement /opengraph-image.js
+    // depuis src/app/ comme fallback, et l'asset /og-prospection.png n'existe
+    // pas dans /public (référence cassée qui pénalisait le partage social).
   },
   twitter: {
     card: 'summary_large_image',

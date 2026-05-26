@@ -1,0 +1,97 @@
+name: Backup Supabase DB
+
+# ----------------------------------------------------------------------------
+# Workflow de backup quotidien de la base Supabase Volia.
+#
+# DESACTIVE PAR DEFAUT : le bloc "schedule:" est commente.
+# Pour activer :
+#   1. Ajouter les GitHub Secrets : SUPABASE_DB_HOST, SUPABASE_DB_PASSWORD
+#      (optionnels S3 : AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_S3_BUCKET)
+#   2. Decommenter le bloc "schedule:" ci-dessous
+#   3. Tester manuellement : Actions -> "Backup Supabase DB" -> Run workflow
+#
+# Voir docs/BACKUP.md pour la procedure complete.
+# ----------------------------------------------------------------------------
+
+on:
+  # schedule:
+  #   - cron: '0 3 * * *'   # Tous les jours a 3h UTC (= 5h Paris ete / 4h hiver)
+  workflow_dispatch:        # Permet de lancer manuellement depuis l'UI GitHub
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Install PostgreSQL 16 client
+        run: |
+          sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+          wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client-16
+
+      - name: Verify pg_dump version
+        run: pg_dump --version
+
+      - name: Run pg_dump (custom format)
+        env:
+          DB_HOST: ${{ secrets.SUPABASE_DB_HOST }}
+          DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+        run: |
+          DATE=$(date -u +"%Y-%m-%d_%H-%M-%S")
+          echo "BACKUP_DATE=${DATE}" >> $GITHUB_ENV
+          mkdir -p /tmp/backups
+
+          PGPASSWORD="$DB_PASSWORD" pg_dump \
+            -h "$DB_HOST" \
+            -p 5432 \
+            -U postgres \
+            -d postgres \
+            --no-owner --no-acl --clean \
+            --exclude-schema=cron --exclude-schema=net --exclude-schema=vault \
+            -F c \
+            -f "/tmp/backups/volia-${DATE}.dump"
+
+          ls -lh /tmp/backups/
+
+      - name: Compress dump
+        run: |
+          gzip -9 "/tmp/backups/volia-${BACKUP_DATE}.dump"
+          ls -lh /tmp/backups/
+
+      - name: Upload backup as GitHub artifact (rétention 90j)
+        uses: actions/upload-artifact@v4
+        with:
+          name: volia-db-backup-${{ env.BACKUP_DATE }}
+          path: /tmp/backups/volia-${{ env.BACKUP_DATE }}.dump.gz
+          retention-days: 90
+          if-no-files-found: error
+
+      # ------------------------------------------------------------------
+      # OPTION OFF-SITE : upload vers S3 / B2 / R2 (decommenter si setup)
+      # ------------------------------------------------------------------
+      # - name: Configure AWS credentials
+      #   uses: aws-actions/configure-aws-credentials@v4
+      #   with:
+      #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      #     aws-region: eu-west-3
+      #
+      # - name: Upload to S3
+      #   env:
+      #     AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+      #   run: |
+      #     aws s3 cp \
+      #       "/tmp/backups/volia-${BACKUP_DATE}.dump.gz" \
+      #       "s3://${AWS_S3_BUCKET}/db/volia-${BACKUP_DATE}.dump.gz" \
+      #       --storage-class STANDARD_IA
+
+      - name: Notify on failure
+        if: failure()
+        run: |
+          echo "::error::Backup Supabase a echoue. Verifier les secrets et la connectivite DB."
+          # TODO : ajouter une notification Slack/email si besoin
