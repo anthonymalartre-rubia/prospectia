@@ -7,6 +7,7 @@ import { LogOut, Menu, Loader2, Sun, Moon, Globe } from 'lucide-react';
 import { useTheme } from '@/lib/theme';
 import { useI18n } from '@/lib/i18n';
 import NotificationBell from '@/components/NotificationBell';
+import ModuleSwitcher from '@/components/ModuleSwitcher';
 import { LogoIcon } from '@/components/ui';
 
 export default function TopBar({ user, onToggleSidebar, searchProgress, isSearching }) {
@@ -41,10 +42,24 @@ export default function TopBar({ user, onToggleSidebar, searchProgress, isSearch
           </button>
           <div className="flex items-center gap-3">
             <LogoIcon size="sm" />
-            <span className="text-sm font-semibold text-content-primary hidden sm:block tracking-tight">
+            <span className="text-sm font-semibold text-content-primary hidden lg:block tracking-tight">
               Volia<span className="text-violet-400">.fr</span>
             </span>
           </div>
+          {/* Module switcher (Prospection / Campagnes / CRM) — visible
+              uniquement pour les users authentifiés (qui ont user défini). */}
+          {user && (
+            <div className="hidden sm:flex items-center pl-1">
+              <span className="text-content-muted text-sm mr-2" aria-hidden="true">/</span>
+              <ModuleSwitcher />
+            </div>
+          )}
+          {/* Mobile : juste l'icône module sans séparateur */}
+          {user && (
+            <div className="sm:hidden flex items-center">
+              <ModuleSwitcher />
+            </div>
+          )}
         </div>
 
         {/* Center: progress indicator when searching */}
