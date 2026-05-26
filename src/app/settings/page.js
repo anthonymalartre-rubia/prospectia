@@ -13,7 +13,8 @@ import {
 import { useTheme } from '@/lib/theme';
 import { useI18n } from '@/lib/i18n';
 import ApiKeysManager from '@/components/ApiKeysManager';
-import { Key } from 'lucide-react';
+import { Key, Phone } from 'lucide-react';
+import Link from 'next/link';
 
 // ─── Composants UI réutilisables (refonte settings UX) ──────────────────
 function SectionHeader({ icon, title, subtitle }) {
@@ -961,6 +962,52 @@ export default function SettingsPage() {
               </div>
               <div className="mt-3 text-sm text-content-tertiary">
                 <a href="/api" className="text-violet-400 hover:underline">📖 Documentation complète de l&apos;API v1 →</a>
+              </div>
+
+              {/* Numéros SMS d'envoi (sous-page dédiée) */}
+              <div className="mt-4">
+                <Link
+                  href="/settings/sms-senders"
+                  className="flex items-center justify-between gap-4 rounded-2xl border border-line bg-surface-card p-5 hover:border-violet-500/40 hover:bg-violet-500/[0.02] transition group"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-violet-500/10 group-hover:bg-violet-500/20 transition">
+                      <Phone className="h-4 w-4 text-violet-500" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-content-primary">Numéros SMS d&apos;envoi</p>
+                      <p className="text-xs text-content-tertiary mt-0.5">
+                        Connectez un numéro Twilio (Volia ou BYO) pour lancer des campagnes SMS.
+                      </p>
+                    </div>
+                  </div>
+                  <ChevronRight className="h-4 w-4 text-content-tertiary group-hover:text-violet-500 transition" />
+                </Link>
+              </div>
+            </section>
+
+            {/* ─── Domaines d'envoi email ─────────────────────── */}
+            <section id="email-senders" className="scroll-mt-20 mb-8">
+              <SectionHeader
+                icon={<Mail className="h-5 w-5 text-violet-500" />}
+                title="Domaines d'envoi email"
+                subtitle="Connectez votre propre domaine pour envoyer vos campagnes (DKIM/SPF/DMARC)."
+              />
+              <div className="mt-4">
+                <SettingRow
+                  icon={<Mail className="h-4 w-4 text-violet-500" />}
+                  title="Gérer mes domaines"
+                  description="Ajoutez send.votre-marque.fr et vérifiez la configuration DNS via Resend."
+                  control={
+                    <button
+                      onClick={() => router.push('/settings/email-senders')}
+                      className="inline-flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium bg-violet-500/10 text-violet-600 hover:bg-violet-500/20 border border-violet-500/30 transition whitespace-nowrap"
+                    >
+                      Configurer
+                      <ChevronRight className="h-3.5 w-3.5" />
+                    </button>
+                  }
+                />
               </div>
             </section>
 

@@ -57,12 +57,41 @@ export async function GET(request) {
   const contactIds = [...new Set(sends.map((s) => s.contact_id))];
 
   const [{ data: campaigns }, { data: contacts }] = await Promise.all([
-    supabase.from('sms_campaigns').select('id, name, body, sender_name, status').in('id', campaignIds),
+    supabase.from('sms_campaigns').select('id, name, body, sender_name, status, sms_sender_id').in('id', campaignIds),
     supabase.from('prospect_contacts').select('id, phone, first_name, last_name, company, position_title, custom_fields, opt_out').in('id', contactIds),
   ]);
 
   const campaignMap = new Map((campaigns || []).map((c) => [c.id, c]));
   const contactMap = new Map((contacts || []).map((c) => [c.id, c]));
+
+  // 3.bis) Bulk fetch des sms_senders verified référencés par ces campaigns.
+  // Comme pour l'email : sender absent du map = deleted/non-verified = fail explicite.
+  const senderIds = [...new Set(
+    (campaigns || [])
+      .map((c) => c.sms_sender_id)
+      .filter(Boolean)
+  )];
+  let senderMap = new Map();
+  if (senderIds.length > 0) {
+    const { data: senders } = await supabase
+      .from('sms_senders')
+      .select('id, user_id, type, phone_number, twilio_account_sid, twilio_auth_token_encrypted, status, verified_at')
+      .in('id', senderIds)
+      .eq('status', 'verified');
+    senderMap = new Map((senders || []).map((s) => [s.id, s]));
+  }
+
+  // Dynamique : lib/crypto.js est créé par un autre agent. On import lazy
+  // pour ne pas casser le build si le fichier n'existe pas encore.
+  let decryptSecret = null;
+  if (senderMap.size > 0) {
+    try {
+      const cryptoMod = await import('@/lib/crypto').catch(() => null);
+      decryptSecret = cryptoMod?.decryptSecret || cryptoMod?.decrypteSecret || null;
+    } catch {
+      decryptSecret = null;
+    }
+  }
 
   // 4) Envoi
   const results = await Promise.all(sends.map(async (send) => {
@@ -81,11 +110,58 @@ export async function GET(request) {
     let text = applyTemplate(campaign.body, contact, '');
     text = appendSmsOptOutFooter(text);
 
-    const result = await sendSms({
+    // Résolution du sender SMS :
+    //   - sms_sender_id NULL              → fallback Volia (env vars TWILIO_*)
+    //                                       et sender_name historique de la campagne.
+    //                                       Garantit la rétro-compat des campagnes
+    //                                       créées avant la feature.
+    //   - sender Volia-managed (verified) → utilise nos env vars TWILIO_ACCOUNT_SID
+    //                                       + TWILIO_AUTH_TOKEN, from = numéro
+    //                                       du sender.
+    //   - sender BYO (verified)           → utilise les creds du sender, auth_token
+    //                                       déchiffré via lib/crypto. Si le module
+    //                                       crypto n'est pas dispo (autre agent
+    //                                       pas encore mergé), on échoue proprement.
+    //   - sender_id présent mais absent
+    //     du map (deleted / non verified) → fail explicite.
+    let smsOpts = {
       to: contact.phone,
       body: text,
-      from: campaign.sender_name || undefined, // Twilio sender ID (peut être alphanumérique sur certains pays)
-    });
+      from: campaign.sender_name || undefined,
+    };
+    if (campaign.sms_sender_id) {
+      const sender = senderMap.get(campaign.sms_sender_id);
+      if (!sender) {
+        return updateSendStatus(supabase, send.id, 'failed', {
+          error: 'Sender not verified or deleted',
+          failed_at: new Date().toISOString(),
+        });
+      }
+      smsOpts.from = sender.phone_number;
+      if (sender.type === 'byo') {
+        if (!decryptSecret) {
+          return updateSendStatus(supabase, send.id, 'failed', {
+            error: 'Crypto module unavailable for BYO sender',
+            failed_at: new Date().toISOString(),
+          });
+        }
+        let authToken;
+        try {
+          authToken = decryptSecret(sender.twilio_auth_token_encrypted);
+        } catch (err) {
+          return updateSendStatus(supabase, send.id, 'failed', {
+            error: `BYO auth token decrypt failed: ${err.message || 'unknown'}`,
+            failed_at: new Date().toISOString(),
+          });
+        }
+        smsOpts.accountSid = sender.twilio_account_sid;
+        smsOpts.authToken = authToken;
+      }
+      // Volia-managed : on laisse sendSms() lire TWILIO_ACCOUNT_SID/AUTH_TOKEN
+      // depuis l'env, pas besoin de passer accountSid/authToken.
+    }
+
+    const result = await sendSms(smsOpts);
 
     if (result.success) {
       // Update last_sms_at

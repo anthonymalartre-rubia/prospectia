@@ -31,10 +31,10 @@ const FALLBACK_FROM = 'Volia <onboarding@resend.dev>';
  *      retentative depuis onboarding@resend.dev (sandbox Resend qui marche
  *      toujours, mais limité à l'email du compte Resend en mode dev).
  *
- * @param {{ to, subject, html, replyTo? }} options
+ * @param {{ to, subject, html, replyTo?, from? }} options
  * @returns {Promise<{ success, id?, error?, fromUsed?, fallbackUsed?, status? }>}
  */
-export async function sendEmail({ to, subject, html, replyTo }) {
+export async function sendEmail({ to, subject, html, replyTo, from, tags }) {
   const apiKey = cleanEnv(process.env.RESEND_API_KEY);
   if (!apiKey) {
     console.warn('[email] RESEND_API_KEY not configured — skipping email');
@@ -43,10 +43,12 @@ export async function sendEmail({ to, subject, html, replyTo }) {
 
   const isTestKey = apiKey.startsWith('re_test_');
   const customFrom = cleanEnv(process.env.RESEND_FROM_ADDRESS);
-  const primaryFrom = isTestKey ? FALLBACK_FROM : (customFrom || DEFAULT_FROM);
+  // Si `from` est explicitement fourni (cas multi-tenant senders), on l'utilise
+  // en priorité. Sinon on garde l'ancien comportement (env var ou default).
+  const primaryFrom = isTestKey ? FALLBACK_FROM : (from || customFrom || DEFAULT_FROM);
 
   // Try 1 : sender custom
-  const firstAttempt = await callResend({ apiKey, from: primaryFrom, to, subject, html, replyTo });
+  const firstAttempt = await callResend({ apiKey, from: primaryFrom, to, subject, html, replyTo, tags });
   if (firstAttempt.success) {
     return { ...firstAttempt, fromUsed: primaryFrom, fallbackUsed: false };
   }
@@ -70,7 +72,7 @@ export async function sendEmail({ to, subject, html, replyTo }) {
   }
 
   console.warn(`[email] Primary sender ${primaryFrom} refused (${firstAttempt.error}). Retrying with ${FALLBACK_FROM}...`);
-  const fallbackAttempt = await callResend({ apiKey, from: FALLBACK_FROM, to, subject, html, replyTo });
+  const fallbackAttempt = await callResend({ apiKey, from: FALLBACK_FROM, to, subject, html, replyTo, tags });
 
   // Conserve la trace du primary error même si le fallback marche, et
   // surtout si le fallback échoue (très utile pour le debug).
@@ -93,10 +95,14 @@ export async function sendEmail({ to, subject, html, replyTo }) {
   };
 }
 
-async function callResend({ apiKey, from, to, subject, html, replyTo }) {
+async function callResend({ apiKey, from, to, subject, html, replyTo, tags }) {
   try {
     const body = { from, to: [to], subject, html };
     if (replyTo) body.reply_to = replyTo;
+    // Resend tags : tableau d'objets { name, value } (lettres/chiffres/_ et -)
+    // Utilisé pour le routage webhook (campaign_id, user_id…). Doc :
+    // https://resend.com/docs/api-reference/emails/send-email#tags
+    if (Array.isArray(tags) && tags.length > 0) body.tags = tags;
 
     const res = await fetch('https://api.resend.com/emails', {
       method: 'POST',

@@ -32,6 +32,7 @@ export async function POST(request) {
   const from_name = (body.from_name || 'Volia').trim().slice(0, 80);
   const from_email = (body.from_email || 'hello@volia.fr').trim();
   const reply_to = body.reply_to ? String(body.reply_to).trim() : null;
+  const email_sender_id = body.email_sender_id || null;
 
   if (!name || !subject || !body_html || !list_id) {
     return NextResponse.json({ error: 'name, subject, body_html, list_id requis' }, { status: 400 });
@@ -49,6 +50,20 @@ export async function POST(request) {
     .maybeSingle();
   if (!list) return NextResponse.json({ error: 'Liste introuvable' }, { status: 404 });
 
+  // Si email_sender_id fourni : doit appartenir au user ET être verified.
+  // Sinon on garde le fallback Volia (hello@volia.fr) au moment de l'envoi.
+  if (email_sender_id) {
+    const { data: sender } = await supabase
+      .from('email_senders')
+      .select('id, status')
+      .eq('id', email_sender_id)
+      .eq('user_id', user.id)
+      .maybeSingle();
+    if (!sender || sender.status !== 'verified') {
+      return NextResponse.json({ error: 'Sender invalide ou pas vérifié' }, { status: 400 });
+    }
+  }
+
   const totalRecipients = (list.email_count || 0) - (list.opt_out_count || 0);
 
   const { data, error } = await supabase
@@ -62,6 +77,7 @@ export async function POST(request) {
       from_name,
       from_email,
       reply_to,
+      email_sender_id,
       status: 'draft',
       total_recipients: totalRecipients,
     })

@@ -19,7 +19,7 @@ import { useEffect, useState } from 'react';
 import {
   X, Loader2, Trash2, Mail, Phone, Building2, User,
   Calendar, AlertCircle, Save, Check, StickyNote, CheckSquare,
-  Square, Users as UsersIcon, Megaphone,
+  Square, Users as UsersIcon, Megaphone, Sparkles,
 } from 'lucide-react';
 import { formatDealValue } from '@/lib/crm';
 import ActivityForm from './ActivityForm';
@@ -321,6 +321,11 @@ export default function DealDetailDrawer({
 
         {deal && (
           <div className="p-5 space-y-5">
+            {/* Auto-créé banner (Phase 2) */}
+            {deal.metadata?.auto_created === true && (
+              <AutoCreatedBanner metadata={deal.metadata} />
+            )}
+
             {/* Title (editable inline) */}
             <div>
               <label className="block text-[10px] font-bold uppercase tracking-wider text-content-tertiary mb-1.5">
@@ -687,6 +692,33 @@ export default function DealDetailDrawer({
           }}
         />
       )}
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// AutoCreatedBanner — bandeau violet affiché quand un deal est issu
+// d'une réponse auto-traitée à une campagne (Phase 2).
+// ─────────────────────────────────────────────────────────────────────
+function AutoCreatedBanner({ metadata = {} }) {
+  const channelRaw = metadata?.source_channel;
+  const channelLabel =
+    channelRaw === 'email' ? 'email' : channelRaw === 'sms' ? 'SMS' : null;
+  return (
+    <div className="rounded-lg border border-violet-200 bg-violet-50 px-3 py-2.5 flex items-start gap-2">
+      <div className="p-1 rounded-md bg-violet-100 flex-shrink-0">
+        <Sparkles size={12} className="text-violet-600" />
+      </div>
+      <div className="min-w-0 flex-1">
+        <p className="text-[11px] font-bold uppercase tracking-wider text-violet-700 mb-0.5">
+          Deal auto-créé
+        </p>
+        <p className="text-xs text-violet-900 leading-snug">
+          Ce deal a été créé automatiquement depuis une réponse à votre campagne
+          {channelLabel ? ` ${channelLabel}` : ''}. Engagement déjà enregistré
+          dans la timeline ci-dessous.
+        </p>
+      </div>
     </div>
   );
 }

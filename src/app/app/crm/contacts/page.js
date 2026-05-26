@@ -55,10 +55,13 @@ export default function CrmContactsPage() {
   const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState('');
 
-  // ─── Search + pagination ─────────────────────────────────
+  // ─── Search + pagination + sort ──────────────────────────
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [offset, setOffset] = useState(0);
+  // sort : 'created' (par défaut) | 'engagement'. dir : 'asc' | 'desc'.
+  const [sortKey, setSortKey] = useState('created');
+  const [sortDir, setSortDir] = useState('desc');
 
   // ─── UI ───────────────────────────────────────────────────
   const [newContactOpen, setNewContactOpen] = useState(false);
@@ -143,6 +146,8 @@ export default function CrmContactsPage() {
         params.set('limit', String(PAGE_SIZE));
         params.set('offset', String(currentOffset));
         if (debouncedSearch) params.set('q', debouncedSearch);
+        params.set('sort', sortKey);
+        params.set('dir', sortDir);
 
         const res = await fetch(`/api/crm/contacts?${params.toString()}`);
         const data = await res.json();
@@ -165,15 +170,20 @@ export default function CrmContactsPage() {
         setLoadingMore(false);
       }
     },
-    [authChecked, debouncedSearch]
+    [authChecked, debouncedSearch, sortKey, sortDir]
   );
 
-  // Re-fetch quand la search change OU au mount après auth
+  // Re-fetch quand la search OU le tri change OU au mount après auth
   useEffect(() => {
     if (!authChecked) return;
     setOffset(0);
     fetchContacts({ append: false, currentOffset: 0 });
-  }, [authChecked, debouncedSearch, fetchContacts]);
+  }, [authChecked, debouncedSearch, sortKey, sortDir, fetchContacts]);
+
+  function handleSortChange(nextKey, nextDir) {
+    setSortKey(nextKey);
+    setSortDir(nextDir);
+  }
 
   function handleLoadMore() {
     const next = offset + PAGE_SIZE;
@@ -379,6 +389,9 @@ export default function CrmContactsPage() {
               selectedIds={selectedIds}
               onToggleSelect={toggleSelect}
               onToggleSelectAll={toggleSelectAll}
+              sortKey={sortKey}
+              sortDir={sortDir}
+              onSortChange={handleSortChange}
               emptyState={
                 debouncedSearch ? (
                   <div className="max-w-sm mx-auto">

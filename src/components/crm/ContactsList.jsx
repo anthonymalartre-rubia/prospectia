@@ -19,7 +19,7 @@
 // avatars en gradient violet (initiales 2 lettres).
 // ─────────────────────────────────────────────────────────────────────
 
-import { Mail, Phone, Pencil, Trash2, Building2 } from 'lucide-react';
+import { Mail, Phone, Pencil, Trash2, Building2, ArrowDown, ArrowUp } from 'lucide-react';
 
 // Palette de gradients violets/cyan/indigo pour les avatars contacts.
 // Choisi de manière déterministe selon le nom (hash basique) pour qu'un
@@ -100,6 +100,65 @@ function formatDate(iso) {
   }
 }
 
+// ─── Engagement helpers ──────────────────────────────────────────────
+// Heatmap de couleurs basée sur le score d'engagement cumulé (Phase 2).
+// 0-9 : gris discret · 10-29 : bleu · 30-59 : violet · 60+ : orange/feu.
+function engagementTone(score) {
+  const s = Number(score) || 0;
+  if (s >= 60) return {
+    className: 'bg-orange-100 text-orange-700 border-orange-200',
+    hot: true,
+  };
+  if (s >= 30) return {
+    className: 'bg-violet-100 text-violet-700 border-violet-200',
+    hot: false,
+  };
+  if (s >= 10) return {
+    className: 'bg-blue-100 text-blue-700 border-blue-200',
+    hot: false,
+  };
+  return {
+    className: 'bg-zinc-100 text-zinc-600 border-zinc-200',
+    hot: false,
+  };
+}
+
+// Format simple "il y a Xj / Xh / Xmin" — sans dep externe.
+function formatRelativeShort(iso) {
+  if (!iso) return null;
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return null;
+  const diffMs = Date.now() - date.getTime();
+  if (diffMs < 60_000) return "à l'instant";
+  const mins = Math.floor(diffMs / 60_000);
+  if (mins < 60) return `il y a ${mins} min`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `il y a ${hours} h`;
+  const days = Math.floor(hours / 24);
+  if (days < 30) return `il y a ${days} j`;
+  const months = Math.floor(days / 30);
+  if (months < 12) return `il y a ${months} mois`;
+  return `il y a ${Math.floor(months / 12)} an${months >= 24 ? 's' : ''}`;
+}
+
+function EngagementBadge({ score, lastAt }) {
+  const s = Number(score) || 0;
+  const tone = engagementTone(s);
+  const rel = formatRelativeShort(lastAt);
+  const tooltip = rel
+    ? `Score d'engagement : ${s} · Dernier event : ${rel}`
+    : `Score d'engagement : ${s} · Aucun engagement enregistré`;
+  return (
+    <span
+      title={tooltip}
+      className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[11px] font-bold tabular-nums border ${tone.className}`}
+    >
+      {tone.hot && <span aria-hidden="true">🔥</span>}
+      {s}
+    </span>
+  );
+}
+
 export default function ContactsList({
   contacts = [],
   onEdit,
@@ -111,7 +170,19 @@ export default function ContactsList({
   selectedIds = null,
   onToggleSelect,
   onToggleSelectAll,
+  // Phase 2 — Tri colonne Engagement (controlled). Si absent, header inerte.
+  sortKey = null,
+  sortDir = 'desc',
+  onSortChange = null,
 }) {
+  function handleSortClick(key) {
+    if (!onSortChange) return;
+    if (sortKey === key) {
+      onSortChange(key, sortDir === 'desc' ? 'asc' : 'desc');
+    } else {
+      onSortChange(key, 'desc');
+    }
+  }
   const isSelectable = selectable && !!selectedIds && typeof onToggleSelect === 'function';
   const visibleIds = contacts.map((c) => c.id);
   const visibleSelectedCount = isSelectable
@@ -132,6 +203,7 @@ export default function ContactsList({
                 <th className="px-3 py-3 text-left text-[10px] font-semibold uppercase tracking-wider text-content-muted">Email</th>
                 <th className="px-3 py-3 text-left text-[10px] font-semibold uppercase tracking-wider text-content-muted hidden md:table-cell">Téléphone</th>
                 <th className="px-3 py-3 text-left text-[10px] font-semibold uppercase tracking-wider text-content-muted hidden lg:table-cell">Entreprise</th>
+                <th className="px-3 py-3 text-left text-[10px] font-semibold uppercase tracking-wider text-content-muted hidden sm:table-cell">Engagement</th>
                 <th className="px-3 py-3 text-left text-[10px] font-semibold uppercase tracking-wider text-content-muted hidden sm:table-cell">Source</th>
                 <th className="w-24 px-3 py-3" />
               </tr>
@@ -153,6 +225,9 @@ export default function ContactsList({
                   </td>
                   <td className="px-3 py-3 hidden lg:table-cell">
                     <div className="h-3 w-28 bg-zinc-200 rounded animate-pulse" />
+                  </td>
+                  <td className="px-3 py-3 hidden sm:table-cell">
+                    <div className="h-5 w-10 bg-zinc-200 rounded animate-pulse" />
                   </td>
                   <td className="px-3 py-3 hidden sm:table-cell">
                     <div className="h-3 w-16 bg-zinc-200 rounded animate-pulse" />
@@ -211,6 +286,32 @@ export default function ContactsList({
               </th>
               <th className="px-3 py-3 text-left text-[10px] font-semibold uppercase tracking-wider text-content-muted hidden lg:table-cell">
                 Entreprise
+              </th>
+              <th className="px-3 py-3 text-left text-[10px] font-semibold uppercase tracking-wider text-content-muted hidden sm:table-cell">
+                {onSortChange ? (
+                  <button
+                    type="button"
+                    onClick={() => handleSortClick('engagement')}
+                    className={`inline-flex items-center gap-1 hover:text-content-secondary transition-colors ${
+                      sortKey === 'engagement' ? 'text-violet-700' : ''
+                    }`}
+                    title="Trier par engagement"
+                    aria-label="Trier par engagement"
+                  >
+                    Engagement
+                    {sortKey === 'engagement' ? (
+                      sortDir === 'asc' ? (
+                        <ArrowUp size={10} />
+                      ) : (
+                        <ArrowDown size={10} />
+                      )
+                    ) : (
+                      <ArrowDown size={10} className="opacity-30" />
+                    )}
+                  </button>
+                ) : (
+                  'Engagement'
+                )}
               </th>
               <th className="px-3 py-3 text-left text-[10px] font-semibold uppercase tracking-wider text-content-muted hidden sm:table-cell">
                 Source
@@ -312,6 +413,14 @@ export default function ContactsList({
                     )}
                   </td>
 
+                  {/* Engagement */}
+                  <td className="px-3 py-3 hidden sm:table-cell">
+                    <EngagementBadge
+                      score={c.engagement_score}
+                      lastAt={c.last_engagement_at}
+                    />
+                  </td>
+
                   {/* Source */}
                   <td className="px-3 py-3 hidden sm:table-cell">
                     <SourceBadge source={c.source} />
@@ -368,4 +477,12 @@ export default function ContactsList({
 }
 
 // Exports utilitaires réutilisables ailleurs (page détail contact).
-export { initials, avatarGradient, SourceBadge, formatDate };
+export {
+  initials,
+  avatarGradient,
+  SourceBadge,
+  formatDate,
+  EngagementBadge,
+  engagementTone,
+  formatRelativeShort,
+};

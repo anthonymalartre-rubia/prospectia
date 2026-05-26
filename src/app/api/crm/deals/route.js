@@ -31,7 +31,7 @@ export async function GET(request) {
     .from('crm_deals')
     .select(
       `id, title, value_cents, currency, expected_close_date, notes, status, closed_at, position,
-       pipeline_id, stage_id, contact_id, created_at, updated_at,
+       pipeline_id, stage_id, contact_id, metadata, created_at, updated_at,
        contact:crm_contacts(id, name, email, company),
        stage:crm_stages(id, name, color, probability, closing_type, position)`
     )
@@ -124,7 +124,7 @@ export async function POST(request) {
     })
     .select(
       `id, title, value_cents, currency, expected_close_date, notes, status, closed_at, position,
-       pipeline_id, stage_id, contact_id, created_at, updated_at,
+       pipeline_id, stage_id, contact_id, metadata, created_at, updated_at,
        contact:crm_contacts(id, name, email, company),
        stage:crm_stages(id, name, color, probability, closing_type, position)`
     )

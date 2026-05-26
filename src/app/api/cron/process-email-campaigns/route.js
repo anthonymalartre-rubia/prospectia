@@ -61,12 +61,30 @@ export async function GET(request) {
   const contactIds = [...new Set(sends.map((s) => s.contact_id))];
 
   const [{ data: campaigns }, { data: contacts }] = await Promise.all([
-    supabase.from('email_campaigns').select('id, owner_id, name, subject, body_html, from_name, from_email, reply_to, status').in('id', campaignIds),
+    supabase.from('email_campaigns').select('id, owner_id, name, subject, body_html, from_name, from_email, reply_to, status, email_sender_id').in('id', campaignIds),
     supabase.from('prospect_contacts').select('id, email, phone, first_name, last_name, company, position_title, custom_fields, opt_out').in('id', contactIds),
   ]);
 
   const campaignMap = new Map((campaigns || []).map((c) => [c.id, c]));
   const contactMap = new Map((contacts || []).map((c) => [c.id, c]));
+
+  // 3.bis) Bulk fetch des email_senders verified référencés par ces campaigns.
+  // On ne charge QUE les senders status='verified' : un sender supprimé ou non
+  // vérifié provoquera un fail explicite du send (cf. plus bas).
+  const senderIds = [...new Set(
+    (campaigns || [])
+      .map((c) => c.email_sender_id)
+      .filter(Boolean)
+  )];
+  let senderMap = new Map();
+  if (senderIds.length > 0) {
+    const { data: senders } = await supabase
+      .from('email_senders')
+      .select('id, user_id, domain, from_name, status, verified_at')
+      .in('id', senderIds)
+      .eq('status', 'verified');
+    senderMap = new Map((senders || []).map((s) => [s.id, s]));
+  }
 
   // 4) Envoie chaque send
   const results = await Promise.all(sends.map(async (send) => {
@@ -92,13 +110,47 @@ export async function GET(request) {
     const optOutUrl = `${baseUrl}/api/prospection/opt-out?c=${contact.id}&cmp=${campaign.id}`;
     html = appendOptOutFooter(html, optOutUrl, campaign.name);
 
-    const fromHeader = `${campaign.from_name} <${campaign.from_email}>`;
+    // Résolution du From/ReplyTo en fonction du sender multi-tenant :
+    //   - campaign.email_sender_id NULL    → fallback ancien comportement
+    //     (campaign.from_name / campaign.from_email — typiquement hello@volia.fr).
+    //     C'est la soft migration : les campagnes pré-feature continuent d'envoyer.
+    //   - sender_id présent + verified     → on utilise le domaine du customer :
+    //     From: "{sender.from_name} <noreply@{sender.domain}>", reply_to par défaut
+    //     "reply@{sender.domain}" (sauf override explicite sur la campagne).
+    //   - sender_id présent mais sender absent du map (= deleted ou pas verified)
+    //     → on échoue ce send proprement plutôt que d'envoyer depuis le mauvais
+    //     domaine et de cramer la délivrabilité.
+    let fromHeader;
+    let replyToHeader = campaign.reply_to;
+    if (campaign.email_sender_id) {
+      const sender = senderMap.get(campaign.email_sender_id);
+      if (!sender) {
+        return updateSendStatus(supabase, send.id, 'failed', {
+          error: 'Sender not verified or deleted',
+        });
+      }
+      const displayName = sender.from_name || campaign.from_name || 'Volia';
+      fromHeader = `${displayName} <noreply@${sender.domain}>`;
+      if (!replyToHeader) replyToHeader = `reply@${sender.domain}`;
+    } else {
+      fromHeader = `${campaign.from_name} <${campaign.from_email}>`;
+    }
+
+    // Tags Resend pour le routage webhook (Resend exige alphanum + _ + -, max 256 chars).
+    // On stocke campaign_id + owner_id pour pouvoir dispatcher côté receveur si
+    // besoin (le matching primaire reste sur provider_id, c'est juste un bonus debug).
+    const tags = [
+      { name: 'campaign_id', value: String(campaign.id).replace(/-/g, '_') },
+      { name: 'owner_id', value: String(campaign.owner_id).replace(/-/g, '_') },
+    ];
 
     const result = await sendEmail({
       to: contact.email,
+      from: fromHeader,
       subject,
       html,
-      replyTo: campaign.reply_to,
+      replyTo: replyToHeader,
+      tags,
     });
 
     if (result.success) {

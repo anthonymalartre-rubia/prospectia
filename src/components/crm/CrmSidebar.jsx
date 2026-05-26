@@ -25,6 +25,7 @@ import {
   GitBranch,
   ChevronLeft,
   Sparkles,
+  Inbox,
 } from 'lucide-react';
 
 const NAV_ITEMS = [
@@ -51,6 +52,14 @@ const NAV_ITEMS = [
     href: '/app/crm/activities',
     icon: Activity,
     matches: (p) => p.startsWith('/app/crm/activities'),
+  },
+  {
+    id: 'inbound',
+    label: 'Réponses',
+    description: 'Replies email & SMS',
+    href: '/app/crm/inbound',
+    icon: Inbox,
+    matches: (p) => p.startsWith('/app/crm/inbound'),
   },
   {
     id: 'pipelines',

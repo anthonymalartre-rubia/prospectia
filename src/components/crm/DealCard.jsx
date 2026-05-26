@@ -15,7 +15,7 @@
 // Status 'lost' → badge rose + bg-rose-50 + opacity-70
 // ─────────────────────────────────────────────────────────────────────
 
-import { Building2, Banknote, Calendar } from 'lucide-react';
+import { Building2, Banknote, Calendar, Sparkles } from 'lucide-react';
 import { formatDealValue } from '@/lib/crm';
 
 // ─── Mini avatar (initiales) ─────────────────────────────────────────
@@ -83,6 +83,13 @@ export default function DealCard({
   const isWon = deal.status === 'won';
   const isLost = deal.status === 'lost';
   const isClosed = isWon || isLost;
+  const isAutoCreated = deal.metadata?.auto_created === true;
+  const sourceChannel =
+    deal.metadata?.source_channel === 'email'
+      ? 'email'
+      : deal.metadata?.source_channel === 'sms'
+      ? 'SMS'
+      : null;
 
   const dateInfo = formatRelativeDate(deal.expected_close_date);
   const contact = deal.contact;
@@ -139,6 +146,23 @@ export default function DealCard({
             }`}
           >
             {isWon ? '✓ Gagné' : '✗ Perdu'}
+          </span>
+        </div>
+      )}
+
+      {/* Auto-créé badge (Phase 2) — discret, en haut à gauche */}
+      {isAutoCreated && (
+        <div className="mb-1.5">
+          <span
+            title={
+              sourceChannel
+                ? `Créé automatiquement depuis une réponse à une campagne ${sourceChannel}`
+                : 'Créé automatiquement depuis une réponse à une campagne'
+            }
+            className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[9px] font-semibold bg-violet-50 text-violet-700 border border-violet-200"
+          >
+            <Sparkles size={9} className="text-violet-500" />
+            Auto-créé
           </span>
         </div>
       )}

@@ -19,6 +19,7 @@ function NewCampaignContent() {
   const [currentEmail, setCurrentEmail] = useState(null);
   const [loading, setLoading] = useState(true);
   const [lists, setLists] = useState([]);
+  const [senders, setSenders] = useState([]);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
 
@@ -30,6 +31,7 @@ function NewCampaignContent() {
   const [replyTo, setReplyTo] = useState('');
   const [subject, setSubject] = useState('');
   const [bodyHtml, setBodyHtml] = useState('');
+  const [emailSenderId, setEmailSenderId] = useState(''); // '' = fallback Volia
   const [previewMode, setPreviewMode] = useState(false);
 
   useEffect(() => {
@@ -44,12 +46,23 @@ function NewCampaignContent() {
       if (!profile?.is_admin) { setAuthState('no-admin'); setLoading(false); return; }
       setAuthState('ok');
 
-      // Charge l'email réel + les listes
+      // Charge l'email réel + les listes + les senders vérifiés
       setReplyTo(user.email);
-      const res = await fetch('/api/admin/prospection/lists');
-      if (res.ok) {
-        const data = await res.json();
+      const [listsRes, sendersRes] = await Promise.all([
+        fetch('/api/admin/prospection/lists'),
+        fetch('/api/email-senders').catch(() => null),
+      ]);
+      if (listsRes.ok) {
+        const data = await listsRes.json();
         setLists(data.lists || []);
+      }
+      if (sendersRes && sendersRes.ok) {
+        const data = await sendersRes.json();
+        // On ne propose dans le dropdown que les senders status='verified'
+        const verified = (data.senders || data.email_senders || []).filter(
+          (s) => s.status === 'verified'
+        );
+        setSenders(verified);
       }
       setLoading(false);
     })();
@@ -72,6 +85,7 @@ function NewCampaignContent() {
           reply_to: replyTo.trim() || null,
           subject: subject.trim(),
           body_html: bodyHtml.trim(),
+          email_sender_id: emailSenderId || null,
         }),
       });
       const data = await res.json();
@@ -196,6 +210,35 @@ Anthony</p>
               {/* Bloc Métadonnées */}
               <Block title="2. Identité & objet" icon={<Send size={14} />}>
                 <div className="space-y-3">
+                  {/* Dropdown sender multi-tenant (soft migration : option par défaut = Volia) */}
+                  <div>
+                    <label className="block text-xs text-content-tertiary mb-1.5">
+                      Envoyer depuis
+                    </label>
+                    <select
+                      value={emailSenderId}
+                      onChange={(e) => setEmailSenderId(e.target.value)}
+                      className="w-full px-3 py-2 rounded-lg bg-surface-base border border-line text-sm text-content-primary focus:outline-none focus:border-violet-500 transition"
+                    >
+                      <option value="">Sender par défaut Volia (hello@volia.fr)</option>
+                      {senders.map((s) => (
+                        <option key={s.id} value={s.id}>
+                          {s.from_name ? `${s.from_name} — ` : ''}noreply@{s.domain} (vérifié)
+                        </option>
+                      ))}
+                    </select>
+                    {senders.length === 0 && (
+                      <div className="mt-2 p-2.5 rounded-lg bg-amber-500/10 border border-amber-500/30 text-[11px] text-amber-300 leading-relaxed flex items-start gap-2">
+                        <AlertTriangle size={12} className="mt-0.5 flex-shrink-0" />
+                        <span>
+                          Aucun domaine vérifié. Configurez votre domaine d&apos;envoi pour une meilleure deliverability →{' '}
+                          <Link href="/settings/email-senders" className="underline font-semibold hover:text-amber-200">
+                            /settings/email-senders
+                          </Link>
+                        </span>
+                      </div>
+                    )}
+                  </div>
                   <div>
                     <label className="block text-xs text-content-tertiary mb-1.5">Nom interne (jamais affiché aux destinataires)</label>
                     <input

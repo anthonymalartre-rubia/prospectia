@@ -30,6 +30,7 @@ export async function POST(request) {
   const rawBody = (body.body || '').trim();
   const list_id = body.list_id;
   const sender_name = body.sender_name ? String(body.sender_name).trim().slice(0, 11) : null;
+  const sms_sender_id = body.sms_sender_id || null;
 
   if (!name || !rawBody || !list_id) {
     return NextResponse.json({ error: 'name, body, list_id requis' }, { status: 400 });
@@ -47,6 +48,20 @@ export async function POST(request) {
     .maybeSingle();
   if (!list) return NextResponse.json({ error: 'Liste introuvable' }, { status: 404 });
 
+  // Si sms_sender_id fourni : doit appartenir au user ET être verified.
+  // Sinon on garde le fallback compte Volia managé (env TWILIO_*) à l'envoi.
+  if (sms_sender_id) {
+    const { data: sender } = await supabase
+      .from('sms_senders')
+      .select('id, status')
+      .eq('id', sms_sender_id)
+      .eq('user_id', user.id)
+      .maybeSingle();
+    if (!sender || sender.status !== 'verified') {
+      return NextResponse.json({ error: 'Sender invalide ou pas vérifié' }, { status: 400 });
+    }
+  }
+
   // Texte final (avec footer STOP obligatoire)
   const fullText = appendSmsOptOutFooter(rawBody);
   const segments = countSmsSegments(fullText);
@@ -61,6 +76,7 @@ export async function POST(request) {
       name,
       body: rawBody, // on stocke le brut, le footer sera ré-ajouté à l'envoi
       sender_name,
+      sms_sender_id,
       status: 'draft',
       total_recipients: totalRecipients,
       estimated_cost_eur: estimatedCost,

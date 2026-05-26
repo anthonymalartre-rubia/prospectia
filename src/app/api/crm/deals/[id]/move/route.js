@@ -79,7 +79,7 @@ export async function PATCH(request, { params }) {
     .eq('id', id)
     .select(
       `id, title, value_cents, currency, status, closed_at, position,
-       pipeline_id, stage_id, contact_id, updated_at,
+       pipeline_id, stage_id, contact_id, metadata, updated_at,
        stage:crm_stages(id, name, color, probability, closing_type, position)`
     )
     .single();

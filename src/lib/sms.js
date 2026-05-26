@@ -54,15 +54,18 @@ export function isMobileE164Fr(phone) {
   return /^\+33[67]\d{8}$/.test(phone);
 }
 
-export async function sendSms({ to, body, from }) {
-  const accountSid = cleanEnv(process.env.TWILIO_ACCOUNT_SID);
-  const authToken = cleanEnv(process.env.TWILIO_AUTH_TOKEN);
-  const apiKeySid = cleanEnv(process.env.TWILIO_API_KEY_SID);
-  const apiKeySecret = cleanEnv(process.env.TWILIO_API_KEY_SECRET);
+export async function sendSms({ to, body, from, accountSid: accountSidOverride, authToken: authTokenOverride, statusCallback }) {
+  // Mode multi-tenant : si accountSid + authToken sont passés (cas BYO sender),
+  // on les utilise en priorité. Sinon fallback sur l'env (compte Volia managed).
+  const accountSid = accountSidOverride || cleanEnv(process.env.TWILIO_ACCOUNT_SID);
+  const authToken = authTokenOverride || cleanEnv(process.env.TWILIO_AUTH_TOKEN);
+  const apiKeySid = accountSidOverride ? null : cleanEnv(process.env.TWILIO_API_KEY_SID);
+  const apiKeySecret = accountSidOverride ? null : cleanEnv(process.env.TWILIO_API_KEY_SECRET);
   const fromNumber = from || cleanEnv(process.env.TWILIO_FROM_NUMBER);
-  const messagingServiceSid = cleanEnv(process.env.TWILIO_MESSAGING_SERVICE_SID);
+  const messagingServiceSid = accountSidOverride ? null : cleanEnv(process.env.TWILIO_MESSAGING_SERVICE_SID);
 
-  // Auth : préfère API Key (recommandée prod) sinon fallback Auth Token
+  // Auth : préfère API Key (recommandée prod, env-only) sinon Auth Token.
+  // En mode BYO on n'a que l'Auth Token déchiffré, donc on l'utilise directement.
   const useApiKey = !!(apiKeySid && apiKeySecret);
   const authUser = useApiKey ? apiKeySid : accountSid;
   const authPass = useApiKey ? apiKeySecret : authToken;
@@ -88,6 +91,17 @@ export async function sendSms({ to, body, from }) {
     form.set('MessagingServiceSid', messagingServiceSid);
   } else {
     form.set('From', fromNumber);
+  }
+  // StatusCallback : URL HTTPS publique vers /api/webhooks/twilio/status.
+  // Twilio POSTera là à chaque changement de status (sent/delivered/failed).
+  // Si non fourni au call, on lit depuis l'env (NEXT_PUBLIC_SITE_URL ou TWILIO_STATUS_CALLBACK_URL).
+  const callbackUrl = statusCallback
+    || cleanEnv(process.env.TWILIO_STATUS_CALLBACK_URL)
+    || (cleanEnv(process.env.NEXT_PUBLIC_SITE_URL)
+        ? `${cleanEnv(process.env.NEXT_PUBLIC_SITE_URL).replace(/\/$/, '')}/api/webhooks/twilio/status`
+        : null);
+  if (callbackUrl) {
+    form.set('StatusCallback', callbackUrl);
   }
 
   const auth = Buffer.from(`${authUser}:${authPass}`).toString('base64');

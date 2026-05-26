@@ -20,6 +20,7 @@ function NewSmsContent() {
   const [currentEmail, setCurrentEmail] = useState(null);
   const [loading, setLoading] = useState(true);
   const [lists, setLists] = useState([]);
+  const [senders, setSenders] = useState([]);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
 
@@ -27,6 +28,7 @@ function NewSmsContent() {
   const [name, setName] = useState('');
   const [senderName, setSenderName] = useState('');
   const [body, setBody] = useState('');
+  const [smsSenderId, setSmsSenderId] = useState(''); // '' = fallback Volia managed
 
   useEffect(() => {
     (async () => {
@@ -40,10 +42,20 @@ function NewSmsContent() {
       if (!profile?.is_admin) { setAuthState('no-admin'); setLoading(false); return; }
       setAuthState('ok');
 
-      const res = await fetch('/api/admin/prospection/lists');
-      if (res.ok) {
-        const data = await res.json();
+      const [listsRes, sendersRes] = await Promise.all([
+        fetch('/api/admin/prospection/lists'),
+        fetch('/api/sms-senders').catch(() => null),
+      ]);
+      if (listsRes.ok) {
+        const data = await listsRes.json();
         setLists(data.lists || []);
+      }
+      if (sendersRes && sendersRes.ok) {
+        const data = await sendersRes.json();
+        const verified = (data.senders || data.sms_senders || []).filter(
+          (s) => s.status === 'verified'
+        );
+        setSenders(verified);
       }
       setLoading(false);
     })();
@@ -79,6 +91,7 @@ function NewSmsContent() {
           name: name.trim(),
           sender_name: senderName.trim() || null,
           body: body.trim(),
+          sms_sender_id: smsSenderId || null,
         }),
       });
       const data = await res.json();
@@ -157,6 +170,35 @@ function NewSmsContent() {
               </Block>
 
               <Block title="2. Identité" icon={<Send size={14} />}>
+                {/* Dropdown sender SMS multi-tenant (soft migration : default = Volia managed) */}
+                <div className="mb-3">
+                  <label className="block text-xs text-content-tertiary mb-1.5">
+                    Envoyer depuis
+                  </label>
+                  <select
+                    value={smsSenderId}
+                    onChange={(e) => setSmsSenderId(e.target.value)}
+                    className="w-full px-3 py-2 rounded-lg bg-surface-base border border-line text-sm text-content-primary focus:outline-none focus:border-emerald-500 transition"
+                  >
+                    <option value="">Numéro Volia managé (par défaut)</option>
+                    {senders.map((s) => (
+                      <option key={s.id} value={s.id}>
+                        {s.phone_number} {s.type === 'byo' ? '(BYO)' : '(Volia)'}
+                      </option>
+                    ))}
+                  </select>
+                  {senders.length === 0 && (
+                    <div className="mt-2 p-2.5 rounded-lg bg-amber-500/10 border border-amber-500/30 text-[11px] text-amber-300 leading-relaxed flex items-start gap-2">
+                      <AlertTriangle size={12} className="mt-0.5 flex-shrink-0" />
+                      <span>
+                        Aucun numéro SMS vérifié. Configurez votre propre numéro pour une meilleure deliverability →{' '}
+                        <Link href="/settings/sms-senders" className="underline font-semibold hover:text-amber-200">
+                          /settings/sms-senders
+                        </Link>
+                      </span>
+                    </div>
+                  )}
+                </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label className="block text-xs text-content-tertiary mb-1.5">Nom interne</label>

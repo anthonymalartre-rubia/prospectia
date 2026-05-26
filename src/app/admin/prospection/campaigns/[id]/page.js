@@ -7,6 +7,7 @@ import {
   ArrowLeft, Mail, Loader2, Send, AlertTriangle, Eye, MousePointerClick,
   CheckCircle2, XCircle, Clock, Pause, Trash2, RefreshCw, ShieldOff,
   LogIn, Users, Calendar, BarChart3, AlertCircle, MessageSquareReply,
+  Sparkles, ExternalLink,
 } from 'lucide-react';
 import { getSupabase } from '@/lib/supabase';
 
@@ -41,6 +42,7 @@ export default function CampaignDetailPage() {
   const [loading, setLoading] = useState(true);
   const [campaign, setCampaign] = useState(null);
   const [sample, setSample] = useState([]);
+  const [crmStats, setCrmStats] = useState({ replies_count: 0, auto_created_deals_count: 0 });
   const [error, setError] = useState(null);
   const [sending, setSending] = useState(false);
   const [confirmSend, setConfirmSend] = useState(false);
@@ -59,6 +61,7 @@ export default function CampaignDetailPage() {
       const data = await res.json();
       setCampaign(data.campaign);
       setSample(data.sample_sends || []);
+      setCrmStats(data.crm || { replies_count: 0, auto_created_deals_count: 0 });
     } catch {
       setError('Erreur réseau');
     } finally {
@@ -148,6 +151,15 @@ export default function CampaignDetailPage() {
   const replyRate = sent > 0 ? ((campaign.replied_count / sent) * 100).toFixed(1) : '0.0';
   const bounceRate = sent > 0 ? ((campaign.bounced_count / sent) * 100).toFixed(1) : '0.0';
 
+  // ── Phase 2 — engagement (CRM) ──────────────────────────────────
+  // Réponses comptées côté CRM via inbound_events / email_sends.replied_at.
+  // engagementRate = replies / delivered (vs reply rate au sens marketing
+  // = replies / sent qui surévalue si beaucoup de bounces).
+  const repliesCrm = crmStats?.replies_count || 0;
+  const autoDealsCount = crmStats?.auto_created_deals_count || 0;
+  const delivered = campaign.delivered_count || 0;
+  const engagementRate = delivered > 0 ? ((repliesCrm / delivered) * 100).toFixed(1) : '0.0';
+
   const canSend = ['draft', 'paused'].includes(campaign.status);
   const canDelete = ['draft', 'paused'].includes(campaign.status);
 
@@ -233,13 +245,38 @@ export default function CampaignDetailPage() {
         )}
 
         {/* Stats grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-4">
           <StatCard icon={<Users size={14} />} label="Destinataires" value={total} color="text-content-primary" />
           <StatCard icon={<Send size={14} />} label="Envoyés" value={sent} color="text-content-primary" />
           <StatCard icon={<CheckCircle2 size={14} />} label="Délivrés" value={campaign.delivered_count || 0} color="text-emerald-400" />
           <StatCard icon={<Eye size={14} />} label="Ouvertures" value={campaign.opened_count || 0} sub={`${openRate}%`} color="text-violet-300" />
           <StatCard icon={<MousePointerClick size={14} />} label="Clics" value={campaign.clicked_count || 0} sub={`${clickRate}%`} color="text-violet-400" />
           <StatCard icon={<MessageSquareReply size={14} />} label="Réponses" value={campaign.replied_count || 0} sub={`${replyRate}%`} color="text-blue-300" />
+        </div>
+
+        {/* Engagement & CRM (Phase 2 — couleur violet "campagnes") */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-6">
+          <StatCard
+            icon={<MessageSquareReply size={14} />}
+            label="Réponses (CRM)"
+            value={repliesCrm}
+            color="text-violet-400"
+            sub={`Trackées via inbound_events`}
+          />
+          <StatCard
+            icon={<BarChart3 size={14} />}
+            label="Taux engagement"
+            value={`${engagementRate}%`}
+            color="text-violet-400"
+            sub="Réponses / Délivrés"
+          />
+          <StatCard
+            icon={<Sparkles size={14} />}
+            label="Deals auto-créés"
+            value={autoDealsCount}
+            color="text-violet-400"
+            sub="Convertis vers CRM"
+          />
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
           <StatCard icon={<AlertCircle size={14} />} label="Bounces" value={campaign.bounced_count || 0} sub={`${bounceRate}%`} color="text-red-400" warn={bounceRate > 3} />
@@ -313,7 +350,21 @@ export default function CampaignDetailPage() {
                       const ts = s.replied_at || s.clicked_at || s.opened_at || s.delivered_at || s.bounced_at || s.sent_at;
                       return (
                         <tr key={s.id} className="border-t border-line">
-                          <td className="px-3 py-2 truncate max-w-[180px]" title={s.email}>{s.email}</td>
+                          <td className="px-3 py-2 max-w-[220px]" title={s.email}>
+                            <div className="flex items-center gap-1.5">
+                              <span className="truncate">{s.email}</span>
+                              {s.crm_contact_id && (
+                                <Link
+                                  href={`/app/crm/contacts/${s.crm_contact_id}`}
+                                  title="Voir ce contact dans le CRM"
+                                  className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 transition-colors flex-shrink-0"
+                                >
+                                  CRM
+                                  <ExternalLink size={9} />
+                                </Link>
+                              )}
+                            </div>
+                          </td>
                           <td className="px-3 py-2">
                             <span className={`text-[11px] font-medium ${smeta.color}`}>{smeta.label}</span>
                             {s.error && (

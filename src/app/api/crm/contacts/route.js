@@ -35,14 +35,31 @@ export async function GET(request) {
   const limit = Math.min(LIMIT_MAX, isNaN(limitParam) ? LIMIT_DEFAULT : Math.max(1, limitParam));
   const offset = isNaN(offsetParam) ? 0 : Math.max(0, offsetParam);
 
+  // Tri (Phase 2.x — engagement) : ?sort=engagement|created &dir=asc|desc.
+  // Tolérant : colonnes inexistantes → fallback created_at desc.
+  const ALLOWED_SORT = {
+    created: 'created_at',
+    engagement: 'engagement_score',
+  };
+  const sortKey = url.searchParams.get('sort') || 'created';
+  const dir = url.searchParams.get('dir') === 'asc' ? 'asc' : 'desc';
+  const sortColumn = ALLOWED_SORT[sortKey] || 'created_at';
+  const ascending = dir === 'asc';
+
   let query = supabase
     .from('crm_contacts')
     .select(
-      'id, name, email, phone, company, position, notes, source, source_ref_id, created_at, updated_at',
+      'id, name, email, phone, company, position, notes, source, source_ref_id, engagement_score, last_engagement_at, tags, created_at, updated_at',
       { count: 'exact' }
     )
-    .order('created_at', { ascending: false })
+    .order(sortColumn, { ascending, nullsFirst: false })
     .range(offset, offset + limit - 1);
+
+  // Tiebreaker stable : created_at desc en secondaire (sauf si c'est déjà la
+  // colonne primaire).
+  if (sortColumn !== 'created_at') {
+    query = query.order('created_at', { ascending: false });
+  }
 
   if (q) {
     const safe = q.replace(/[%_]/g, '\\$&');
