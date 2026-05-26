@@ -5,6 +5,7 @@ import { createNotification, NOTIF_TYPES } from './notifications';
 import { usageWarningEmail, usageLimitReachedEmail } from './emailTemplates';
 import { getEffectivePlan } from './trial';
 import { getQuotaMemberIds } from './teams';
+import { getSupabaseAdmin } from './supabase-admin';
 
 function getCurrentMonth() {
   const now = new Date();
@@ -150,22 +151,31 @@ export async function incrementUsage(supabase, userId, action, amount = 1) {
     }
 
     if (thresholdCrossed) {
-      // Fetch user email
-      const { data: profile } = await supabase
-        .from('user_profiles')
-        .select('email, full_name')
-        .eq('id', userId)
-        .single();
+      // ─── Fetch user email via auth.admin ─────────────────────────────────
+      // user_profiles n'a PAS de colonne email / full_name (cf. schéma).
+      // Avant on faisait .select('email, full_name') qui retournait null
+      // sans erreur → email d'alerte jamais envoyé. On lit maintenant
+      // depuis auth.users via le service role (pattern utilisé aussi
+      // dans /api/cron/expire-trials et /api/cron/drip-onboarding).
+      const supabaseAdmin = getSupabaseAdmin();
+      const { data: { user: authUser } = {} } =
+        await supabaseAdmin.auth.admin.getUserById(userId);
+      const email = authUser?.email;
+      const fullName =
+        authUser?.user_metadata?.full_name ||
+        authUser?.user_metadata?.name ||
+        email?.split('@')[0] ||
+        'utilisateur';
 
-      if (profile?.email) {
+      if (email) {
         const limitType = action; // 'searches', 'enrichments', 'exports'
         let template;
         if (thresholdCrossed === 100) {
-          template = usageLimitReachedEmail(profile.full_name, plan.name, limitType);
+          template = usageLimitReachedEmail(fullName, plan.name, limitType);
         } else {
-          template = usageWarningEmail(profile.full_name, thresholdCrossed, plan.name, limitType);
+          template = usageWarningEmail(fullName, thresholdCrossed, plan.name, limitType);
         }
-        sendEmail({ to: profile.email, subject: template.subject, html: template.html })
+        sendEmail({ to: email, subject: template.subject, html: template.html })
           .catch((err) => console.error(`[usage] ${thresholdCrossed}% email failed:`, err));
       }
 

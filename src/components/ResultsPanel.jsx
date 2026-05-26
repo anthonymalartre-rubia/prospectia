@@ -1141,7 +1141,11 @@ export default memo(function ResultsPanel({
             <div className="absolute right-0 top-full mt-2 z-50 w-[600px] max-w-[90vw] rounded-xl border border-line bg-surface-elevated shadow-2xl overflow-hidden">
               <div className="px-4 py-3 border-b border-line flex items-center justify-between">
                 <h4 className="text-xs font-semibold uppercase tracking-wider text-content-faint">{t('results.csvPreview')}</h4>
-                <button onClick={() => setShowExportPreview(false)} className="p-1 rounded hover:bg-surface-card text-content-muted hover:text-content-primary transition">
+                <button
+                  onClick={() => setShowExportPreview(false)}
+                  className="p-1 rounded hover:bg-surface-card text-content-muted hover:text-content-primary transition"
+                  aria-label="Fermer l'aperçu CSV"
+                >
                   <X size={14} />
                 </button>
               </div>

@@ -114,6 +114,39 @@ async function handleInbound(request) {
     return NextResponse.json({ received: true }, { status: 200 });
   }
 
+  // 2.5) Idempotence svix-id — Resend retry agressif si signature pas vérifiée
+  // côté client, et certains relay (load-balancer, MTA) peuvent re-livrer un
+  // même payload. On stocke l'event AVANT tout side-effect : si on l'a déjà
+  // traité, court-circuit immédiat → 0 doublon contact/deal CRM.
+  // Cf. UNIQUE index webhook_events_provider_event_uniq (migration 2026-05).
+  const svixId = request.headers.get('svix-id');
+  if (svixId) {
+    const { data: existingEvent } = await supabaseAdmin
+      .from('webhook_events')
+      .select('id')
+      .eq('provider', 'resend-inbound')
+      .eq('provider_event_id', svixId)
+      .maybeSingle();
+    if (existingEvent) {
+      return NextResponse.json({ received: true, deduplicated: true }, { status: 200 });
+    }
+    // Insert d'audit + lock idempotence. Si une 2e requête concurrente arrive
+    // sur le même svix-id, le UNIQUE index renverra une erreur ici → on la
+    // catch et on retourne 200 dédupliqué pour rester safe en race condition.
+    const { error: insErr } = await supabaseAdmin
+      .from('webhook_events')
+      .insert({
+        provider: 'resend-inbound',
+        provider_event_id: svixId,
+        event_type: payload?.type || 'email.received',
+        payload,
+        processed: false,
+      });
+    if (insErr && /duplicate key|unique/i.test(insErr.message || '')) {
+      return NextResponse.json({ received: true, deduplicated: true }, { status: 200 });
+    }
+  }
+
   // ───────────────────────────────────────────────────────────────────
   // 3.warmup) PEER-TO-PEER WARMUP — court-circuit prioritaire
   // ───────────────────────────────────────────────────────────────────
@@ -182,6 +215,15 @@ async function handleInbound(request) {
         });
       } catch (e) {
         console.warn('[resend-inbound] warmup peer handling failed', e.message);
+      }
+      // Marque l'event comme traité (best-effort).
+      if (svixId) {
+        supabaseAdmin
+          .from('webhook_events')
+          .update({ processed: true })
+          .eq('provider', 'resend-inbound')
+          .eq('provider_event_id', svixId)
+          .then(() => {}, () => {});
       }
       // Court-circuit : pas d'auto-create CRM, pas de matching campaign.
       return NextResponse.json({ received: true, warmup_peer: true }, { status: 200 });
@@ -401,6 +443,16 @@ async function handleInbound(request) {
         received_at: new Date().toISOString(),
       },
     }).catch(() => {});
+  }
+
+  // Marque l'event comme traité (best-effort, pas bloquant pour la réponse).
+  if (svixId) {
+    supabaseAdmin
+      .from('webhook_events')
+      .update({ processed: true })
+      .eq('provider', 'resend-inbound')
+      .eq('provider_event_id', svixId)
+      .then(() => {}, () => {});
   }
 
   return NextResponse.json(

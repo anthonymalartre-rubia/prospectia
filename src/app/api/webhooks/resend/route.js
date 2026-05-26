@@ -21,6 +21,7 @@ import { getSupabaseAdmin } from '@/lib/supabase-admin';
 import { cleanEnv } from '@/lib/envClean';
 import { verifyResendSignature } from '@/lib/webhooks/resend-verify';
 import { logEmailEventToCrm } from '@/lib/crm-activity-logger';
+import { emitWebhookEvent } from '@/lib/webhooks/emitter';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 30;
@@ -210,21 +211,63 @@ export async function POST(request) {
     }
 
     // 8) Bridge CRM : log activity + bump engagement
+    let campaignOwnerId = null;
+    let campaignRow = null;
     if (mapping.crmType) {
       const { data: campaign } = await supabase
         .from('email_campaigns')
         .select('id, owner_id, name, subject')
         .eq('id', send.campaign_id)
         .maybeSingle();
-      if (campaign?.owner_id) {
+      campaignRow = campaign || null;
+      campaignOwnerId = campaign?.owner_id || null;
+      if (campaignOwnerId) {
         await logEmailEventToCrm({
           supabaseAdmin: supabase,
-          ownerId: campaign.owner_id,
+          ownerId: campaignOwnerId,
           recipientEmail: send.email,
           campaign,
           eventType: mapping.crmType,
           providerId,
         });
+      }
+    }
+
+    // 8.bis) Webhooks publics Zapier/Make pour la déliverabilité fine
+    // (email.delivered/opened/clicked). On émet UNIQUEMENT pour les events à
+    // forte valeur métier ; les bounces/failed restent internes pour le moment.
+    const PUBLIC_EMITTED = new Set(['email.delivered', 'email.opened', 'email.clicked']);
+    if (PUBLIC_EMITTED.has(eventType)) {
+      // owner_id : on a peut-être déjà fetch ci-dessus, sinon on le récupère.
+      let ownerForEmit = campaignOwnerId;
+      let camp = campaignRow;
+      if (!ownerForEmit && send.campaign_id) {
+        const { data } = await supabase
+          .from('email_campaigns')
+          .select('id, owner_id, name, subject')
+          .eq('id', send.campaign_id)
+          .maybeSingle();
+        camp = data || null;
+        ownerForEmit = data?.owner_id || null;
+      }
+      if (ownerForEmit) {
+        const eventTs = new Date().toISOString();
+        const payloadData = {
+          campaign_id: send.campaign_id,
+          campaign_name: camp?.name || null,
+          to: send.email,
+          ...(eventType === 'email.delivered' && { delivered_at: eventTs }),
+          ...(eventType === 'email.opened' && { opened_at: eventTs }),
+          ...(eventType === 'email.clicked' && {
+            clicked_at: eventTs,
+            url: eventData?.click?.link || eventData?.link || null,
+          }),
+        };
+        emitWebhookEvent({
+          userId: ownerForEmit,
+          event: eventType,
+          data: payloadData,
+        }).catch((e) => console.warn('[webhooks/resend] emit failed', e?.message));
       }
     }
 

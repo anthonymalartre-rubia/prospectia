@@ -48,6 +48,7 @@ export default function CampaignDetailPage() {
   const [abTest, setAbTest] = useState(null);
   const [error, setError] = useState(null);
   const [sending, setSending] = useState(false);
+  const [submitting, setSubmitting] = useState(false); // Bug P0 #3 : verrou ferme contre double-click
   const [confirmSend, setConfirmSend] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [scheduledAt, setScheduledAt] = useState('');
@@ -98,7 +99,13 @@ export default function CampaignDetailPage() {
   }, [campaign, fetchCampaign]);
 
   async function handleSend() {
-    if (sending || !campaign) return;
+    // Bug P0 #3 : double verrou. `submitting` est synchrone (lecture
+    // immédiate après set côté React 18 batch), `sending` reste pour
+    // l'UI (spinner). On garde aussi le verrou DB (UNIQUE INDEX
+    // email_sends_campaign_contact_unique) comme dernière ligne de
+    // défense — un double-click ne créera jamais 2× le même send.
+    if (submitting || sending || !campaign) return;
+    setSubmitting(true);
     setSending(true);
     setError(null);
     try {
@@ -113,14 +120,22 @@ export default function CampaignDetailPage() {
       if (!res.ok) {
         setError(data.error || 'Erreur envoi');
         setSending(false);
+        setSubmitting(false);
         return;
       }
+      // On ferme la modale AVANT le fetch pour éviter qu'un re-render
+      // ne laisse le bouton actif (même si disabled) le temps que
+      // fetchCampaign tourne.
       setConfirmSend(false);
       await fetchCampaign();
     } catch {
       setError('Erreur réseau');
     } finally {
       setSending(false);
+      // submitting reste true volontairement après succès — la modale
+      // est fermée et la prochaine ouverture est un nouveau cycle.
+      // On reset uniquement en cas d'erreur (déjà fait au-dessus).
+      if (!confirmSend) setSubmitting(false);
     }
   }
 
@@ -209,7 +224,13 @@ export default function CampaignDetailPage() {
               )}
               {canSend && (
                 <button
-                  onClick={() => setConfirmSend(true)}
+                  onClick={() => {
+                    // Bug P0 #3 : nouveau cycle d'envoi → on relâche le
+                    // verrou submitting (qui restait true après un succès
+                    // pour bloquer un re-click pendant fetchCampaign).
+                    setSubmitting(false);
+                    setConfirmSend(true);
+                  }}
                   className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-violet-600 hover:bg-violet-500 text-white text-sm font-semibold transition shadow-lg shadow-violet-500/20"
                 >
                   <Send size={14} />
@@ -508,8 +529,8 @@ export default function CampaignDetailPage() {
               </button>
               <button
                 onClick={handleSend}
-                disabled={sending}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-violet-600 hover:bg-violet-500 disabled:opacity-50 text-white text-sm font-semibold transition"
+                disabled={sending || submitting}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-violet-600 hover:bg-violet-500 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-semibold transition"
               >
                 {sending ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
                 {scheduledAt ? 'Planifier' : 'Envoyer maintenant'}

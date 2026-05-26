@@ -311,6 +311,21 @@ export default function PricingContent() {
               </button>
             </div>
 
+            {/* Label économies CONCRET sous le toggle — chiffres en euros
+                réels par plan (vs "-2 mois" abstrait). Boost conversion
+                annuel attendu : +5-10%. */}
+            <p
+              className="text-sm font-semibold text-emerald-700 mb-2"
+              aria-live="polite"
+            >
+              {isYearly
+                ? `Vous économisez jusqu'à ${formatEuro(maxSavings)}/an`
+                : `Passez à l'annuel et économisez jusqu'à ${formatEuro(maxSavings)}/an`}
+            </p>
+            <p className="text-xs text-content-tertiary mb-6">
+              Solo : -38€/an · Pro : -98€/an · Business : -198€/an
+            </p>
+
             {/* Trust badges */}
             <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 text-xs text-content-tertiary">
               <span className="flex items-center gap-1.5"><Check size={12} className="text-emerald-500" /> Sans CB pour Starter</span>

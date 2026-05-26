@@ -186,11 +186,12 @@ Content-Type: application/json`}
               GET <span className="text-violet-400">https://volia.fr/api/v1/webhooks/events</span>
             </div>
             <p className="text-xs text-content-tertiary mt-2">
-              Catégories : <strong>Prospection</strong> (prospect.created, prospect.enriched, prospect.opt_out, search.completed),{' '}
-              <strong>Campagnes</strong> (campaign.sent, campaign.completed, email.delivered/opened/clicked/bounced/replied, sms.delivered/replied),{' '}
-              <strong>Séquences</strong> (sequence.enrolled, sequence.completed),{' '}
+              Catégories disponibles aujourd&apos;hui : <strong>Prospection</strong> (prospect.created),{' '}
+              <strong>Campagnes</strong> (campaign.completed, email.delivered/opened/clicked/replied),{' '}
+              <strong>Séquences</strong> (sequence.enrolled),{' '}
               <strong>CRM</strong> (crm.contact.created, crm.deal.created, crm.deal.stage_changed, crm.deal.won, crm.deal.lost),{' '}
               et le wildcard <code className="text-xs">*</code> pour tout recevoir.
+              D&apos;autres events (campaign.sent, email.bounced, sms.*, sequence.completed, prospect.enriched/opt_out, search.completed) sont à venir.
             </p>
           </section>
 

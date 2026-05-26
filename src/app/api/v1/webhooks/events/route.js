@@ -7,7 +7,7 @@
 
 import { NextResponse } from 'next/server';
 import { apiCorsHeaders } from '@/lib/api-auth';
-import { WEBHOOK_EVENTS } from '@/lib/webhooks/events';
+import { WEBHOOK_EVENTS, getAvailableEvents } from '@/lib/webhooks/events';
 
 // Echantillon de payload par event — utile pour Zapier qui demande un
 // "sample payload" pour mapper les champs côté UI.
@@ -59,9 +59,12 @@ export async function OPTIONS() {
 }
 
 export async function GET() {
+  // On ne retourne QUE les events réellement émis aujourd'hui (available=true)
+  // afin de ne pas promettre à Zapier/Make un Trigger qui ne se déclenchera
+  // jamais. Les events `available=false` sont marqués "à venir" dans la doc.
   return NextResponse.json(
     {
-      data: WEBHOOK_EVENTS.map((e) => ({
+      data: getAvailableEvents().map((e) => ({
         id: e.id,
         label: e.label,
         module: e.module,
@@ -72,3 +75,7 @@ export async function GET() {
     { headers: apiCorsHeaders() }
   );
 }
+
+// Référence WEBHOOK_EVENTS importée pour rester compatible avec les futurs
+// usages internes qui voudraient TOUS les events (y compris les non émis).
+void WEBHOOK_EVENTS;

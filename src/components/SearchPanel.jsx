@@ -1173,7 +1173,11 @@ export default function SearchPanel({
                       {freeSearchTerms.map((t, i) => (
                         <div key={i} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-500/10 border border-amber-300 text-amber-600 text-xs font-medium">
                           {t}
-                          <button onClick={() => setFreeSearchTerms((prev) => prev.filter((_, idx) => idx !== i))} className="text-amber-600 hover:text-amber-700">
+                          <button
+                            onClick={() => setFreeSearchTerms((prev) => prev.filter((_, idx) => idx !== i))}
+                            className="text-amber-600 hover:text-amber-700"
+                            aria-label={`Retirer ${t}`}
+                          >
                             <X size={12} />
                           </button>
                         </div>

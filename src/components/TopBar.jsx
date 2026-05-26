@@ -30,7 +30,7 @@ export default function TopBar({ user, onToggleSidebar, searchProgress, isSearch
     : 0;
 
   return (
-    <div className="sticky top-0 z-50 w-full border-b border-line bg-surface-base/90 backdrop-blur-xl">
+    <div className="sticky top-0 z-[60] w-full border-b border-line bg-surface-base/90 backdrop-blur-xl">
       <div className="flex h-14 items-center justify-between px-4">
         {/* Left: hamburger + logo */}
         <div className="flex items-center gap-3">

@@ -7,7 +7,7 @@ import ReaderFooter from '@/components/ReaderFooter';
 export const metadata = {
   title: 'Volia × Zapier — Triggers, Actions et exemples de Zaps',
   description:
-    "Documentation complète Volia × Zapier : 8 triggers (new_deal, reply_received…), 5 actions (créer contact, lancer campagne…), exemples concrets et setup pas-à-pas en 2 minutes.",
+    "Documentation complète Volia × Zapier : 11 triggers (new_deal, reply_received, email.opened, email.clicked, sequence.enrolled…), 5 actions (créer contact, lancer campagne…), exemples concrets et setup pas-à-pas en 2 minutes.",
   alternates: { canonical: 'https://volia.fr/integrations/zapier' },
   keywords: [
     'volia zapier',
@@ -18,7 +18,7 @@ export const metadata = {
     'webhook zapier prospection',
   ],
   openGraph: {
-    title: 'Volia × Zapier — 8 triggers + 5 actions documentés',
+    title: 'Volia × Zapier — 11 triggers + 5 actions documentés',
     description: "Connectez Volia à 5000+ apps via Zapier sans coder. Setup en 2 minutes.",
     url: 'https://volia.fr/integrations/zapier',
   },
@@ -121,21 +121,66 @@ const TRIGGERS = [
     usecase: 'Logge la raison du lost dans Notion + ajoute à une séquence de re-nurturing 3 mois.',
   },
   {
-    id: 'campaign.sent',
-    label: 'Campaign sent',
-    desc: 'Déclenché au démarrage de l\'envoi d\'une campagne email/SMS.',
+    id: 'email.delivered',
+    label: 'Email delivered',
+    desc: 'Déclenché quand Resend confirme la délivrance d\'un email de campagne.',
     sample: `{
-  "event_type": "campaign.sent",
-  "timestamp": "2026-05-26T09:00:00Z",
+  "event_type": "email.delivered",
+  "timestamp": "2026-05-26T10:00:30Z",
   "data": {
     "campaign_id": "uuid",
-    "name": "Relance leads froids — Mai",
-    "subject": "On reste en contact ?",
-    "list_id": "uuid",
-    "sent_count": 247
+    "to": "prospect@example.com",
+    "delivered_at": "2026-05-26T10:00:30Z"
   }
 }`,
-    usecase: 'Annonce sur Slack quand une campagne démarre + crée un événement Calendar.',
+    usecase: 'Tracking délivrabilité fine dans un Google Sheets ou un dashboard custom.',
+  },
+  {
+    id: 'email.opened',
+    label: 'Email opened',
+    desc: 'Déclenché à la PREMIÈRE ouverture d\'un email (pixel chargé).',
+    sample: `{
+  "event_type": "email.opened",
+  "timestamp": "2026-05-26T10:15:00Z",
+  "data": {
+    "campaign_id": "uuid",
+    "to": "prospect@example.com",
+    "opened_at": "2026-05-26T10:15:00Z"
+  }
+}`,
+    usecase: 'Score engagement HubSpot/Salesforce + notification Slack pour les prospects chauds.',
+  },
+  {
+    id: 'email.clicked',
+    label: 'Email clicked',
+    desc: 'Déclenché quand un destinataire clique un lien tracké dans l\'email.',
+    sample: `{
+  "event_type": "email.clicked",
+  "timestamp": "2026-05-26T10:16:00Z",
+  "data": {
+    "campaign_id": "uuid",
+    "to": "prospect@example.com",
+    "url": "https://example.com/cta",
+    "clicked_at": "2026-05-26T10:16:00Z"
+  }
+}`,
+    usecase: 'Tag automatique "hot lead" + envoi d\'un follow-up perso depuis Zapier.',
+  },
+  {
+    id: 'sequence.enrolled',
+    label: 'Sequence enrolled',
+    desc: 'Déclenché quand un contact démarre une séquence (1 event par contact enrôlé).',
+    sample: `{
+  "event_type": "sequence.enrolled",
+  "timestamp": "2026-05-26T09:00:00Z",
+  "data": {
+    "sequence_id": "uuid",
+    "sequence_name": "Reactivation 30j",
+    "contact_id": "uuid",
+    "email": "prospect@example.com"
+  }
+}`,
+    usecase: 'Synchroniser l\'enrollment dans le CRM tiers pour reporting unifié.',
   },
   {
     id: 'campaign.completed',
@@ -299,7 +344,7 @@ export default function ZapierIntegrationPage() {
 
           <p className="text-lg text-content-secondary leading-relaxed mb-8">
             Connectez Volia à plus de 5 000 applications (Slack, HubSpot, Notion, Google Sheets, Stripe…)
-            sans écrire une ligne de code. 8 triggers, 5 actions, setup en 2 minutes via les Webhooks
+            sans écrire une ligne de code. 11 triggers, 5 actions, setup en 2 minutes via les Webhooks
             Premium de Zapier.
           </p>
 
@@ -319,7 +364,7 @@ export default function ZapierIntegrationPage() {
             <p className="text-xs font-semibold text-orange-500 uppercase tracking-wider mb-2">Sommaire</p>
             <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1 text-sm list-disc list-inside text-content-secondary">
               <li><a href="#setup" className="hover:text-orange-500">Setup pas-à-pas (2 min)</a></li>
-              <li><a href="#triggers" className="hover:text-orange-500">8 Triggers (Volia → Zapier)</a></li>
+              <li><a href="#triggers" className="hover:text-orange-500">11 Triggers (Volia → Zapier)</a></li>
               <li><a href="#actions" className="hover:text-orange-500">5 Actions (Zapier → Volia)</a></li>
               <li><a href="#popular-zaps" className="hover:text-orange-500">Zaps populaires</a></li>
               <li><a href="#security" className="hover:text-orange-500">Sécurité &amp; signature HMAC</a></li>
@@ -392,7 +437,7 @@ export default function ZapierIntegrationPage() {
               Triggers — Volia → Zapier
             </h2>
             <p className="text-content-secondary mb-6">
-              8 events Volia push'és vers Zapier dès qu&apos;ils surviennent. Chaque payload est signé
+              11 events Volia push'és vers Zapier dès qu&apos;ils surviennent. Chaque payload est signé
               HMAC-SHA256 (header <code className="text-xs px-1.5 py-0.5 rounded bg-surface-elevated">X-Volia-Signature</code>).
             </p>
 
@@ -422,8 +467,8 @@ export default function ZapierIntegrationPage() {
             </div>
 
             <p className="text-xs text-content-tertiary mt-4">
-              Liste exhaustive et payloads : <Link href="/api/v1/webhooks/events" className="text-violet-400 hover:underline">GET /api/v1/webhooks/events</Link>{' '}
-              (21 events au total, dont email.delivered/opened/clicked/bounced, sms.delivered/replied, sequence.enrolled/completed, etc.)
+              Liste exhaustive et payloads : <Link href="/api/v1/webhooks/events" className="text-violet-400 hover:underline">GET /api/v1/webhooks/events</Link>.
+              D&apos;autres events (campaign.sent, email.bounced, sms.*, sequence.completed, prospect.enriched/opt_out, search.completed) sont prévus dans nos prochains sprints.
             </p>
           </section>
 

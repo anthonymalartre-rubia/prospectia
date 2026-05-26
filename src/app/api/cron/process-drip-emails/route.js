@@ -33,11 +33,15 @@ import {
  *     — paiement, mot de passe, RGPD — continuent normalement via leurs propres flux).
  *
  * FENÊTRE DE TIR :
- *   - Pour chaque step à J+N, on cible les users créés entre J-N-1 et J-N
- *     (fenêtre de 24h). Ça évite de spammer un user créé il y a 30 jours qui
- *     n'aurait jamais reçu le step à cause d'un déploiement tardif.
- *   - Logique : si on n'a pas envoyé à temps, on n'envoie pas du tout
- *     (l'email n+suivant prend le relais).
+ *   - Pour chaque step à J+N, on cible les users créés il y a >= N jours
+ *     (borne supérieure : created_at <= now - N*24h).
+ *   - L'idempotence est garantie par le filtre drip_emails_sent ? '<key>' :
+ *     un user qui a déjà reçu le step ne le recevra plus.
+ *   - Borne inférieure historique enlevée : avec l'ancienne fenêtre 24h,
+ *     un signup à 11h le jour J avait son créneau J+1 calé entre 10h-1j et
+ *     10h (cron daily à 10h UTC) → l'user était à "il y a 23h" → hors
+ *     fenêtre, et le créneau J+2 le mettait à "47h" → encore hors fenêtre.
+ *     Résultat : drip J+1 jamais envoyé pour tous les signups après 10h UTC.
  *
  * Sécurité : header Authorization: Bearer CRON_SECRET (cf. vercel.json).
  */
@@ -110,14 +114,16 @@ const DRIP_STEPS = [
 ];
 
 /**
- * Calcule les bornes de la fenêtre d'envoi pour un step à J+N.
- * Renvoie [from, to] = users créés entre [now - (N+1)j, now - Nj].
+ * Calcule la borne supérieure (created_at <= to) pour un step à J+N.
+ * Pas de borne inférieure : tout user créé il y a au moins N jours est éligible,
+ * et l'idempotence est garantie par drip_emails_sent ? '<key>'.
+ *
+ * Voir le bloc FENÊTRE DE TIR plus haut pour la justification du changement.
  */
 function windowForStep(daysSinceSignup) {
   const now = Date.now();
   const to = new Date(now - daysSinceSignup * 86400 * 1000).toISOString();
-  const from = new Date(now - (daysSinceSignup + 1) * 86400 * 1000).toISOString();
-  return { from, to };
+  return { to };
 }
 
 export async function GET(request) {
@@ -132,18 +138,17 @@ export async function GET(request) {
   try {
     for (const step of DRIP_STEPS) {
       const stepStats = { eligible: 0, sent: 0, skipped: 0, failed: 0 };
-      const { from, to } = windowForStep(step.daysSinceSignup);
+      const { to } = windowForStep(step.daysSinceSignup);
 
-      // 1. Fetch candidats : créés dans la bonne fenêtre, opt-in actif,
-      //    pas encore destinataires de ce step précis.
+      // 1. Fetch candidats : créés il y a au moins N jours, opt-in actif,
+      //    pas encore destinataires de ce step précis (idempotence via jsonb ?).
       //    Le filtre `drip_emails_sent` côté SQL utilise l'opérateur jsonb `?`
       //    qui matche "la clé existe dans le tableau" (PostgreSQL natif).
       const { data: profiles, error: fetchError } = await supabase
         .from('user_profiles')
         .select('id, created_at, plan, trial_ends_at, trial_converted_at, drip_emails_sent, company_name')
         .eq('drip_emails_enabled', true)
-        .gte('created_at', from)
-        .lt('created_at', to)
+        .lte('created_at', to)
         .not('drip_emails_sent', 'cs', `["${step.key}"]`);
 
       if (fetchError) {

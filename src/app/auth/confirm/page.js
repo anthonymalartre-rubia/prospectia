@@ -50,10 +50,21 @@ export default function AuthConfirmPage() {
     // dans une race condition.
     let timeoutId;
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === 'SIGNED_IN' || (event === 'INITIAL_SESSION' && session)) {
         clearTimeout(timeoutId);
         subscription?.unsubscribe();
+
+        // Trial Pro 14j : le trigger DB handle_new_user attribue déjà le
+        // trial au signup. On appelle /api/auth/trial-start pour envoyer
+        // l'email "Bienvenue + 14j Pro inclus" (fire & forget côté API,
+        // mais on await pour garantir que la requête est lancée avant
+        // que le navigateur change de page).
+        try {
+          await fetch('/api/auth/trial-start', { method: 'POST' });
+        } catch {
+          // Silent — ne bloque pas l'auth si l'email échoue
+        }
 
         // Destination par défaut : /dashboard. Override via ?next=...
         const next = searchParams.get('next') || '/dashboard';

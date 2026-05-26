@@ -61,10 +61,41 @@ export default function NotificationBell() {
     }
   };
 
+  // Polling intelligent : on stoppe l'intervalle quand la tab passe en
+  // arrière-plan (document.hidden) et on relance + refresh immédiat au
+  // retour. Évite 60 requêtes inutiles/heure × N tabs ouvertes.
   useEffect(() => {
+    let interval = null;
+
+    const startPolling = () => {
+      if (interval) return;
+      interval = setInterval(fetchNotifs, 60_000); // 60s
+    };
+    const stopPolling = () => {
+      if (interval) {
+        clearInterval(interval);
+        interval = null;
+      }
+    };
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        stopPolling();
+      } else {
+        fetchNotifs(); // refresh immédiat au retour
+        startPolling();
+      }
+    };
+
+    // Fetch initial + polling si la tab est active
     fetchNotifs();
-    const interval = setInterval(fetchNotifs, 60_000); // 60s
-    return () => clearInterval(interval);
+    if (!document.hidden) startPolling();
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      stopPolling();
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
   }, []);
 
   // Quand on ouvre le panel, refresh

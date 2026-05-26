@@ -77,43 +77,88 @@ export function estimateCompletionDate(startedAt) {
 
 /**
  * Compte les envois 'sent' du jour (UTC midnight → maintenant) pour un sender.
- * Joint email_sends → email_campaigns pour matcher campaign.email_sender_id = senderId.
  *
- * Retourne Infinity si pas de warmup actif (le caller doit gérer ce cas avant
- * d'appeler cette fonction normalement).
+ * Couvre les deux canaux qui consomment le quota warmup :
+ *   - sends via campagnes one-shot : email_sends.campaign_id → email_campaigns.email_sender_id
+ *   - sends via séquences         : email_sends.sequence_enrollment_id → sequence_enrollments.sequence_id → email_sequences.email_sender_id
+ *
+ * Sans le 2e compte, un sender en phase 1 (10/j) pouvait envoyer
+ * 50 sequence emails + 10 campaign = 60 emails dans la journée
+ * et brûler son warmup (issue P1 #2).
+ *
+ * Retourne 0 si pas de campagnes ni séquences attachées au sender.
  *
  * @param {object} supabase - client Supabase admin
  * @param {string} senderId - UUID du email_sender
- * @returns {Promise<number>} nombre d'envois déjà 'sent' aujourd'hui pour ce sender
+ * @returns {Promise<number>} nombre d'envois 'sent' aujourd'hui pour ce sender (campaigns + sequences)
  */
 export async function countTodaySendsForSender(supabase, senderId) {
   const todayStart = new Date();
   todayStart.setHours(0, 0, 0, 0);
   const todayStartIso = todayStart.toISOString();
 
-  // 1) Récupère les campaign_id du sender (limite à 1000 — un user n'aura
-  //    jamais plus de campagnes que ça associées à un même domaine pendant
-  //    la fenêtre de warmup).
+  // ── Phase 1 : sends via campagnes ──────────────────────────────────
+  // Récupère les campaign_id du sender (limite à 1000 — un user n'aura
+  // jamais plus de campagnes que ça associées à un même domaine pendant
+  // la fenêtre de warmup).
+  let campaignSendsCount = 0;
   const { data: campaigns, error: cErr } = await supabase
     .from('email_campaigns')
     .select('id')
     .eq('email_sender_id', senderId)
     .limit(1000);
 
-  if (cErr || !campaigns || campaigns.length === 0) return 0;
+  if (!cErr && campaigns && campaigns.length > 0) {
+    const campaignIds = campaigns.map((c) => c.id);
+    const { count, error: sErr } = await supabase
+      .from('email_sends')
+      .select('id', { count: 'exact', head: true })
+      .eq('status', 'sent')
+      .gte('sent_at', todayStartIso)
+      .in('campaign_id', campaignIds);
+    if (!sErr) campaignSendsCount = count || 0;
+  }
 
-  const campaignIds = campaigns.map((c) => c.id);
+  // ── Phase 2 : sends via séquences (NOUVEAU — fix bug P1 #2) ───────
+  // 1) sequences du sender (cap 1000, idem)
+  // 2) enrollments de ces sequences (cap large, on batch côté .in())
+  // 3) sends 'sent' aujourd'hui rattachés à ces enrollments
+  let sequenceSendsCount = 0;
+  const { data: sequences, error: seqErr } = await supabase
+    .from('email_sequences')
+    .select('id')
+    .eq('email_sender_id', senderId)
+    .limit(1000);
 
-  // 2) Compte les sends 'sent' du jour pour ces campagnes
-  const { count, error: sErr } = await supabase
-    .from('email_sends')
-    .select('id', { count: 'exact', head: true })
-    .eq('status', 'sent')
-    .gte('sent_at', todayStartIso)
-    .in('campaign_id', campaignIds);
+  if (!seqErr && sequences && sequences.length > 0) {
+    const sequenceIds = sequences.map((s) => s.id);
+    // Fetch tous les enrollments en batchs (cap à 5000 pour éviter explosion mémoire ;
+    // au-delà, le warmup est de toute façon terminé et la fonction n'est plus appelée).
+    const { data: enrollRows } = await supabase
+      .from('sequence_enrollments')
+      .select('id')
+      .in('sequence_id', sequenceIds)
+      .limit(5000);
 
-  if (sErr) return 0;
-  return count || 0;
+    const enrollIds = (enrollRows || []).map((r) => r.id);
+    if (enrollIds.length > 0) {
+      // .in() Supabase est OK jusqu'à ~1000 éléments par requête.
+      // On batch par 500 par prudence.
+      const CHUNK = 500;
+      for (let i = 0; i < enrollIds.length; i += CHUNK) {
+        const chunk = enrollIds.slice(i, i + CHUNK);
+        const { count, error: sErr2 } = await supabase
+          .from('email_sends')
+          .select('id', { count: 'exact', head: true })
+          .eq('status', 'sent')
+          .gte('sent_at', todayStartIso)
+          .in('sequence_enrollment_id', chunk);
+        if (!sErr2) sequenceSendsCount += count || 0;
+      }
+    }
+  }
+
+  return campaignSendsCount + sequenceSendsCount;
 }
 
 /**

@@ -43,9 +43,12 @@ export async function GET(request) {
     const sevenDaysAgo = new Date(Date.now() - 7 * 86400 * 1000).toISOString();
 
     // 1. Récupérer les candidats potentiels (qui n'ont pas encore reçu l'email)
+    // Note : on ne select PAS full_name — la colonne n'existe pas sur
+    // user_profiles. Le nom complet vient d'auth.users.user_metadata
+    // (récupéré plus bas via auth.admin.getUserById).
     const { data: profiles, error: profilesError } = await supabase
       .from('user_profiles')
-      .select('id, created_at, referral_code, full_name')
+      .select('id, created_at, referral_code')
       .gte('created_at', fourteenDaysAgo)
       .lte('created_at', sevenDaysAgo)
       .is('referral_push_email_sent_at', null);
@@ -99,9 +102,9 @@ export async function GET(request) {
         }
         const email = userData.user.email;
         const fullName =
-          profile.full_name ||
           userData.user.user_metadata?.full_name ||
           userData.user.user_metadata?.name ||
+          email?.split('@')[0] ||
           null;
 
         if (!profile.referral_code) {

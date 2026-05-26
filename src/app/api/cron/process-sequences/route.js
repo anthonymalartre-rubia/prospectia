@@ -20,6 +20,12 @@ import { applyTemplate, appendOptOutFooter } from '@/lib/campaign-templates';
 import { cleanEnv } from '@/lib/envClean';
 import { buildSequenceReplyAddress } from '@/lib/inbound-domain';
 import { reportError } from '@/lib/errorReporting';
+import {
+  calculateCurrentDay,
+  getCurrentPhase,
+  countTodaySendsForSender,
+  WARMUP_DURATION_DAYS,
+} from '@/lib/warmup';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
@@ -108,6 +114,66 @@ async function handleCron(request) {
       .eq('status', 'verified');
     senderMap = new Map((senders || []).map((s) => [s.id, s]));
   }
+
+  // 3.bis) WARMUP — pour chaque sender concerné, on charge sa session warmup
+  // active. Le quota du jour est PARTAGÉ entre campagnes one-shot ET séquences
+  // (countTodaySendsForSender additionne les deux canaux). Sans ce gardien,
+  // un sender en phase 1 (10/j) pouvait envoyer 50 sequence emails + 10
+  // campaign = 60 dans la journée → warmup brûlé (bug P1 #1).
+  const warmupQuotaBySender = new Map(); // senderId → remaining today (Infinity si pas de warmup actif)
+  const warmupSessionsToComplete = [];
+  const warmupSessionsToUpdateDay = [];
+
+  if (senderIds.length > 0) {
+    const { data: warmupSessions } = await supabase
+      .from('warmup_sessions')
+      .select('id, sender_id, started_at, current_day, status')
+      .in('sender_id', senderIds)
+      .eq('status', 'active');
+
+    for (const session of warmupSessions || []) {
+      const computedDay = calculateCurrentDay(session.started_at);
+
+      if (computedDay > WARMUP_DURATION_DAYS) {
+        warmupSessionsToComplete.push(session.id);
+        warmupQuotaBySender.set(session.sender_id, Infinity);
+        continue;
+      }
+
+      if (computedDay !== session.current_day) {
+        warmupSessionsToUpdateDay.push({ id: session.id, current_day: computedDay });
+      }
+
+      const phase = getCurrentPhase(computedDay);
+      if (!phase) {
+        warmupQuotaBySender.set(session.sender_id, Infinity);
+        continue;
+      }
+
+      const alreadySent = await countTodaySendsForSender(supabase, session.sender_id);
+      const remaining = Math.max(0, phase.maxPerDay - alreadySent);
+      warmupQuotaBySender.set(session.sender_id, remaining);
+    }
+  }
+
+  // Persiste les updates de session (best-effort)
+  if (warmupSessionsToComplete.length > 0) {
+    await supabase
+      .from('warmup_sessions')
+      .update({ status: 'completed', completed_at: new Date().toISOString(), updated_at: new Date().toISOString() })
+      .in('id', warmupSessionsToComplete);
+  }
+  for (const upd of warmupSessionsToUpdateDay) {
+    await supabase
+      .from('warmup_sessions')
+      .update({ current_day: upd.current_day, updated_at: new Date().toISOString() })
+      .eq('id', upd.id);
+  }
+
+  // Compteur in-batch (copie mutable) : on décrémente à chaque envoi pour
+  // éviter de dépasser la limite jour sur les sends suivants du même batch.
+  const senderRemainingBatch = new Map(warmupQuotaBySender);
+  let warmupThrottled = 0;
 
   // 3) daily_limit : on compte les sends aujourd'hui par séquence.
   //    On joint email_sends → sequence_enrollments → sequence_id.
@@ -203,6 +269,29 @@ async function handleCron(request) {
       await markEnrollmentFailed(supabase, enroll.id, 'Sender not verified or deleted');
       results.push({ ok: false, id: enroll.id, reason: 'sender_invalid' });
       continue;
+    }
+
+    // WARMUP — vérifie le quota du sender (campaigns + sequences partagés).
+    // Si épuisé pour aujourd'hui : on reporte le next_send_at à demain 9h UTC
+    // et on laisse l'enrollment 'active' pour qu'il soit retraité par le cron.
+    if (senderRemainingBatch.has(sender.id)) {
+      const remaining = senderRemainingBatch.get(sender.id);
+      if (remaining !== Infinity && remaining <= 0) {
+        warmupThrottled++;
+        const tomorrow9hUtc = new Date();
+        tomorrow9hUtc.setUTCDate(tomorrow9hUtc.getUTCDate() + 1);
+        tomorrow9hUtc.setUTCHours(9, 0, 0, 0);
+        await supabase
+          .from('sequence_enrollments')
+          .update({ next_send_at: tomorrow9hUtc.toISOString() })
+          .eq('id', enroll.id);
+        results.push({ ok: false, id: enroll.id, reason: 'warmup_throttled' });
+        continue;
+      }
+      // Décrémente le quota in-batch (sauf si Infinity)
+      if (remaining !== Infinity) {
+        senderRemainingBatch.set(sender.id, remaining - 1);
+      }
     }
 
     // Templating
@@ -310,6 +399,7 @@ async function handleCron(request) {
     succeeded,
     failed,
     daily_throttled: dailyThrottled,
+    warmup_throttled: warmupThrottled,
     skipped_no_sequence: skippedNoSequence,
     sequences_affected: seqIds.length,
   });

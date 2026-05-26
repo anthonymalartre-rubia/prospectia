@@ -13,6 +13,7 @@ import { getSupabaseAdmin } from '@/lib/supabase-admin';
 import { sendSms, appendSmsOptOutFooter, countSmsSegments, estimateSmsCostEur } from '@/lib/sms';
 import { applyTemplate } from '@/lib/campaign-templates';
 import { cleanEnv } from '@/lib/envClean';
+import { SMS_CAMPAIGNS_ENABLED } from '@/lib/feature-flags';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60;
@@ -21,6 +22,16 @@ export const maxDuration = 60;
 const BATCH_SIZE = 20;
 
 export async function GET(request) {
+  // Feature flag : si SMS désactivé, on no-op immédiatement pour ne pas
+  // gaspiller le quota cron Vercel ni hit Supabase/Twilio (bug P1 #4).
+  if (!SMS_CAMPAIGNS_ENABLED) {
+    return NextResponse.json({
+      ok: true,
+      disabled: true,
+      message: 'SMS campaigns are disabled via feature flag',
+    });
+  }
+
   const expected = cleanEnv(process.env.CRON_SECRET);
   const provided = request.headers.get('authorization');
   if (expected && provided !== `Bearer ${expected}`) {

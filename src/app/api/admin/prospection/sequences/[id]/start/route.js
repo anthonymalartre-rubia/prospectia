@@ -10,6 +10,7 @@
 
 import { NextResponse } from 'next/server';
 import { requireCampagnesAccess } from '@/lib/campagnes-access-server';
+import { emitWebhookEvent } from '@/lib/webhooks/emitter';
 
 export async function POST(request, { params }) {
   const auth = await requireCampagnesAccess();
@@ -19,7 +20,7 @@ export async function POST(request, { params }) {
 
   const { data: seq } = await supabase
     .from('email_sequences')
-    .select('id, status, list_id, owner_id')
+    .select('id, status, list_id, owner_id, started_at, name')
     .eq('id', id)
     .eq('owner_id', user.id)
     .maybeSingle();
@@ -62,10 +63,12 @@ export async function POST(request, { params }) {
     }));
 
   // Insert avec onConflict pour ignorer les enrollments déjà existants
-  // (UNIQUE (sequence_id, contact_id))
-  const { error: insErr } = await supabase
+  // (UNIQUE (sequence_id, contact_id)). On `select()` pour récupérer les
+  // rows réellement insérées et émettre 1 webhook par nouvel enrollment.
+  const { data: insertedEnrollments, error: insErr } = await supabase
     .from('sequence_enrollments')
-    .upsert(rows, { onConflict: 'sequence_id,contact_id', ignoreDuplicates: true });
+    .upsert(rows, { onConflict: 'sequence_id,contact_id', ignoreDuplicates: true })
+    .select('id, contact_id');
 
   if (insErr) return NextResponse.json({ error: insErr.message }, { status: 500 });
 
@@ -80,6 +83,27 @@ export async function POST(request, { params }) {
     .select()
     .single();
   if (upErr) return NextResponse.json({ error: upErr.message }, { status: 500 });
+
+  // Webhooks publics : 1 event sequence.enrolled par nouvel enrollment.
+  // Fire-and-forget — n'arrête JAMAIS le flux principal en cas d'erreur.
+  const newRows = insertedEnrollments || [];
+  if (newRows.length > 0) {
+    const emailById = new Map(contacts.map((c) => [c.id, c.email]));
+    for (const er of newRows) {
+      emitWebhookEvent({
+        userId: seq.owner_id,
+        event: 'sequence.enrolled',
+        data: {
+          sequence_id: id,
+          sequence_name: seq.name || null,
+          enrollment_id: er.id,
+          contact_id: er.contact_id,
+          email: emailById.get(er.contact_id) || null,
+          enrolled_at: now,
+        },
+      }).catch(() => {});
+    }
+  }
 
   return NextResponse.json({ ok: true, enrolled: rows.length, sequence: updated });
 }
