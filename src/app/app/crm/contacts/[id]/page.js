@@ -43,6 +43,7 @@ import {
   formatDate,
 } from '@/components/crm/ContactsList';
 import NewDealModal from '@/components/crm/NewDealModal';
+import ActivityForm from '@/components/crm/ActivityForm';
 
 const BUSINESS_PLANS = ['business', 'enterprise'];
 
@@ -216,31 +217,39 @@ const ACTIVITY_ICON = {
   task: { icon: CheckCircle2, color: 'text-amber-600 bg-amber-100' },
 };
 
-function ActivitiesTab({ activities, loading }) {
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center py-10">
-        <Loader2 size={20} className="animate-spin text-emerald-600" />
-      </div>
-    );
-  }
+function ActivitiesTab({ activities, loading, contactId, onCreated }) {
+  return (
+    <div className="space-y-3">
+      {/* Form de création */}
+      {contactId && (
+        <ActivityForm contactId={contactId} onCreated={onCreated} />
+      )}
 
-  if (!activities || activities.length === 0) {
-    return (
-      <div className="rounded-2xl border border-dashed border-line bg-surface-card/50 p-8 text-center">
-        <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-zinc-100 to-zinc-50 border border-line mb-3">
-          <Activity size={20} className="text-content-tertiary" />
+      {loading ? (
+        <div className="flex items-center justify-center py-10">
+          <Loader2 size={20} className="animate-spin text-emerald-600" />
         </div>
-        <p className="text-sm font-semibold text-content-primary mb-1">
-          Aucune activité
-        </p>
-        <p className="text-xs text-content-tertiary">
-          Les notes, appels et meetings liés à ce contact apparaîtront ici.
-        </p>
-      </div>
-    );
-  }
+      ) : !activities || activities.length === 0 ? (
+        <div className="rounded-2xl border border-dashed border-line bg-surface-card/50 p-8 text-center">
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-zinc-100 to-zinc-50 border border-line mb-3">
+            <Activity size={20} className="text-content-tertiary" />
+          </div>
+          <p className="text-sm font-semibold text-content-primary mb-1">
+            Aucune activité
+          </p>
+          <p className="text-xs text-content-tertiary">
+            Ajoutez une note, un appel ou un meeting pour suivre l&apos;historique
+            de ce contact.
+          </p>
+        </div>
+      ) : (
+        <ActivitiesList activities={activities} />
+      )}
+    </div>
+  );
+}
 
+function ActivitiesList({ activities }) {
   return (
     <div className="space-y-2">
       {activities.map((a) => {
@@ -692,7 +701,12 @@ export default function CrmContactDetailPage() {
                 <DealsTab deals={contact.deals} onNewDeal={handleNewDeal} />
               )}
               {tab === 'activities' && (
-                <ActivitiesTab activities={activities} loading={activitiesLoading} />
+                <ActivitiesTab
+                  activities={activities}
+                  loading={activitiesLoading}
+                  contactId={contact.id}
+                  onCreated={(act) => setActivities((prev) => [act, ...prev])}
+                />
               )}
             </div>
           </div>

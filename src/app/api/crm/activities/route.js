@@ -28,25 +28,52 @@ export async function GET(request) {
   const dealId = url.searchParams.get('deal_id');
   const contactId = url.searchParams.get('contact_id');
   const type = url.searchParams.get('type');
+  const scope = url.searchParams.get('scope'); // 'all' (user-wide, requiert plan Business)
+  const status = url.searchParams.get('status'); // 'open' | 'completed' | 'overdue'
+  const withRelations = url.searchParams.get('with_relations') === '1';
   const limitParam = parseInt(url.searchParams.get('limit') || '', 10);
   const limit = Math.min(LIMIT_MAX, isNaN(limitParam) ? LIMIT_DEFAULT : Math.max(1, limitParam));
 
-  if (!dealId && !contactId) {
+  // Si pas de scope=all, on exige deal_id ou contact_id (compat existante)
+  if (scope !== 'all' && !dealId && !contactId) {
     return NextResponse.json(
       { success: false, error: 'deal_id ou contact_id est requis' },
       { status: 400 }
     );
   }
 
+  // Sélection avec ou sans relations (deal/contact) pour la page /app/crm/activities
+  const selectClause = withRelations
+    ? `id, type, content, due_at, completed_at, deal_id, contact_id, created_at,
+       deal:crm_deals(id, title, status),
+       contact:crm_contacts(id, name, company)`
+    : 'id, type, content, due_at, completed_at, deal_id, contact_id, created_at';
+
   let query = supabase
     .from('crm_activities')
-    .select('id, type, content, due_at, completed_at, deal_id, contact_id, created_at')
+    .select(selectClause)
     .order('created_at', { ascending: false })
     .limit(limit);
 
+  // Scope=all → on filtre explicitement par user_id (sécurité défense en profondeur ;
+  // RLS doit aussi le faire).
+  if (scope === 'all') {
+    query = query.eq('user_id', user.id);
+  }
   if (dealId) query = query.eq('deal_id', dealId);
   if (contactId) query = query.eq('contact_id', contactId);
   if (type && VALID_TYPES.includes(type)) query = query.eq('type', type);
+
+  // Filtres status (uniquement pertinents pour les tasks, mais on les applique
+  // côté SQL pour limiter le payload)
+  const nowIso = new Date().toISOString();
+  if (status === 'completed') {
+    query = query.not('completed_at', 'is', null);
+  } else if (status === 'open') {
+    query = query.is('completed_at', null);
+  } else if (status === 'overdue') {
+    query = query.is('completed_at', null).lt('due_at', nowIso);
+  }
 
   const { data, error } = await query;
   if (error) {

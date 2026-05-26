@@ -18,9 +18,39 @@
 import { useEffect, useState } from 'react';
 import {
   X, Loader2, Trash2, Mail, Phone, Building2, User,
-  Calendar, AlertCircle, Save, Check,
+  Calendar, AlertCircle, Save, Check, StickyNote, CheckSquare,
+  Square, Users as UsersIcon,
 } from 'lucide-react';
 import { formatDealValue } from '@/lib/crm';
+import ActivityForm from './ActivityForm';
+
+// Icône par type d'activity
+const ACTIVITY_TYPE_META = {
+  note: { Icon: StickyNote, color: 'text-zinc-600 bg-zinc-100' },
+  call: { Icon: Phone, color: 'text-blue-600 bg-blue-100' },
+  email: { Icon: Mail, color: 'text-emerald-600 bg-emerald-100' },
+  meeting: { Icon: UsersIcon, color: 'text-violet-600 bg-violet-100' },
+  task: { Icon: CheckSquare, color: 'text-amber-600 bg-amber-100' },
+};
+
+function formatActivityDate(iso) {
+  if (!iso) return '';
+  try {
+    return new Date(iso).toLocaleDateString('fr-FR', {
+      day: 'numeric',
+      month: 'short',
+    });
+  } catch {
+    return '';
+  }
+}
+
+function isOverdue(act) {
+  if (act.type !== 'task') return false;
+  if (act.completed_at) return false;
+  if (!act.due_at) return false;
+  return new Date(act.due_at).getTime() < Date.now();
+}
 
 export default function DealDetailDrawer({
   dealId,
@@ -38,6 +68,67 @@ export default function DealDetailDrawer({
   const [savingField, setSavingField] = useState(null);
   const [deleting, setDeleting] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
+
+  // Tasks toggle (Phase 4)
+  const [togglingTaskId, setTogglingTaskId] = useState(null);
+
+  // Toggle completed_at sur une task (optimistic)
+  async function toggleTask(activity) {
+    if (!activity || activity.type !== 'task' || togglingTaskId) return;
+    const willComplete = !activity.completed_at;
+    setTogglingTaskId(activity.id);
+    // Optimistic update
+    setDeal((prev) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        activities: (prev.activities || []).map((a) =>
+          a.id === activity.id
+            ? { ...a, completed_at: willComplete ? new Date().toISOString() : null }
+            : a
+        ),
+      };
+    });
+    try {
+      const res = await fetch(`/api/crm/activities/${activity.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ completed_at: willComplete }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        // Revert
+        setDeal((prev) => {
+          if (!prev) return prev;
+          return {
+            ...prev,
+            activities: (prev.activities || []).map((a) =>
+              a.id === activity.id
+                ? { ...a, completed_at: activity.completed_at }
+                : a
+            ),
+          };
+        });
+        setError(data.error || 'Erreur mise à jour de la tâche');
+      } else {
+        // Sync avec réponse server
+        setDeal((prev) => {
+          if (!prev) return prev;
+          return {
+            ...prev,
+            activities: (prev.activities || []).map((a) =>
+              a.id === activity.id ? { ...a, ...data.data } : a
+            ),
+          };
+        });
+      }
+    } catch (err) {
+      console.error('[DealDetailDrawer] toggleTask error', err);
+      setError('Erreur réseau');
+    } finally {
+      setTogglingTaskId(null);
+    }
+  }
 
   // Fetch quand le drawer s'ouvre
   useEffect(() => {
@@ -379,32 +470,103 @@ export default function DealDetailDrawer({
               />
             </div>
 
-            {/* Activity timeline (Phase 4 placeholder, mais on affiche ce qui existe) */}
-            {Array.isArray(deal.activities) && deal.activities.length > 0 && (
-              <div>
-                <label className="block text-[10px] font-bold uppercase tracking-wider text-content-tertiary mb-1.5">
-                  Activités récentes
-                </label>
-                <ul className="space-y-2">
-                  {deal.activities.slice(0, 5).map((a) => (
-                    <li
-                      key={a.id}
-                      className="text-xs text-content-secondary px-3 py-2 rounded-lg border border-line bg-surface-card/60"
-                    >
-                      <div className="flex items-center justify-between mb-1">
-                        <span className="font-semibold uppercase text-[10px] text-emerald-700">
-                          {a.type}
-                        </span>
-                        <span className="text-[10px] text-content-muted">
-                          {new Date(a.created_at).toLocaleDateString('fr-FR')}
-                        </span>
-                      </div>
-                      <p className="text-content-primary whitespace-pre-wrap">{a.content}</p>
-                    </li>
-                  ))}
+            {/* Activity timeline + form (Phase 4) */}
+            <div>
+              <label className="block text-[10px] font-bold uppercase tracking-wider text-content-tertiary mb-1.5">
+                Activités
+              </label>
+
+              {/* Form de création */}
+              <ActivityForm
+                dealId={deal.id}
+                compact
+                onCreated={(act) => {
+                  // Optimistic prepend
+                  setDeal((prev) =>
+                    prev
+                      ? { ...prev, activities: [act, ...(prev.activities || [])] }
+                      : prev
+                  );
+                }}
+              />
+
+              {/* Timeline */}
+              {Array.isArray(deal.activities) && deal.activities.length > 0 && (
+                <ul className="mt-3 space-y-2">
+                  {deal.activities.map((a) => {
+                    const meta = ACTIVITY_TYPE_META[a.type] || ACTIVITY_TYPE_META.note;
+                    const Icon = meta.Icon;
+                    const overdue = isOverdue(a);
+                    const completed = !!a.completed_at;
+                    return (
+                      <li
+                        key={a.id}
+                        className={`flex items-start gap-2 px-3 py-2 rounded-lg border ${
+                          overdue
+                            ? 'border-rose-200 bg-rose-50/40'
+                            : completed
+                            ? 'border-line bg-surface-card/40 opacity-70'
+                            : 'border-line bg-surface-card/60'
+                        }`}
+                      >
+                        <div className={`p-1.5 rounded-md flex-shrink-0 ${meta.color}`}>
+                          <Icon size={11} />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center justify-between gap-2 mb-0.5">
+                            <span className="font-semibold uppercase text-[9px] text-content-tertiary tracking-wider">
+                              {a.type}
+                              {overdue && (
+                                <span className="ml-1.5 px-1 py-px rounded bg-rose-100 text-rose-700 border border-rose-200 text-[8px]">
+                                  En retard
+                                </span>
+                              )}
+                            </span>
+                            <span className="text-[10px] text-content-muted tabular-nums">
+                              {formatActivityDate(a.created_at)}
+                            </span>
+                          </div>
+                          <p
+                            className={`text-xs whitespace-pre-wrap break-words ${
+                              completed ? 'text-content-tertiary line-through' : 'text-content-primary'
+                            }`}
+                          >
+                            {a.content}
+                          </p>
+                          {a.type === 'task' && a.due_at && (
+                            <p className="text-[10px] text-content-tertiary mt-0.5 tabular-nums">
+                              Échéance : {formatActivityDate(a.due_at)}
+                            </p>
+                          )}
+                        </div>
+                        {a.type === 'task' && (
+                          <button
+                            type="button"
+                            onClick={() => toggleTask(a)}
+                            disabled={togglingTaskId === a.id}
+                            className={`p-1 rounded-md transition-colors flex-shrink-0 ${
+                              completed
+                                ? 'text-emerald-600 hover:bg-emerald-50'
+                                : 'text-content-tertiary hover:text-emerald-600 hover:bg-emerald-50'
+                            } disabled:opacity-50`}
+                            aria-label={completed ? 'Marquer comme non-complétée' : 'Marquer comme complétée'}
+                            title={completed ? 'Décocher' : 'Marquer complétée'}
+                          >
+                            {togglingTaskId === a.id ? (
+                              <Loader2 size={14} className="animate-spin" />
+                            ) : completed ? (
+                              <CheckSquare size={14} />
+                            ) : (
+                              <Square size={14} />
+                            )}
+                          </button>
+                        )}
+                      </li>
+                    );
+                  })}
                 </ul>
-              </div>
-            )}
+              )}
+            </div>
 
             {/* Error display */}
             {error && (

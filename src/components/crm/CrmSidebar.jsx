@@ -50,7 +50,6 @@ const NAV_ITEMS = [
     description: 'Notes, calls, meetings',
     href: '/app/crm/activities',
     icon: Activity,
-    soon: true,
     matches: (p) => p.startsWith('/app/crm/activities'),
   },
   {

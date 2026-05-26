@@ -15,8 +15,34 @@
 // Status 'lost' → badge rose + bg-rose-50 + opacity-70
 // ─────────────────────────────────────────────────────────────────────
 
-import { Building2, Banknote, Calendar, User } from 'lucide-react';
+import { Building2, Banknote, Calendar } from 'lucide-react';
 import { formatDealValue } from '@/lib/crm';
+
+// ─── Mini avatar (initiales) ─────────────────────────────────────────
+const MINI_AVATAR_GRADIENTS = [
+  'from-violet-500 to-indigo-600',
+  'from-purple-500 to-violet-600',
+  'from-fuchsia-500 to-purple-600',
+  'from-indigo-500 to-blue-600',
+  'from-sky-500 to-indigo-600',
+  'from-cyan-500 to-teal-600',
+  'from-emerald-500 to-teal-600',
+  'from-rose-500 to-pink-600',
+];
+function miniAvatarGradient(seed = '') {
+  let h = 0;
+  for (let i = 0; i < seed.length; i++) {
+    h = (h << 5) - h + seed.charCodeAt(i);
+    h |= 0;
+  }
+  return MINI_AVATAR_GRADIENTS[Math.abs(h) % MINI_AVATAR_GRADIENTS.length];
+}
+function miniInitials(name = '') {
+  const parts = String(name).trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return '?';
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
 
 // ─── helpers date ────────────────────────────────────────────────────
 function formatRelativeDate(dateString) {
@@ -146,11 +172,32 @@ export default function DealCard({
         )}
       </div>
 
-      {/* Contact name (compact, only if heading shown company) */}
+      {/* Contact name + mini avatar (compact, only if heading shown company) */}
       {company && contactName && (
-        <div className="mt-2 pt-2 border-t border-line flex items-center gap-1.5 text-[11px] text-content-tertiary">
-          <User size={10} />
-          <span className="truncate">{contactName}</span>
+        <div className="mt-2 pt-2 border-t border-line flex items-center justify-between gap-2 text-[11px] text-content-tertiary">
+          <span className="truncate flex-1">{contactName}</span>
+          <span
+            className={`flex-shrink-0 inline-flex items-center justify-center w-5 h-5 rounded-full bg-gradient-to-br ${miniAvatarGradient(
+              contactName
+            )} text-white text-[8px] font-bold tracking-wide ring-1 ring-white`}
+            title={contactName}
+          >
+            {miniInitials(contactName)}
+          </span>
+        </div>
+      )}
+
+      {/* Si pas d'entreprise mais un contact, on affiche le mini avatar tout seul en bas droite */}
+      {!company && contactName && (
+        <div className="absolute bottom-2 right-2">
+          <span
+            className={`inline-flex items-center justify-center w-5 h-5 rounded-full bg-gradient-to-br ${miniAvatarGradient(
+              contactName
+            )} text-white text-[8px] font-bold tracking-wide ring-1 ring-white`}
+            title={contactName}
+          >
+            {miniInitials(contactName)}
+          </span>
         </div>
       )}
     </div>

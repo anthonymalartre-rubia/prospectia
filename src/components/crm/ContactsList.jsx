@@ -15,7 +15,7 @@
 // avatars en gradient violet (initiales 2 lettres).
 // ─────────────────────────────────────────────────────────────────────
 
-import { Mail, Phone, Pencil, Trash2, Loader2, Building2 } from 'lucide-react';
+import { Mail, Phone, Pencil, Trash2, Building2 } from 'lucide-react';
 
 // Palette de gradients violets/cyan/indigo pour les avatars contacts.
 // Choisi de manière déterministe selon le nom (hash basique) pour qu'un
@@ -105,9 +105,49 @@ export default function ContactsList({
   emptyState = null,
 }) {
   if (loading && contacts.length === 0) {
+    // ─── Skeleton table (Phase 4 polish) ───────────────────
     return (
-      <div className="flex items-center justify-center py-20">
-        <Loader2 size={28} className="animate-spin text-emerald-600" />
+      <div className="rounded-2xl border border-line bg-surface-base overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead className="bg-surface-card border-b border-line">
+              <tr>
+                <th className="w-12 px-4 py-3" />
+                <th className="px-3 py-3 text-left text-[10px] font-semibold uppercase tracking-wider text-content-muted">Nom</th>
+                <th className="px-3 py-3 text-left text-[10px] font-semibold uppercase tracking-wider text-content-muted">Email</th>
+                <th className="px-3 py-3 text-left text-[10px] font-semibold uppercase tracking-wider text-content-muted hidden md:table-cell">Téléphone</th>
+                <th className="px-3 py-3 text-left text-[10px] font-semibold uppercase tracking-wider text-content-muted hidden lg:table-cell">Entreprise</th>
+                <th className="px-3 py-3 text-left text-[10px] font-semibold uppercase tracking-wider text-content-muted hidden sm:table-cell">Source</th>
+                <th className="w-24 px-3 py-3" />
+              </tr>
+            </thead>
+            <tbody>
+              {[0, 1, 2, 3, 4, 5].map((i) => (
+                <tr key={i} className="border-b border-line/70 last:border-b-0">
+                  <td className="pl-4 pr-1 py-3">
+                    <div className="w-9 h-9 rounded-full bg-zinc-200 animate-pulse" />
+                  </td>
+                  <td className="px-3 py-3">
+                    <div className="h-3 w-32 bg-zinc-200 rounded animate-pulse" />
+                  </td>
+                  <td className="px-3 py-3">
+                    <div className="h-3 w-40 bg-zinc-200 rounded animate-pulse" />
+                  </td>
+                  <td className="px-3 py-3 hidden md:table-cell">
+                    <div className="h-3 w-24 bg-zinc-200 rounded animate-pulse" />
+                  </td>
+                  <td className="px-3 py-3 hidden lg:table-cell">
+                    <div className="h-3 w-28 bg-zinc-200 rounded animate-pulse" />
+                  </td>
+                  <td className="px-3 py-3 hidden sm:table-cell">
+                    <div className="h-3 w-16 bg-zinc-200 rounded animate-pulse" />
+                  </td>
+                  <td className="pr-4 pl-1 py-3" />
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     );
   }

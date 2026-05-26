@@ -102,22 +102,57 @@ export function formatDealValue(cents, currency = 'EUR') {
 /**
  * Calcule les stats d'un pipeline à partir d'une liste de deals.
  * Chaque deal peut avoir un `stage` joined avec `probability` pour le pipeline pondéré.
+ *
+ * Retourne :
+ *  - openCount, wonCount, lostCount
+ *  - totalOpenValue, totalWonValue
+ *  - weightedPipeline : pondéré par probability du stage
+ *  - wonCountMonth, wonValueMonth : closés gagnés sur le mois en cours
+ *  - closingRate30d : won / (won + lost) sur les 30 derniers jours (0-100, null si N/A)
  */
 export function calculatePipelineStats(deals) {
   const list = Array.isArray(deals) ? deals : [];
   const openDeals = list.filter((d) => d.status === 'open');
   const wonDeals = list.filter((d) => d.status === 'won');
+  const lostDeals = list.filter((d) => d.status === 'lost');
   const totalOpenValue = openDeals.reduce((sum, d) => sum + (d.value_cents || 0), 0);
   const totalWonValue = wonDeals.reduce((sum, d) => sum + (d.value_cents || 0), 0);
   const weightedPipeline = openDeals.reduce(
     (sum, d) => sum + ((d.value_cents || 0) * (d.stage?.probability || 0)) / 100,
     0
   );
+
+  // Mois en cours
+  const now = new Date();
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+  const wonThisMonth = wonDeals.filter((d) => {
+    const t = d.closed_at ? new Date(d.closed_at).getTime() : 0;
+    return t >= startOfMonth;
+  });
+  const wonCountMonth = wonThisMonth.length;
+  const wonValueMonth = wonThisMonth.reduce((sum, d) => sum + (d.value_cents || 0), 0);
+
+  // 30 derniers jours : closing rate
+  const cutoff30 = now.getTime() - 30 * 24 * 60 * 60 * 1000;
+  const closedRecently = [...wonDeals, ...lostDeals].filter((d) => {
+    const t = d.closed_at ? new Date(d.closed_at).getTime() : 0;
+    return t >= cutoff30;
+  });
+  const wonRecently = closedRecently.filter((d) => d.status === 'won').length;
+  const closingRate30d =
+    closedRecently.length > 0
+      ? Math.round((wonRecently / closedRecently.length) * 100)
+      : null;
+
   return {
     openCount: openDeals.length,
     wonCount: wonDeals.length,
+    lostCount: lostDeals.length,
     totalOpenValue,
     totalWonValue,
     weightedPipeline,
+    wonCountMonth,
+    wonValueMonth,
+    closingRate30d,
   };
 }
