@@ -5,7 +5,7 @@
 // Position : module mère, le seul actuellement payant à part entière.
 // ─────────────────────────────────────────────────────────────────────
 
-import { Search, Mail, Download } from 'lucide-react';
+import { Search, Mail, Download, Phone } from 'lucide-react';
 import ProductPageLayout from '@/components/ProductPageLayout';
 import { breadcrumbSchema, productSchema } from '@/lib/seo-helpers';
 
@@ -13,22 +13,23 @@ const SITE_URL = 'https://volia.fr';
 const PAGE_URL = `${SITE_URL}/produits/prospection`;
 
 export const metadata = {
-  title: "Volia Prospection — L'email de toute entreprise française",
+  title: "Volia Prospection — L'email et le téléphone de toute entreprise française",
   description:
-    "Trouvez l'email de n'importe quelle entreprise française : 150+ secteurs, 101 départements, scraping intelligent + recherche Google. À partir de 19 €/mois, conforme RGPD.",
+    "Trouvez l'email pro ET le téléphone de n'importe quelle entreprise française : 150+ secteurs, 101 départements, scraping intelligent + recherche Google. À partir de 19 €/mois, conforme RGPD.",
   alternates: { canonical: PAGE_URL },
   keywords: [
     'prospection b2b France',
     'trouver email entreprise',
+    'trouver téléphone entreprise',
     'enrichissement email b2b',
     'scraping email France',
     'Volia Prospection',
     'leads B2B France',
   ],
   openGraph: {
-    title: "Volia Prospection — L'email de toute entreprise française",
+    title: "Volia Prospection — Email + téléphone de toute entreprise française",
     description:
-      '150+ secteurs · 101 départements · scraping waterfall multi-sources · scoring de confiance · export CSV/HubSpot/Zoho. À partir de 19 €/mois.',
+      'Email pro + téléphone · 150+ secteurs · 101 départements · scraping waterfall multi-sources · scoring de confiance · export CSV/HubSpot/Zoho. À partir de 19 €/mois.',
     url: PAGE_URL,
     type: 'website',
   },
@@ -39,11 +40,11 @@ export const metadata = {
 // ─────────────────────────────────────────────────────────────────────
 function HeroMockup() {
   const rows = [
-    { name: 'La Bonne Table', email: 'contact@labonnetable.fr', score: 'Vérifié', color: 'emerald', avatar: '🍽️' },
-    { name: 'Pasta Roma', email: 'info@pastaroma.fr', score: 'Vérifié', color: 'emerald', avatar: '🍝' },
-    { name: 'Boulangerie Maison', email: 'bonjour@boulangerie-m.fr', score: 'Google', color: 'amber', avatar: '🥖' },
-    { name: 'Le Petit Bistrot', email: 'reservation@petitbistrot.fr', score: 'Vérifié', color: 'emerald', avatar: '🍷' },
-    { name: 'Sushi Lounge Paris', email: 'contact@sushilounge.fr', score: 'Vérifié', color: 'emerald', avatar: '🍱' },
+    { name: 'La Bonne Table', email: 'contact@labonnetable.fr', phone: '01 42 33 45 67', score: 'Vérifié', color: 'emerald', avatar: '🍽️' },
+    { name: 'Pasta Roma', email: 'info@pastaroma.fr', phone: '01 48 06 12 89', score: 'Vérifié', color: 'emerald', avatar: '🍝' },
+    { name: 'Boulangerie Maison', email: 'bonjour@boulangerie-m.fr', phone: '01 45 22 78 03', score: 'Google', color: 'amber', avatar: '🥖' },
+    { name: 'Le Petit Bistrot', email: 'reservation@petitbistrot.fr', phone: '01 43 87 19 56', score: 'Vérifié', color: 'emerald', avatar: '🍷' },
+    { name: 'Sushi Lounge Paris', email: 'contact@sushilounge.fr', phone: '01 56 34 21 78', score: 'Vérifié', color: 'emerald', avatar: '🍱' },
   ];
   return (
     <>
@@ -85,7 +86,16 @@ function HeroMockup() {
               </div>
               <div className="flex-1 min-w-0">
                 <div className="text-sm font-semibold text-content-primary truncate">{row.name}</div>
-                <div className="text-xs text-content-tertiary font-mono truncate">{row.email}</div>
+                <div className="flex items-center gap-3 mt-0.5">
+                  <div className="flex items-center gap-1 text-xs text-content-tertiary font-mono truncate min-w-0">
+                    <Mail size={10} className="flex-shrink-0 text-violet-500" />
+                    <span className="truncate">{row.email}</span>
+                  </div>
+                  <div className="hidden sm:flex items-center gap-1 text-xs text-content-tertiary font-mono flex-shrink-0">
+                    <Phone size={10} className="flex-shrink-0 text-violet-500" />
+                    <span>{row.phone}</span>
+                  </div>
+                </div>
               </div>
               <div className={`text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-md flex-shrink-0 ${
                 row.color === 'emerald' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'
@@ -110,7 +120,7 @@ function HeroMockup() {
           <Mail size={18} className="text-white" />
         </div>
         <div>
-          <div className="text-xs text-content-tertiary">Emails trouvés</div>
+          <div className="text-xs text-content-tertiary">Emails + tels trouvés</div>
           <div className="text-lg font-bold text-content-primary tabular-nums">+ 192</div>
         </div>
       </div>
@@ -216,12 +226,13 @@ export default function ProspectionProductPage() {
         module="prospection"
         status="LIVE"
         hero={{
-          h1Before: "L'email de",
+          h1Before: "L'email et le téléphone de",
           h1Highlight: 'toute entreprise',
           h1After: 'française.',
           subtitle: (
             <>
-              Scraping intelligent + recherche Google.{' '}
+              Email pro <strong className="text-content-primary font-semibold">+ téléphone</strong>{' '}
+              de chaque prospect. Scraping intelligent + recherche Google,{' '}
               <strong className="text-content-primary font-semibold">150+ secteurs, 101 départements</strong>.
               Conformité RGPD incluse. À partir de 19 €/mois.
             </>
