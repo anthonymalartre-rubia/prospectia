@@ -119,6 +119,8 @@ export async function middleware(request) {
     pathname.startsWith('/comparatif') ||         // pages /comparatif/[slug] + /comparatif-outils-prospection-b2b-france
     pathname.startsWith('/produits') ||           // pages produits /produits/{prospection,campagnes,crm}
     pathname.startsWith('/pricing') ||            // page tarifs standalone
+    pathname.startsWith('/demo') ||               // page demo Cal.com
+    pathname.startsWith('/en') ||                 // version anglaise (landing + pricing + products)
     pathname.startsWith('/etude') ||
     pathname.startsWith('/ressources') ||
     pathname.startsWith('/blog') ||
