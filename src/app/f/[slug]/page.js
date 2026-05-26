@@ -1,14 +1,12 @@
 // ─────────────────────────────────────────────────────────────────────
-// /f/[slug] — Renderer public Volia Formulaires (Sprint F2)
+// /f/[slug] — Renderer public Volia Formulaires
 // ─────────────────────────────────────────────────────────────────────
 // Server component minimal :
-//   1. Récupère le form via RPC get_published_form (bypass RLS, ne retourne
-//      que les forms status='published').
-//   2. Fetch des form_fields (la RPC ne les retourne pas).
-//   3. Incrémente le view_count (fire-and-forget).
-//   4. Render le wrapper (wordmark + footer Volia) + <FormRenderer/>.
-//   5. Si ?embed=true → mode embed (ultra-minimal, transparent, headers
-//      autorisant frame-ancestors *).
+//   1. RPC get_published_form(slug) → 1 query (schema JSONB inclus).
+//   2. SOURCE OF TRUTH = form.schema (Sprint F3) — on n'interroge plus
+//      form_fields. Le builder écrit dans schema, le renderer lit schema.
+//   3. View count incrémenté fire-and-forget.
+//   4. Si ?embed=true → mode embed (ultra-minimal, transparent).
 //
 // SEO : noindex (les forms persos ne doivent pas être indexés).
 // ─────────────────────────────────────────────────────────────────────
@@ -17,17 +15,16 @@ import { notFound } from 'next/navigation';
 import { headers } from 'next/headers';
 import Link from 'next/link';
 import { getSupabaseAdmin } from '@/lib/supabase-admin';
+import { schemaFieldsToRendererFields, normalizeSchema } from '@/lib/forms';
 import FormRenderer from '@/components/forms/FormRenderer';
 
-// Toujours rendre dynamiquement : les forms publiés évoluent, on ne
-// veut pas de cache statique sur le slug (sinon update de schema invisible).
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 async function loadForm(slug) {
   const supabase = getSupabaseAdmin();
 
-  // 1. RPC SECURITY DEFINER → bypass RLS, retourne uniquement si published
+  // RPC SECURITY DEFINER → bypass RLS, ne retourne que status='published'
   const { data: rows, error } = await supabase.rpc('get_published_form', {
     p_slug: slug,
   });
@@ -40,21 +37,13 @@ async function loadForm(slug) {
   const form = Array.isArray(rows) ? rows[0] : rows;
   if (!form) return null;
 
-  // 2. Fetch des fields (la RPC ne les inclut pas)
-  const { data: fields, error: fieldsError } = await supabase
-    .from('form_fields')
-    .select(
-      'id, field_key, field_type, label, placeholder, help_text, required, position, page, options, validation, conditional_logic'
-    )
-    .eq('form_id', form.id)
-    .order('page', { ascending: true })
-    .order('position', { ascending: true });
+  // Sprint F3 : on lit schema JSONB et on aplatit pour le FormRenderer
+  // (qui attend toujours la shape DB historique avec field_key, field_type,
+  // page numérique). Évite de réécrire le renderer entier.
+  const schema = normalizeSchema(form.schema);
+  const fields = schemaFieldsToRendererFields(schema);
 
-  if (fieldsError) {
-    console.error('[/f/[slug]] fields fetch error', fieldsError);
-  }
-
-  return { ...form, fields: fields || [] };
+  return { ...form, schema, fields };
 }
 
 export async function generateMetadata({ params }) {
@@ -88,8 +77,7 @@ export default async function FormRendererPage({ params, searchParams }) {
     notFound();
   }
 
-  // Fire-and-forget view_count increment.
-  // Pas d'await pour ne pas bloquer le render. Best-effort.
+  // Fire-and-forget view_count increment
   (async () => {
     try {
       const supabase = getSupabaseAdmin();
@@ -99,12 +87,10 @@ export default async function FormRendererPage({ params, searchParams }) {
     }
   })();
 
-  // Lit l'headers (utile pour referer si on veut faire de l'analytics V2)
   try {
     await headers();
   } catch {}
 
-  // Mode embed : pas de chrome, fond transparent
   if (isEmbed) {
     return (
       <div className="min-h-screen w-full bg-transparent">
@@ -113,10 +99,8 @@ export default async function FormRendererPage({ params, searchParams }) {
     );
   }
 
-  // Mode standalone : wordmark + form + footer
   return (
     <div className="min-h-screen w-full bg-gradient-to-b from-zinc-50 to-white text-zinc-900">
-      {/* Wordmark subtil */}
       <header className="w-full px-4 sm:px-6 py-5 flex items-center justify-center">
         <Link
           href="https://volia.fr?utm_source=form_header&utm_medium=referral"
@@ -128,14 +112,12 @@ export default async function FormRendererPage({ params, searchParams }) {
         </Link>
       </header>
 
-      {/* Form */}
       <main className="w-full px-4 sm:px-6 pb-12">
         <div className="max-w-2xl mx-auto">
           <FormRenderer form={form} slug={slug} />
         </div>
       </main>
 
-      {/* Footer Powered by */}
       <footer className="w-full px-4 py-6 text-center">
         <Link
           href="https://volia.fr?utm_source=form_powered_by&utm_medium=referral"

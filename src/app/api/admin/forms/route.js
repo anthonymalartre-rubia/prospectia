@@ -29,7 +29,7 @@ export async function GET(request) {
   let query = supabase
     .from('forms')
     .select(
-      'id, slug, name, description, status, crm_auto_create_contact, campagnes_list_id, submission_count, view_count, published_at, created_at, updated_at',
+      'id, slug, name, description, status, schema, crm_auto_create_contact, campagnes_list_id, submission_count, view_count, published_at, created_at, updated_at',
       { count: 'exact' }
     )
     .eq('user_id', user.id)
@@ -46,9 +46,21 @@ export async function GET(request) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
 
+  // Ajoute les counts schema (fields, pages) pour l'affichage hub.
+  // On NE renvoie PAS le schema brut au client (peut être lourd) — juste les counts.
+  const enriched = (data || []).map((f) => {
+    const schema = f.schema && typeof f.schema === 'object' ? f.schema : {};
+    return {
+      ...f,
+      fields_count: Array.isArray(schema.fields) ? schema.fields.length : 0,
+      pages_count: Array.isArray(schema.pages) ? schema.pages.length : (Array.isArray(schema.fields) && schema.fields.length > 0 ? 1 : 1),
+      schema: undefined, // strip
+    };
+  });
+
   return NextResponse.json({
     success: true,
-    data: data || [],
+    data: enriched,
     pagination: {
       total: count || 0,
       limit,

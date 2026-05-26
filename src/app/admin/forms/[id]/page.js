@@ -1,19 +1,27 @@
 'use client';
 
 // ─────────────────────────────────────────────────────────────────────
-// /admin/forms/[id] — Placeholder builder (Sprint F3)
+// /admin/forms/[id] — Builder UI (Sprint F3)
 // ─────────────────────────────────────────────────────────────────────
-// Affiche les métadonnées du form + un message "Builder à venir Sprint F3".
-// Le vrai builder (drag-drop multi-page + logique conditionnelle) sera
-// implémenté au sprint F3. F1 ne fournit que le squelette CRUD.
+// Fetch initial du form puis monte BuilderLayout en dynamic import
+// ssr:false (dnd-kit utilise window pour les sensors).
 // ─────────────────────────────────────────────────────────────────────
 
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
-import Link from 'next/link';
-import { ArrowLeft, FileText, Sparkles, Loader2, Settings, Inbox, ExternalLink } from 'lucide-react';
+import dynamic from 'next/dynamic';
+import { Loader2 } from 'lucide-react';
 
-export default function FormBuilderPlaceholderPage() {
+const BuilderLayout = dynamic(() => import('@/components/forms/builder/BuilderLayout'), {
+  ssr: false,
+  loading: () => (
+    <div className="fixed inset-0 top-14 flex items-center justify-center text-content-tertiary text-sm">
+      <Loader2 size={18} className="animate-spin mr-2" /> Chargement du builder…
+    </div>
+  ),
+});
+
+export default function FormBuilderPage() {
   const { id } = useParams();
   const [form, setForm] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -39,102 +47,25 @@ export default function FormBuilderPlaceholderPage() {
     };
   }, [id]);
 
-  return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
-      <Link
-        href="/admin/forms"
-        className="inline-flex items-center gap-1.5 text-xs text-content-tertiary hover:text-pink-700 transition-colors mb-6"
-      >
-        <ArrowLeft size={14} /> Retour à mes formulaires
-      </Link>
+  if (loading) {
+    return (
+      <div className="fixed inset-0 top-14 flex items-center justify-center text-content-tertiary text-sm">
+        <Loader2 size={18} className="animate-spin mr-2" /> Chargement…
+      </div>
+    );
+  }
 
-      {loading && (
-        <div className="flex items-center gap-2 text-content-tertiary text-sm">
-          <Loader2 size={16} className="animate-spin" /> Chargement…
-        </div>
-      )}
+  if (error) {
+    return (
+      <div className="max-w-md mx-auto mt-20 p-4 rounded-xl bg-rose-50 border border-rose-200 text-sm text-rose-700">
+        {error}
+      </div>
+    );
+  }
 
-      {error && (
-        <div className="p-4 rounded-xl bg-rose-50 border border-rose-200 text-sm text-rose-700">
-          {error}
-        </div>
-      )}
+  if (!form) {
+    return null;
+  }
 
-      {form && (
-        <>
-          <div className="mb-8">
-            <div className="flex items-center gap-2 mb-1.5">
-              <FileText size={14} className="text-pink-600" />
-              <p className="text-[11px] uppercase tracking-wider font-semibold text-content-muted">
-                Formulaire · {form.status}
-              </p>
-            </div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-content-primary tracking-tight">
-              {form.name}
-            </h1>
-            {form.description && (
-              <p className="mt-1.5 text-sm text-content-tertiary">{form.description}</p>
-            )}
-            <p className="mt-2 text-[11px] text-content-faint">
-              Slug : <code className="px-1.5 py-0.5 rounded bg-surface-card">/f/{form.slug}</code>
-            </p>
-
-            {/* Quick actions Sprint F2 */}
-            <div className="mt-4 flex flex-wrap items-center gap-2">
-              <Link
-                href={`/admin/forms/${form.id}/responses`}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-card border border-line hover:bg-surface-elevated text-xs font-medium text-content-primary transition-colors"
-              >
-                <Inbox size={13} /> Réponses ({form.submission_count || 0})
-              </Link>
-              <Link
-                href={`/admin/forms/${form.id}/settings`}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-card border border-line hover:bg-surface-elevated text-xs font-medium text-content-primary transition-colors"
-              >
-                <Settings size={13} /> Réglages
-              </Link>
-              {form.status === 'published' && (
-                <Link
-                  href={`/f/${form.slug}`}
-                  target="_blank"
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-pink-100 hover:bg-pink-200 text-pink-700 text-xs font-medium transition-colors"
-                >
-                  <ExternalLink size={13} /> Aperçu /f/{form.slug}
-                </Link>
-              )}
-            </div>
-          </div>
-
-          {/* Placeholder builder */}
-          <div className="rounded-2xl border border-dashed border-pink-200 bg-gradient-to-br from-pink-500/[0.04] to-rose-500/[0.04] p-10 text-center">
-            <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-pink-100 text-pink-600 mb-4">
-              <Sparkles size={22} />
-            </div>
-            <h3 className="text-lg font-semibold text-content-primary">
-              Builder à venir Sprint F3
-            </h3>
-            <p className="mt-1 text-sm text-content-tertiary max-w-md mx-auto">
-              Le constructeur drag-drop multi-pages avec logique conditionnelle
-              sera disponible au prochain sprint. En attendant, vous pouvez
-              éditer les métadonnées via l\'API.
-            </p>
-            <div className="mt-6 grid grid-cols-3 gap-4 max-w-md mx-auto text-center">
-              <div>
-                <p className="text-xl font-bold text-content-primary">{form.stats?.total_views || 0}</p>
-                <p className="text-[10px] uppercase tracking-wider text-content-muted">Vues</p>
-              </div>
-              <div>
-                <p className="text-xl font-bold text-content-primary">{form.stats?.total_submissions || 0}</p>
-                <p className="text-[10px] uppercase tracking-wider text-content-muted">Réponses</p>
-              </div>
-              <div>
-                <p className="text-xl font-bold text-content-primary">{form.stats?.conversion_rate || 0}%</p>
-                <p className="text-[10px] uppercase tracking-wider text-content-muted">Conversion</p>
-              </div>
-            </div>
-          </div>
-        </>
-      )}
-    </div>
-  );
+  return <BuilderLayout formId={id} initialForm={form} />;
 }

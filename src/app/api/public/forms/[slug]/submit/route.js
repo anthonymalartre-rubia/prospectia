@@ -22,7 +22,7 @@
 import { NextResponse } from 'next/server';
 import { createHash } from 'node:crypto';
 import { getSupabaseAdmin } from '@/lib/supabase-admin';
-import { incrementSubmissionCount } from '@/lib/forms';
+import { incrementSubmissionCount, schemaFieldsToRendererFields, normalizeSchema } from '@/lib/forms';
 import { checkRateLimit } from '@/lib/rateLimit';
 import { sendEmail } from '@/lib/email';
 import { cleanEnv } from '@/lib/envClean';
@@ -318,13 +318,12 @@ export async function POST(request, { params }) {
     );
   }
 
-  // ──── 2. Fetch form (avec owner + fields) ────
-  const { data: form, error: formError } = await supabaseAdmin
+  // ──── 2. Fetch form (Sprint F3 — source of truth = schema JSONB) ────
+  const { data: formRow, error: formError } = await supabaseAdmin
     .from('forms')
     .select(
       `id, slug, name, status, user_id, schema, settings,
-       crm_auto_create_contact, campagnes_list_id,
-       fields:form_fields(id, field_key, field_type, label, required, validation, options)`
+       crm_auto_create_contact, campagnes_list_id`
     )
     .eq('slug', slug)
     .maybeSingle();
@@ -333,9 +332,15 @@ export async function POST(request, { params }) {
     console.error('[forms/submit] form lookup error', formError);
     return NextResponse.json({ success: false, error: 'Erreur serveur' }, { status: 500 });
   }
-  if (!form || form.status !== 'published') {
+  if (!formRow || formRow.status !== 'published') {
     return NextResponse.json({ success: false, error: 'Formulaire introuvable' }, { status: 404 });
   }
+
+  // Aplatit schema.fields[] (shape builder : key/type/page_id) en shape
+  // historique (field_key/field_type/page) pour le reste du handler.
+  const schema = normalizeSchema(formRow.schema);
+  const flatFields = schemaFieldsToRendererFields(schema);
+  const form = { ...formRow, fields: flatFields };
 
   // ──── 3. Parse body (FormData) ────
   let formData;

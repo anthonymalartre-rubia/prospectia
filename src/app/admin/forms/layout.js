@@ -12,11 +12,27 @@
 // ─────────────────────────────────────────────────────────────────────
 
 import { useState } from 'react';
+import { usePathname } from 'next/navigation';
 import FormsSidebar from '@/components/forms/FormsSidebar';
 import { Menu } from 'lucide-react';
 
 export default function FormsLayout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const pathname = usePathname() || '';
+
+  // Sur les pages builder (/admin/forms/[id], hors sous-pages) ou preview,
+  // on cache la sidebar pour laisser le builder occuper toute la largeur.
+  // Match :
+  //   /admin/forms/abc                → builder fullscreen
+  //   /admin/forms/abc/preview        → preview fullscreen
+  //   /admin/forms/abc/settings       → garde sidebar
+  //   /admin/forms/abc/responses      → garde sidebar
+  const fullscreenMatch = /^\/admin\/forms\/[^/]+(\/preview)?\/?$/.test(pathname);
+  const isFullscreen = fullscreenMatch && pathname !== '/admin/forms';
+
+  if (isFullscreen) {
+    return <main className="min-w-0">{children}</main>;
+  }
 
   return (
     <div className="flex">

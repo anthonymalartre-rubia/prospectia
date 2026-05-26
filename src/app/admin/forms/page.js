@@ -24,6 +24,8 @@ import {
   ExternalLink,
   Archive,
   Loader2,
+  Pencil,
+  Layers,
 } from 'lucide-react';
 
 const STATUS_BADGES = {
@@ -91,7 +93,7 @@ export default function FormsHubPage() {
         <div className="flex items-center gap-2 mb-2">
           <Sparkles size={14} className="text-pink-600" />
           <p className="text-[11px] uppercase tracking-wider font-semibold text-pink-700">
-            Nouveau · Sprint F1
+            Nouveau · Sprint F3
           </p>
         </div>
         <h1 className="text-3xl sm:text-4xl font-bold text-content-primary tracking-tight">
@@ -163,47 +165,67 @@ export default function FormsHubPage() {
           {forms.map((form) => {
             const badge = STATUS_BADGES[form.status] || STATUS_BADGES.draft;
             return (
-              <Link
+              <div
                 key={form.id}
-                href={`/admin/forms/${form.id}`}
-                className="block p-4 rounded-xl border border-line bg-surface-card hover:bg-surface-elevated hover:border-pink-200 transition-all group"
+                className="p-4 rounded-xl border border-line bg-surface-card hover:bg-surface-elevated hover:border-pink-200 transition-all group"
               >
-                <div className="flex items-start justify-between gap-3">
+                <div className="flex items-start justify-between gap-3 flex-wrap">
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <h3 className="text-sm font-semibold text-content-primary group-hover:text-pink-700 transition-colors">
-                        {form.name}
-                      </h3>
-                      <span
-                        className={`text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded border ${badge.cls}`}
-                      >
-                        {badge.label}
-                      </span>
-                      {form.status === 'archived' && (
-                        <Archive size={12} className="text-amber-600" />
-                      )}
-                    </div>
-                    {form.description && (
-                      <p className="mt-1 text-xs text-content-tertiary line-clamp-1">
-                        {form.description}
-                      </p>
-                    )}
-                    <div className="mt-2 flex items-center gap-4 text-[11px] text-content-faint">
-                      <span className="inline-flex items-center gap-1">
-                        <Eye size={11} /> {form.view_count} vues
-                      </span>
-                      <span className="inline-flex items-center gap-1">
-                        <Send size={11} /> {form.submission_count} réponses
-                      </span>
-                      {form.status === 'published' && (
-                        <span className="inline-flex items-center gap-1 text-pink-600">
-                          <ExternalLink size={11} /> /f/{form.slug}
+                    <Link href={`/admin/forms/${form.id}`} className="block">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <h3 className="text-sm font-semibold text-content-primary group-hover:text-pink-700 transition-colors">
+                          {form.name}
+                        </h3>
+                        <span
+                          className={`text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded border ${badge.cls}`}
+                        >
+                          {badge.label}
                         </span>
+                        {form.status === 'archived' && (
+                          <Archive size={12} className="text-amber-600" />
+                        )}
+                      </div>
+                      {form.description && (
+                        <p className="mt-1 text-xs text-content-tertiary line-clamp-1">
+                          {form.description}
+                        </p>
                       )}
-                    </div>
+                      <div className="mt-2 flex items-center gap-4 text-[11px] text-content-faint flex-wrap">
+                        <span className="inline-flex items-center gap-1">
+                          <FileText size={11} /> {form.fields_count || 0} champ{(form.fields_count || 0) > 1 ? 's' : ''}
+                        </span>
+                        <span className="inline-flex items-center gap-1">
+                          <Layers size={11} /> {form.pages_count || 1} page{(form.pages_count || 1) > 1 ? 's' : ''}
+                        </span>
+                        <span className="inline-flex items-center gap-1">
+                          <Eye size={11} /> {form.view_count} vues
+                        </span>
+                        <span className="inline-flex items-center gap-1">
+                          <Send size={11} /> {form.submission_count} réponses
+                        </span>
+                      </div>
+                    </Link>
+                  </div>
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <Link
+                      href={`/admin/forms/${form.id}`}
+                      className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-medium bg-surface-base border border-line hover:bg-surface-elevated hover:border-pink-200 transition-colors"
+                    >
+                      <Pencil size={11} /> Modifier
+                    </Link>
+                    {form.status === 'published' && (
+                      <Link
+                        href={`/f/${form.slug}`}
+                        target="_blank"
+                        rel="noopener"
+                        className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-medium bg-pink-100 text-pink-700 hover:bg-pink-200 transition-colors"
+                      >
+                        <ExternalLink size={11} /> Voir
+                      </Link>
+                    )}
                   </div>
                 </div>
-              </Link>
+              </div>
             );
           })}
         </div>

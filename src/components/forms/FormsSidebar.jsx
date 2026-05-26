@@ -44,7 +44,6 @@ const NAV_ITEMS = [
     description: 'Modèles prêts à l\'emploi',
     href: '/admin/forms/templates',
     icon: LayoutTemplate,
-    soon: true,
     matches: (p) => p.startsWith('/admin/forms/templates'),
   },
   {
