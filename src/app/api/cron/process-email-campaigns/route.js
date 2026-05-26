@@ -16,6 +16,7 @@ import { sendEmail } from '@/lib/email';
 import { applyTemplate, appendOptOutFooter } from '@/lib/campaign-templates';
 import { cleanEnv } from '@/lib/envClean';
 import { logEmailSentToCrm } from '@/lib/crm-activity-logger';
+import { buildCampaignReplyAddress } from '@/lib/inbound-domain';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60; // Pro tier requis si > 10s sur free, mais 60 ici par sécurité
@@ -115,13 +116,11 @@ export async function GET(request) {
     //     (campaign.from_name / campaign.from_email — typiquement hello@volia.fr).
     //     C'est la soft migration : les campagnes pré-feature continuent d'envoyer.
     //   - sender_id présent + verified     → on utilise le domaine du customer :
-    //     From: "{sender.from_name} <noreply@{sender.domain}>", reply_to par défaut
-    //     "reply@{sender.domain}" (sauf override explicite sur la campagne).
+    //     From: "{sender.from_name} <noreply@{sender.domain}>"
     //   - sender_id présent mais sender absent du map (= deleted ou pas verified)
     //     → on échoue ce send proprement plutôt que d'envoyer depuis le mauvais
     //     domaine et de cramer la délivrabilité.
     let fromHeader;
-    let replyToHeader = campaign.reply_to;
     if (campaign.email_sender_id) {
       const sender = senderMap.get(campaign.email_sender_id);
       if (!sender) {
@@ -131,9 +130,27 @@ export async function GET(request) {
       }
       const displayName = sender.from_name || campaign.from_name || 'Volia';
       fromHeader = `${displayName} <noreply@${sender.domain}>`;
-      if (!replyToHeader) replyToHeader = `reply@${sender.domain}`;
     } else {
       fromHeader = `${campaign.from_name} <${campaign.from_email}>`;
+    }
+
+    // Résolution du reply-to :
+    //   - Priorité 1 : campaign.reply_to (override explicite par l'utilisateur,
+    //     ex: "anthony@volia.fr") → les replies arrivent direct chez le client,
+    //     pas chez nous, mais on perd l'auto-create CRM.
+    //   - Priorité 2 (défaut) : adresse inbound Volia par-campagne :
+    //     `c-{campaign_id_hex}@reply.volia.fr` → Resend Inbound capte, le
+    //     webhook /api/webhooks/resend/inbound parse le local-part pour
+    //     retrouver la campagne et auto-crée le contact + deal CRM.
+    //   - Fallback ultime si la construction échoue : reply@{sender.domain}
+    //     (pour les senders multi-tenant) ou pas de reply_to du tout.
+    let replyToHeader = campaign.reply_to;
+    if (!replyToHeader) {
+      replyToHeader = buildCampaignReplyAddress(campaign.id);
+    }
+    if (!replyToHeader && campaign.email_sender_id) {
+      const sender = senderMap.get(campaign.email_sender_id);
+      if (sender) replyToHeader = `reply@${sender.domain}`;
     }
 
     // Tags Resend pour le routage webhook (Resend exige alphanum + _ + -, max 256 chars).

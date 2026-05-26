@@ -18,6 +18,7 @@ import { getSupabaseAdmin } from '@/lib/supabase-admin';
 import { cleanEnv } from '@/lib/envClean';
 import { verifyResendSignature } from '@/lib/webhooks/resend-verify';
 import { autoCreateFromReply } from '@/lib/crm-auto-create';
+import { parseCampaignReplyAddress, isInboundDomain } from '@/lib/inbound-domain';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -101,30 +102,92 @@ export async function POST(request) {
 
   let senderRow = null;
   let ownerId = null;
+  let matchedCampaignId = null;
 
-  // 3) Identifier le sender par domaine du destinataire (to)
-  try {
-    if (toDomain) {
-      const { data: sender, error } = await supabaseAdmin
-        .from('email_senders')
-        .select('id, user_id, domain, status')
-        .ilike('domain', toDomain)
-        .limit(1)
-        .maybeSingle();
-      if (error) {
-        console.warn('[resend-inbound] sender lookup error', error.message);
-      } else if (sender) {
-        senderRow = sender;
-        ownerId = sender.user_id;
+  // 3a) PREMIER MATCH (le plus fiable) : parser le `to` pour extraire le
+  // campaign_id encodé dans le local-part. Format défini par
+  // lib/inbound-domain.js : `c-{32hex}@reply.volia.fr`. Cette méthode
+  // est résistante aux clients mail qui strippent les headers In-Reply-To.
+  if (toRaw && isInboundDomain(toDomain)) {
+    const parsedCampaignId = parseCampaignReplyAddress(toRaw);
+    if (parsedCampaignId) {
+      try {
+        const { data: camp } = await supabaseAdmin
+          .from('email_campaigns')
+          .select('id, owner_id, name, email_sender_id')
+          .eq('id', parsedCampaignId)
+          .maybeSingle();
+        if (camp?.owner_id) {
+          ownerId = camp.owner_id;
+          matchedCampaignId = camp.id;
+          // Si la campagne a un sender custom, on récupère aussi le sender row
+          if (camp.email_sender_id) {
+            const { data: s } = await supabaseAdmin
+              .from('email_senders')
+              .select('id, user_id, domain, status')
+              .eq('id', camp.email_sender_id)
+              .maybeSingle();
+            if (s) senderRow = s;
+          }
+        }
+      } catch (e) {
+        console.warn('[resend-inbound] campaign-from-to lookup failed', e.message);
       }
     }
-  } catch (e) {
-    console.warn('[resend-inbound] sender lookup exception', e.message);
   }
 
-  // 4) Retrouver le send originel via in_reply_to → email_sends.provider_id
+  // 3b) FALLBACK : si on n'a pas réussi à matcher via le `to`, on retombe
+  // sur l'ancienne logique (lookup sender par domaine `to`). Utile pour les
+  // setups custom où le client a override `campaign.reply_to` avec son
+  // propre domaine d'envoi.
+  if (!ownerId) {
+    try {
+      if (toDomain) {
+        const { data: sender, error } = await supabaseAdmin
+          .from('email_senders')
+          .select('id, user_id, domain, status')
+          .ilike('domain', toDomain)
+          .limit(1)
+          .maybeSingle();
+        if (error) {
+          console.warn('[resend-inbound] sender lookup error', error.message);
+        } else if (sender) {
+          senderRow = sender;
+          ownerId = sender.user_id;
+        }
+      }
+    } catch (e) {
+      console.warn('[resend-inbound] sender lookup exception', e.message);
+    }
+  }
+
+  // 4) Retrouver le send originel — d'abord via le campaign_id matché + from,
+  // puis (fallback) via in_reply_to → email_sends.provider_id.
   let originalSend = null;
-  if (inReplyTo) {
+  if (matchedCampaignId && from) {
+    // Most reliable : on a déjà le campaign, on cherche le send pour cet
+    // email destinataire (le `from` du reply = le `email` de notre send).
+    try {
+      const { data: send } = await supabaseAdmin
+        .from('email_sends')
+        .select('id, campaign_id, contact_id, email, provider_id')
+        .eq('campaign_id', matchedCampaignId)
+        .ilike('email', from)
+        .order('sent_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (send) {
+        originalSend = send;
+        await supabaseAdmin
+          .from('email_sends')
+          .update({ replied_at: new Date().toISOString() })
+          .eq('id', send.id);
+      }
+    } catch (e) {
+      console.warn('[resend-inbound] send lookup by campaign+from failed', e.message);
+    }
+  }
+  if (!originalSend && inReplyTo) {
     try {
       // Resend inclut souvent les chevrons <abcd@resend.dev>
       const cleanInReply = String(inReplyTo).replace(/[<>]/g, '').trim();
@@ -136,12 +199,10 @@ export async function POST(request) {
         .maybeSingle();
       if (send) {
         originalSend = send;
-        // Marque replied_at
         await supabaseAdmin
           .from('email_sends')
           .update({ replied_at: new Date().toISOString() })
           .eq('id', send.id);
-        // Si ownerId pas trouvé via sender, on remonte via la campagne
         if (!ownerId && send.campaign_id) {
           const { data: camp } = await supabaseAdmin
             .from('email_campaigns')
