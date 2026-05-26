@@ -23,7 +23,7 @@ export async function GET(request, { params }) {
   // Liste des 50 derniers sends (échantillon pour debug)
   const { data: sends } = await supabase
     .from('email_sends')
-    .select('id, email, status, error, provider_id, sent_at, delivered_at, opened_at, clicked_at, bounced_at, replied_at')
+    .select('id, email, status, error, provider_id, sent_at, delivered_at, opened_at, clicked_at, bounced_at, replied_at, subject_variant')
     .eq('campaign_id', id)
     .order('created_at', { ascending: false })
     .limit(50);
@@ -103,6 +103,54 @@ export async function GET(request, { params }) {
     crm_contact_id: sendCrmContactByEmail[(s.email || '').toLowerCase()] || null,
   }));
 
+  // ───────── A/B testing — stats par variant ─────────
+  // Si la campagne a au moins subject_variant_2, on agrège opens/sent par variant.
+  let ab_test = null;
+  if (campaign.subject_variant_2) {
+    try {
+      const { data: variantRows } = await supabase
+        .from('email_sends')
+        .select('subject_variant, status, opened_at')
+        .eq('campaign_id', id)
+        .in('status', ['sent', 'delivered', 'opened', 'clicked', 'bounced', 'replied']);
+
+      const agg = { 1: { sent: 0, opened: 0 }, 2: { sent: 0, opened: 0 } };
+      if (campaign.subject_variant_3) agg[3] = { sent: 0, opened: 0 };
+      for (const row of variantRows || []) {
+        const v = row.subject_variant || 1;
+        if (!agg[v]) agg[v] = { sent: 0, opened: 0 };
+        agg[v].sent += 1;
+        if (row.opened_at) agg[v].opened += 1;
+      }
+
+      const subjectByVariant = {
+        1: campaign.subject,
+        2: campaign.subject_variant_2,
+        3: campaign.subject_variant_3,
+      };
+      const variants = Object.keys(agg)
+        .map((k) => parseInt(k, 10))
+        .sort((a, b) => a - b)
+        .map((vid) => ({
+          id: vid,
+          subject: subjectByVariant[vid] || null,
+          sent: agg[vid].sent,
+          opened: agg[vid].opened,
+          open_rate: agg[vid].sent > 0 ? agg[vid].opened / agg[vid].sent : 0,
+        }));
+
+      ab_test = {
+        enabled: true,
+        sample_size: campaign.ab_test_sample_size || 100,
+        winner_variant: campaign.ab_test_winner_variant || null,
+        picked_at: campaign.ab_test_picked_at || null,
+        variants,
+      };
+    } catch (e) {
+      console.warn('[email-campaigns/[id]] ab_test stats error', e?.message);
+    }
+  }
+
   return NextResponse.json({
     campaign,
     sample_sends,
@@ -110,6 +158,7 @@ export async function GET(request, { params }) {
       replies_count,
       auto_created_deals_count,
     },
+    ab_test,
   });
 }
 

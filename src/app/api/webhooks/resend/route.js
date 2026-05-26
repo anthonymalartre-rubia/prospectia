@@ -124,6 +124,43 @@ export async function POST(request) {
   }
 
   try {
+    // 5.warmup) WARMUP PEER-TO-PEER — court-circuit prioritaire.
+    // Si l'event porte le tag `kind=warmup_peer`, c'est un envoi
+    // généré par notre cron warmup peer. Pas de email_sends associé,
+    // on update directement warmup_exchanges + bump peer counters.
+    const tagsArr = Array.isArray(eventData?.tags) ? eventData.tags : [];
+    const tagMap = Object.fromEntries(
+      tagsArr
+        .filter((t) => t && typeof t.name === 'string')
+        .map((t) => [t.name, t.value])
+    );
+    if (tagMap.kind === 'warmup_peer') {
+      // Note : le cron warmup-peer pré-remplit déjà opened_at/clicked_at via
+      // simulation. On utilise ici .is(col, null) pour ne mettre à jour que les
+      // exchanges qui n'avaient pas encore d'engagement simulé (cas rare où
+      // le webhook arrive avant l'update DB, ou cas où on aurait désactivé
+      // la simulation). On ne bump PAS les compteurs peer_pool ici pour
+      // éviter le double-count avec le cron — la source de vérité reste le
+      // cron. Le webhook sert juste à corriger les timestamps si besoin.
+      if (providerId) {
+        const update = {};
+        if (eventType === 'email.opened') update.opened_at = new Date().toISOString();
+        else if (eventType === 'email.clicked') update.clicked_at = new Date().toISOString();
+        if (Object.keys(update).length > 0) {
+          const guardCol = update.opened_at ? 'opened_at' : 'clicked_at';
+          await supabase
+            .from('warmup_exchanges')
+            .update(update)
+            .eq('resend_message_id', providerId)
+            .is(guardCol, null);
+        }
+      }
+      if (auditId) {
+        await supabase.from('webhook_events').update({ processed: true }).eq('id', auditId);
+      }
+      return NextResponse.json({ ok: true, warmup_peer: true, event_type: eventType }, { status: 200 });
+    }
+
     // 5) Lookup email_sends par provider_id
     const { data: send } = await supabase
       .from('email_sends')

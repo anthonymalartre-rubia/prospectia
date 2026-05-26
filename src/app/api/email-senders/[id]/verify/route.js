@@ -10,6 +10,7 @@
 import { NextResponse } from 'next/server';
 import { getAuthenticatedUser } from '@/lib/auth';
 import { getResendDomain } from '@/lib/resend-domains';
+import { buildPeerEmailAddress } from '@/lib/warmup-peer';
 
 const ALLOWED_STATUSES = new Set(['pending', 'verified', 'failed', 'temp_failure']);
 
@@ -123,6 +124,26 @@ export async function POST(_request, { params }) {
       }
     } catch (e) {
       console.error('[api/email-senders/verify] warmup insert exception', e);
+    }
+
+    // Auto-enrôle dans le pool peer-to-peer (Phase 3).
+    // Idempotent : UNIQUE(sender_id) bloque les doublons (code 23505).
+    try {
+      const peerEmail = buildPeerEmailAddress(id);
+      if (peerEmail) {
+        const { error: poolErr } = await supabase
+          .from('warmup_peer_pool')
+          .insert({
+            sender_id: id,
+            peer_email: peerEmail,
+            active: true,
+          });
+        if (poolErr && poolErr.code !== '23505') {
+          console.error('[api/email-senders/verify] peer pool insert error', poolErr);
+        }
+      }
+    } catch (e) {
+      console.error('[api/email-senders/verify] peer pool insert exception', e);
     }
   }
 

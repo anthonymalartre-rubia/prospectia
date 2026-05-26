@@ -10,6 +10,7 @@ import { NextResponse } from 'next/server';
 import { requireCampagnesAccess } from '@/lib/campagnes-access-server';
 import { getSupabaseAdmin } from '@/lib/supabase-admin';
 import { trackOnboardingStep } from '@/lib/onboarding';
+import { detectTimezone, getNextSendWindow } from '@/lib/timezone-detector';
 
 export async function POST(request, { params }) {
   const auth = await requireCampagnesAccess();
@@ -20,10 +21,11 @@ export async function POST(request, { params }) {
   const body = await request.json().catch(() => ({}));
   const scheduledAt = body.scheduled_at ? new Date(body.scheduled_at).toISOString() : null;
 
-  // Vérifie la campagne
+  // Vérifie la campagne — on récupère aussi smart_scheduling pour décider si
+  // on doit calculer un scheduled_for par destinataire.
   const { data: campaign } = await supabase
     .from('email_campaigns')
-    .select('id, list_id, status')
+    .select('id, list_id, status, smart_scheduling')
     .eq('id', id)
     .eq('owner_id', user.id)
     .maybeSingle();
@@ -41,10 +43,15 @@ export async function POST(request, { params }) {
   let totalQueued = 0;
   let offset = 0;
 
+  // Si smart_scheduling actif on a besoin du phone pour la détection TZ (signal
+  // plus fiable que le TLD). Sinon on s'en passe — économie de bytes.
+  const contactColumns = campaign.smart_scheduling ? 'id, email, phone' : 'id, email';
+  const now = new Date();
+
   while (true) {
     const { data: contacts, error: cErr } = await supabaseAdmin
       .from('prospect_contacts')
-      .select('id, email')
+      .select(contactColumns)
       .eq('list_id', campaign.list_id)
       .not('email', 'is', null)
       .eq('opt_out', false)
@@ -56,13 +63,23 @@ export async function POST(request, { params }) {
     }
     if (!contacts || contacts.length === 0) break;
 
-    // Insert sends, ignore les déjà-existants (campaign × contact unique)
-    const rows = contacts.map((c) => ({
-      campaign_id: id,
-      contact_id: c.id,
-      email: c.email,
-      status: 'pending',
-    }));
+    // Insert sends, ignore les déjà-existants (campaign × contact unique).
+    // Si smart_scheduling=true, on précalcule scheduled_for par destinataire
+    // depuis sa timezone (détectée via phone/email TLD), sinon NULL = envoi
+    // immédiat dès que le cron passe (comportement legacy).
+    const rows = contacts.map((c) => {
+      const row = {
+        campaign_id: id,
+        contact_id: c.id,
+        email: c.email,
+        status: 'pending',
+      };
+      if (campaign.smart_scheduling) {
+        const tz = detectTimezone({ email: c.email, phone: c.phone });
+        row.scheduled_for = getNextSendWindow(tz, now).toISOString();
+      }
+      return row;
+    });
 
     const { error: insErr, count } = await supabaseAdmin
       .from('email_sends')
@@ -98,12 +115,20 @@ export async function POST(request, { params }) {
     trackOnboardingStep(user.id, 'first_campaign');
   }
 
+  let message;
+  if (newStatus === 'scheduled') {
+    message = `Campagne planifiée pour ${scheduledAt}. ${totalQueued} destinataires.`;
+  } else if (campaign.smart_scheduling) {
+    message = `Envoi démarré (planification intelligente activée). ${totalQueued} destinataires : chacun recevra son email dans la fenêtre 9h-17h heure locale, du lundi au vendredi.`;
+  } else {
+    message = `Envoi démarré. ${totalQueued} destinataires en queue. Cron envoie ~50 mails toutes les 5 min.`;
+  }
+
   return NextResponse.json({
     ok: true,
     queued: totalQueued,
     status: newStatus,
-    message: newStatus === 'scheduled'
-      ? `Campagne planifiée pour ${scheduledAt}. ${totalQueued} destinataires.`
-      : `Envoi démarré. ${totalQueued} destinataires en queue. Cron envoie ~50 mails toutes les 5 min.`,
+    smart_scheduling: !!campaign.smart_scheduling,
+    message,
   });
 }

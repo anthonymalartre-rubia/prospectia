@@ -47,11 +47,21 @@ export async function GET(request) {
     .eq('status', 'scheduled')
     .lte('scheduled_at', new Date().toISOString());
 
-  // 2) Récup le batch de sends pending (les plus anciens)
+  // 2) Récup le batch de sends pending (les plus anciens).
+  //
+  // Filtre smart-scheduling : on ne pickup un send que si
+  //   - scheduled_for IS NULL (legacy / smart_scheduling=false)
+  //   - OU scheduled_for <= NOW() (fenêtre 9h-17h heure locale atteinte)
+  //
+  // Les sends planifiés dans le futur restent en pending et seront récupérés
+  // au cron qui tourne dans leur fenêtre. L'index partiel
+  // idx_email_sends_scheduled_for accélère le scan.
+  const nowIso = new Date().toISOString();
   const { data: sends, error: fetchErr } = await supabase
     .from('email_sends')
     .select('id, campaign_id, contact_id, email')
     .eq('status', 'pending')
+    .or(`scheduled_for.is.null,scheduled_for.lte.${nowIso}`)
     .order('created_at', { ascending: true })
     .limit(BATCH_SIZE);
 
@@ -68,7 +78,7 @@ export async function GET(request) {
   const contactIds = [...new Set(sends.map((s) => s.contact_id))];
 
   const [{ data: campaigns }, { data: contacts }] = await Promise.all([
-    supabase.from('email_campaigns').select('id, owner_id, name, subject, body_html, from_name, from_email, reply_to, status, email_sender_id').in('id', campaignIds),
+    supabase.from('email_campaigns').select('id, owner_id, name, subject, subject_variant_2, subject_variant_3, ab_test_sample_size, ab_test_winner_variant, ab_test_picked_at, body_html, from_name, from_email, reply_to, status, email_sender_id').in('id', campaignIds),
     supabase.from('prospect_contacts').select('id, email, phone, first_name, last_name, company, position_title, custom_fields, opt_out').in('id', contactIds),
   ]);
 
@@ -193,6 +203,85 @@ export async function GET(request) {
     });
   }
 
+  // 3.quinquies) A/B testing — pour chaque campagne en A/B (subject_variant_2
+  // non-null), on calcule l'état courant :
+  //   - sentSoFar : nombre de sends 'sent'/'delivered'/etc. déjà partis
+  //     (exclut 'pending' et 'failed' pour ne pas biaiser)
+  //   - winnerVariant : 1/2/3 si déjà picked, null sinon
+  //   - variantCount : 2 ou 3 (selon que subject_variant_3 est null ou pas)
+  //
+  // Si sentSoFar >= sample_size ET winner pas encore picked, on pick le winner
+  // immédiatement (sur les stats à ce moment) et on update la campagne.
+  // Tous les sends suivants du batch utiliseront le winner.
+  const abStateByCampaign = new Map();
+  for (const cid of campaignIds) {
+    const c = campaignMap.get(cid);
+    if (!c || !c.subject_variant_2) continue; // pas d'A/B
+    const variantCount = c.subject_variant_3 ? 3 : 2;
+    const sampleSize = c.ab_test_sample_size || 100;
+    let winnerVariant = c.ab_test_winner_variant || null;
+
+    // Compte les sends "réels" (non pending, non failed) pour décider phase
+    let sentSoFar = 0;
+    try {
+      const { count } = await supabase
+        .from('email_sends')
+        .select('id', { count: 'exact', head: true })
+        .eq('campaign_id', cid)
+        .in('status', ['sent', 'delivered', 'opened', 'clicked', 'bounced', 'replied']);
+      sentSoFar = count || 0;
+    } catch (e) {
+      console.warn('[cron/email-campaigns] AB sentSoFar count failed', cid, e?.message);
+    }
+
+    // Pick le winner si on a atteint le sample et pas encore picked
+    if (!winnerVariant && sentSoFar >= sampleSize) {
+      try {
+        const { data: variantStats } = await supabase
+          .from('email_sends')
+          .select('subject_variant, status, opened_at')
+          .eq('campaign_id', cid)
+          .in('status', ['sent', 'delivered', 'opened', 'clicked', 'bounced', 'replied']);
+
+        // Agrégation manuelle (open rate = opened / sent) par variant
+        const agg = {};
+        for (const row of variantStats || []) {
+          const v = row.subject_variant || 1;
+          if (!agg[v]) agg[v] = { sent: 0, opened: 0 };
+          agg[v].sent += 1;
+          if (row.opened_at) agg[v].opened += 1;
+        }
+
+        let bestVariant = 1;
+        let bestRate = -1;
+        for (const v of Object.keys(agg)) {
+          const rate = agg[v].sent > 0 ? agg[v].opened / agg[v].sent : 0;
+          if (rate > bestRate) {
+            bestRate = rate;
+            bestVariant = parseInt(v, 10);
+          }
+        }
+        winnerVariant = bestVariant;
+        await supabase
+          .from('email_campaigns')
+          .update({ ab_test_winner_variant: winnerVariant, ab_test_picked_at: new Date().toISOString() })
+          .eq('id', cid)
+          .is('ab_test_winner_variant', null); // safe : pas d'overwrite si concurrent
+        // Met à jour le map en mémoire pour cohérence du reste du batch
+        c.ab_test_winner_variant = winnerVariant;
+        c.ab_test_picked_at = new Date().toISOString();
+      } catch (e) {
+        console.warn('[cron/email-campaigns] AB winner pick failed', cid, e?.message);
+      }
+    }
+
+    abStateByCampaign.set(cid, { variantCount, sampleSize, winnerVariant, sentSoFar });
+  }
+
+  // Counter mutable des envois "in-flight" dans CE batch pour repartir les
+  // variants en phase 1 (sentSoFar + inFlight)
+  const inFlightByCampaign = new Map();
+
   // 4) Envoie chaque send (filtré par warmup quota)
   const results = await Promise.all(sendsToProcess.map(async (send) => {
     const campaign = campaignMap.get(send.campaign_id);
@@ -208,8 +297,37 @@ export async function GET(request) {
       return updateSendStatus(supabase, send.id, 'failed', { error: 'Contact opt-out' });
     }
 
+    // A/B testing — choix du variant de subject
+    //   Phase 1 (sentSoFar + inFlight < sample_size) : on round-robin entre variants
+    //   Phase 2 (winner picked) : on utilise toujours le winner
+    //   Pas d'A/B : variant = 1 (subject classique)
+    let chosenVariant = 1;
+    const abState = abStateByCampaign.get(campaign.id);
+    if (abState) {
+      if (abState.winnerVariant) {
+        chosenVariant = abState.winnerVariant;
+      } else {
+        const inFlight = inFlightByCampaign.get(campaign.id) || 0;
+        const position = abState.sentSoFar + inFlight;
+        if (position >= abState.sampleSize) {
+          // Sample atteint mais winner pas encore picked dans CE batch
+          // (sera picked au prochain cron run) → on continue le round-robin
+          // pour ne pas tout envoyer sur variant 1.
+          chosenVariant = (position % abState.variantCount) + 1;
+        } else {
+          chosenVariant = (position % abState.variantCount) + 1;
+        }
+        inFlightByCampaign.set(campaign.id, inFlight + 1);
+      }
+    }
+
+    // Résolution du subject template en fonction du variant choisi
+    let rawSubject = campaign.subject;
+    if (chosenVariant === 2 && campaign.subject_variant_2) rawSubject = campaign.subject_variant_2;
+    else if (chosenVariant === 3 && campaign.subject_variant_3) rawSubject = campaign.subject_variant_3;
+
     // Templating
-    const subject = applyTemplate(campaign.subject, contact, '');
+    const subject = applyTemplate(rawSubject, contact, '');
     let html = applyTemplate(campaign.body_html, contact, '');
 
     // Ajoute le lien opt-out RGPD
@@ -299,6 +417,7 @@ export async function GET(request) {
       const sendUpdate = await updateSendStatus(supabase, send.id, 'sent', {
         provider_id: result.id,
         sent_at: new Date().toISOString(),
+        subject_variant: chosenVariant,
       });
       return { ...sendUpdate, crmLogged: !!crmLog?.logged };
     } else {

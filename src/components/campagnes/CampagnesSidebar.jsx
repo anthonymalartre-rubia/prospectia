@@ -24,6 +24,7 @@ import {
   FileText,
   ChevronLeft,
   Sparkles,
+  GitBranch,
 } from 'lucide-react';
 
 const NAV_ITEMS = [
@@ -47,6 +48,14 @@ const NAV_ITEMS = [
     matches: (p) => p.startsWith('/admin/prospection/campaigns'),
   },
   {
+    id: 'sequences',
+    label: 'Séquences',
+    description: 'Multi-touch + stop-on-reply',
+    href: '/admin/prospection/sequences',
+    icon: GitBranch,
+    matches: (p) => p.startsWith('/admin/prospection/sequences'),
+  },
+  {
     id: 'senders',
     label: 'Domaines d\'envoi',
     description: 'Resend multi-tenant',
@@ -60,7 +69,6 @@ const NAV_ITEMS = [
     description: 'Bibliothèque emails',
     href: '/admin/prospection/templates',
     icon: FileText,
-    soon: true,
     matches: (p) => p.startsWith('/admin/prospection/templates'),
   },
   {

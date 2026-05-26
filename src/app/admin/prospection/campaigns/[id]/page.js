@@ -7,7 +7,7 @@ import {
   ArrowLeft, Mail, Loader2, Send, AlertTriangle, Eye, MousePointerClick,
   CheckCircle2, XCircle, Clock, Pause, Trash2, RefreshCw, ShieldOff,
   LogIn, Users, Calendar, BarChart3, AlertCircle, MessageSquareReply,
-  Sparkles, ExternalLink,
+  Sparkles, ExternalLink, FlaskConical, Trophy,
 } from 'lucide-react';
 import { getSupabase } from '@/lib/supabase';
 import { CAMPAGNES_ALLOWED_PLANS } from '@/lib/campagnes-access';
@@ -45,6 +45,7 @@ export default function CampaignDetailPage() {
   const [campaign, setCampaign] = useState(null);
   const [sample, setSample] = useState([]);
   const [crmStats, setCrmStats] = useState({ replies_count: 0, auto_created_deals_count: 0 });
+  const [abTest, setAbTest] = useState(null);
   const [error, setError] = useState(null);
   const [sending, setSending] = useState(false);
   const [confirmSend, setConfirmSend] = useState(false);
@@ -64,6 +65,7 @@ export default function CampaignDetailPage() {
       setCampaign(data.campaign);
       setSample(data.sample_sends || []);
       setCrmStats(data.crm || { replies_count: 0, auto_created_deals_count: 0 });
+      setAbTest(data.ab_test || null);
     } catch {
       setError('Erreur réseau');
     } finally {
@@ -304,6 +306,91 @@ export default function CampaignDetailPage() {
               Vérifiez la qualité de votre liste (emails invalides) et envisagez de l&apos;épurer avant la prochaine campagne.
             </div>
           </div>
+        )}
+
+        {/* A/B test results — visible uniquement si A/B activé */}
+        {abTest && abTest.enabled && (
+          <section className="mb-6 rounded-2xl border border-violet-500/30 bg-violet-500/[0.04] overflow-hidden">
+            <div className="px-4 py-3 border-b border-violet-500/20 bg-violet-500/[0.06] flex items-center justify-between flex-wrap gap-2">
+              <div className="text-xs font-semibold uppercase tracking-wider text-violet-300 flex items-center gap-1.5">
+                <FlaskConical size={12} />
+                A/B test — Résultats par variant
+              </div>
+              <div className="text-[11px] text-content-tertiary">
+                Sample size : <strong className="tabular-nums text-content-secondary">{abTest.sample_size}</strong>
+                {abTest.winner_variant && abTest.picked_at && (
+                  <span className="ml-2">
+                    · winner picked {new Date(abTest.picked_at).toLocaleString('fr-FR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
+                  </span>
+                )}
+              </div>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-xs">
+                <thead className="text-[10px] text-content-tertiary uppercase tracking-wider">
+                  <tr>
+                    <th className="text-left px-4 py-2 font-semibold">Variant</th>
+                    <th className="text-left px-4 py-2 font-semibold">Subject</th>
+                    <th className="text-right px-4 py-2 font-semibold">Sent</th>
+                    <th className="text-right px-4 py-2 font-semibold">Opened</th>
+                    <th className="text-right px-4 py-2 font-semibold">Open rate</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {abTest.variants.map((v) => {
+                    const label = String.fromCharCode(64 + v.id); // 1→A, 2→B, 3→C
+                    const isWinner = abTest.winner_variant === v.id;
+                    const rate = (v.open_rate * 100).toFixed(1);
+                    return (
+                      <tr key={v.id} className={`border-t border-violet-500/10 ${isWinner ? 'bg-violet-500/[0.05]' : ''}`}>
+                        <td className="px-4 py-2.5">
+                          <span className={`inline-flex items-center gap-1 font-semibold ${isWinner ? 'text-violet-300' : 'text-content-primary'}`}>
+                            {label}
+                            {isWinner && <Trophy size={11} className="text-amber-400" />}
+                          </span>
+                        </td>
+                        <td className="px-4 py-2.5 max-w-md">
+                          <span className="text-content-secondary truncate block" title={v.subject || ''}>
+                            {v.subject || <em className="text-content-tertiary">(vide)</em>}
+                          </span>
+                        </td>
+                        <td className="px-4 py-2.5 text-right tabular-nums text-content-secondary">{v.sent}</td>
+                        <td className="px-4 py-2.5 text-right tabular-nums text-content-secondary">{v.opened}</td>
+                        <td className={`px-4 py-2.5 text-right tabular-nums font-semibold ${isWinner ? 'text-violet-300' : 'text-content-primary'}`}>
+                          {rate}%
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+            {abTest.winner_variant ? (
+              (() => {
+                const winner = abTest.variants.find((v) => v.id === abTest.winner_variant);
+                const winnerLabel = String.fromCharCode(64 + abTest.winner_variant);
+                const remaining = Math.max(0, (campaign.total_recipients || 0) - sent);
+                return (
+                  <div className="px-4 py-3 border-t border-violet-500/20 bg-violet-500/[0.03] text-xs text-violet-200 flex items-center gap-2">
+                    <Trophy size={13} className="text-amber-400" />
+                    <span>
+                      Variant <strong>{winnerLabel}</strong> picked as winner
+                      {winner && ` (${(winner.open_rate * 100).toFixed(1)}% open rate)`}
+                      {remaining > 0 && ` — used for the remaining ${remaining} send${remaining > 1 ? 's' : ''}`}
+                    </span>
+                  </div>
+                );
+              })()
+            ) : (
+              <div className="px-4 py-3 border-t border-violet-500/20 bg-violet-500/[0.03] text-xs text-content-tertiary flex items-center gap-2">
+                <FlaskConical size={13} className="text-violet-400" />
+                <span>
+                  En cours — {Math.min(sent, abTest.sample_size)} / {abTest.sample_size} envois faits. Le winner sera automatiquement choisi
+                  une fois le sample size atteint.
+                </span>
+              </div>
+            )}
+          </section>
         )}
 
         {/* Aperçu + sample */}

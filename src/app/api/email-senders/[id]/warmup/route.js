@@ -31,6 +31,46 @@ async function buildWarmupPayload(supabase, session, senderId) {
     ? Math.max(0, phase.maxPerDay - todayAlreadySent)
     : null; // null = warmup terminé
 
+  // Stats peer-to-peer (best-effort, ne fait pas échouer la réponse)
+  let peer = null;
+  try {
+    const { data: peerRow } = await supabase
+      .from('warmup_peer_pool')
+      .select('id, peer_email, active, total_sent, total_received, total_opened, total_clicked, total_replied, joined_at')
+      .eq('sender_id', senderId)
+      .maybeSingle();
+
+    // Compteur jour : exchanges envoyés OU reçus aujourd'hui par ce peer
+    let exchangesToday = 0;
+    if (peerRow?.id) {
+      const todayStart = new Date();
+      todayStart.setHours(0, 0, 0, 0);
+      const todayStartIso = todayStart.toISOString();
+      const { count } = await supabase
+        .from('warmup_exchanges')
+        .select('id', { count: 'exact', head: true })
+        .gte('sent_at', todayStartIso)
+        .or(`from_peer_id.eq.${peerRow.id},to_peer_id.eq.${peerRow.id}`);
+      exchangesToday = count || 0;
+    }
+
+    // Taille du pool actif (info publique style "vous contribuez à N+ domaines")
+    const { count: poolCount } = await supabase
+      .from('warmup_peer_pool')
+      .select('id', { count: 'exact', head: true })
+      .eq('active', true);
+
+    peer = peerRow
+      ? {
+          ...peerRow,
+          exchanges_today: exchangesToday,
+          pool_size: poolCount || 0,
+        }
+      : { enrolled: false, pool_size: poolCount || 0 };
+  } catch (e) {
+    console.warn('[api/email-senders/warmup] peer stats fetch failed', e?.message);
+  }
+
   return {
     warmup: {
       id: session.id,
@@ -45,6 +85,7 @@ async function buildWarmupPayload(supabase, session, senderId) {
       today_sent: todayAlreadySent,
       today_quota_remaining: todayQuotaRemaining,
       estimated_completion_at: completionDate.toISOString(),
+      peer,
     },
   };
 }

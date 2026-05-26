@@ -18,7 +18,8 @@ import { getSupabaseAdmin } from '@/lib/supabase-admin';
 import { cleanEnv } from '@/lib/envClean';
 import { verifyResendSignature } from '@/lib/webhooks/resend-verify';
 import { autoCreateFromReply } from '@/lib/crm-auto-create';
-import { parseCampaignReplyAddress, isInboundDomain } from '@/lib/inbound-domain';
+import { parseCampaignReplyAddress, parseSequenceReplyAddress, isInboundDomain } from '@/lib/inbound-domain';
+import { parsePeerEmailAddress } from '@/lib/warmup-peer';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -100,15 +101,126 @@ export async function POST(request) {
     return NextResponse.json({ received: true }, { status: 200 });
   }
 
+  // ───────────────────────────────────────────────────────────────────
+  // 3.warmup) PEER-TO-PEER WARMUP — court-circuit prioritaire
+  // ───────────────────────────────────────────────────────────────────
+  // Si le `to` matche `warmup-{senderId}@reply.volia.fr`, c'est un email
+  // de notre cron warmup peer-to-peer (cf /api/cron/process-warmup-peer).
+  // On NE DOIT PAS l'auto-créer en CRM (ce n'est pas un vrai reply client) :
+  // à la place, on update warmup_exchanges.replied_at + bump compteurs.
+  if (toRaw && isInboundDomain(toDomain)) {
+    const toSenderId = parsePeerEmailAddress(toRaw);
+    const fromSenderId = parsePeerEmailAddress(from); // si auto-reply du peer
+
+    if (toSenderId) {
+      try {
+        // Récup les peer rows pour from + to (le from peut être absent si
+        // c'est un vrai humain qui a répondu par erreur à warmup-xxx)
+        const { data: toPeer } = await supabaseAdmin
+          .from('warmup_peer_pool')
+          .select('id, sender_id')
+          .eq('sender_id', toSenderId)
+          .maybeSingle();
+
+        let fromPeer = null;
+        if (fromSenderId) {
+          const { data } = await supabaseAdmin
+            .from('warmup_peer_pool')
+            .select('id, sender_id')
+            .eq('sender_id', fromSenderId)
+            .maybeSingle();
+          fromPeer = data || null;
+        }
+
+        // Si on retrouve un exchange en cours (même from/to, pas encore replied),
+        // on le marque replied_at = maintenant.
+        if (fromPeer && toPeer) {
+          const { data: pending } = await supabaseAdmin
+            .from('warmup_exchanges')
+            .select('id')
+            .eq('from_peer_id', fromPeer.id)
+            .eq('to_peer_id', toPeer.id)
+            .is('replied_at', null)
+            .order('sent_at', { ascending: false })
+            .limit(1)
+            .maybeSingle();
+          if (pending?.id) {
+            await supabaseAdmin
+              .from('warmup_exchanges')
+              .update({ replied_at: new Date().toISOString() })
+              .eq('id', pending.id);
+            await supabaseAdmin.rpc('bump_warmup_peer_replied', { peer_id: toPeer.id });
+          }
+        }
+
+        // Audit léger pour debug
+        await supabaseAdmin.from('inbound_events').insert({
+          user_id: null,
+          channel: 'email',
+          sender_id: null,
+          from_email: from,
+          from_phone: null,
+          subject,
+          body: typeof bodyText === 'string' ? bodyText.slice(0, 2000) : null,
+          raw_payload: payload,
+          processed_at: new Date().toISOString(),
+          contact_id: null,
+          deal_id: null,
+        });
+      } catch (e) {
+        console.warn('[resend-inbound] warmup peer handling failed', e.message);
+      }
+      // Court-circuit : pas d'auto-create CRM, pas de matching campaign.
+      return NextResponse.json({ received: true, warmup_peer: true }, { status: 200 });
+    }
+  }
+
   let senderRow = null;
   let ownerId = null;
   let matchedCampaignId = null;
+
+  // 3.pre) STOP-ON-REPLY pour les séquences : si le `to` matche le format
+  // séquence (s-{32hex}@reply.volia.fr), on identifie directement l'enrollment
+  // et on stoppe les follow-ups si la séquence a stop_on_reply=true.
+  let matchedSequenceEnrollmentId = null;
+  if (toRaw && isInboundDomain(toDomain)) {
+    const parsedEnrollmentId = parseSequenceReplyAddress(toRaw);
+    if (parsedEnrollmentId) {
+      try {
+        const { data: enrollRow } = await supabaseAdmin
+          .from('sequence_enrollments')
+          .select('id, sequence_id, contact_id, status, sequence:email_sequences(owner_id, stop_on_reply, name)')
+          .eq('id', parsedEnrollmentId)
+          .maybeSingle();
+        if (enrollRow?.sequence?.owner_id) {
+          matchedSequenceEnrollmentId = enrollRow.id;
+          ownerId = enrollRow.sequence.owner_id;
+          // Stop-on-reply : on coupe les follow-ups de cet enrollment
+          if (enrollRow.sequence.stop_on_reply && enrollRow.status === 'active') {
+            await supabaseAdmin
+              .from('sequence_enrollments')
+              .update({ status: 'replied', replied_at: new Date().toISOString() })
+              .eq('id', enrollRow.id);
+          }
+          // Trace replied_at sur le dernier email_send de cet enrollment
+          // (sert au matching analytics du dashboard séquence).
+          await supabaseAdmin
+            .from('email_sends')
+            .update({ replied_at: new Date().toISOString() })
+            .eq('sequence_enrollment_id', enrollRow.id)
+            .is('replied_at', null);
+        }
+      } catch (e) {
+        console.warn('[resend-inbound] sequence enrollment lookup failed', e.message);
+      }
+    }
+  }
 
   // 3a) PREMIER MATCH (le plus fiable) : parser le `to` pour extraire le
   // campaign_id encodé dans le local-part. Format défini par
   // lib/inbound-domain.js : `c-{32hex}@reply.volia.fr`. Cette méthode
   // est résistante aux clients mail qui strippent les headers In-Reply-To.
-  if (toRaw && isInboundDomain(toDomain)) {
+  if (!ownerId && toRaw && isInboundDomain(toDomain)) {
     const parsedCampaignId = parseCampaignReplyAddress(toRaw);
     if (parsedCampaignId) {
       try {

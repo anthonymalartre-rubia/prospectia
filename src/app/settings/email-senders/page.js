@@ -251,6 +251,13 @@ function WarmupSection({ sender, onStart, starting }) {
   const progress = getWarmupProgressPercent(currentDay);
   const completionDate = estimateCompletionDate(warmup.started_at);
 
+  // Stats peer-to-peer (Phase 3) — fournies par l'API si le sender est enrôlé.
+  const peer = warmup.peer || null;
+  const peerEnrolled = peer && peer.peer_email; // schema : {peer_email, total_*} si enrôlé, {enrolled:false} sinon
+  const peerExchangesToday = peer?.exchanges_today ?? null;
+  const poolSize = peer?.pool_size ?? 0;
+  const peerTooltip = 'Volia simule des échanges email réalistes (ouvertures, clics, réponses) entre les domaines de tous les clients Volia. Ces signaux positifs sont vus par Gmail/Outlook et accélèrent la mise en réputation de votre domaine.';
+
   return (
     <div className="mt-3 pt-3 border-t border-line space-y-2">
       <div className="flex items-center justify-between gap-3 flex-wrap">
@@ -289,6 +296,39 @@ function WarmupSection({ sender, onStart, starting }) {
         </strong>
         .
       </p>
+
+      {peerEnrolled && (
+        <div className="mt-2 px-3 py-2 rounded-md border border-line bg-surface-elevated/40 space-y-1">
+          <div className="flex items-center gap-2 flex-wrap text-[11px] text-content-secondary">
+            <span className="inline-flex items-center gap-1 font-semibold text-violet-600">
+              <Flame className="h-3 w-3" />
+              Réseau peer-to-peer
+            </span>
+            <InfoTooltip content={peerTooltip} iconSize={11} />
+            {poolSize > 0 && (
+              <span className="text-content-tertiary">
+                · Vous contribuez à un pool de <strong>{poolSize}+</strong> domaines Volia
+              </span>
+            )}
+          </div>
+          <div className="flex items-center gap-3 flex-wrap text-[11px] text-content-tertiary">
+            {peerExchangesToday !== null && (
+              <span>
+                <strong className="text-content-secondary">{peerExchangesToday}</strong> emails échangés aujourd'hui
+              </span>
+            )}
+            {typeof peer?.total_sent === 'number' && (
+              <span>· Total envoyés : <strong className="text-content-secondary">{peer.total_sent}</strong></span>
+            )}
+            {typeof peer?.total_opened === 'number' && (
+              <span>· Ouverts : <strong className="text-content-secondary">{peer.total_opened}</strong></span>
+            )}
+            {typeof peer?.total_replied === 'number' && (
+              <span>· Réponses : <strong className="text-content-secondary">{peer.total_replied}</strong></span>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

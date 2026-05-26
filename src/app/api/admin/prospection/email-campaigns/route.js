@@ -33,12 +33,33 @@ export async function POST(request) {
   const from_email = (body.from_email || 'hello@volia.fr').trim();
   const reply_to = body.reply_to ? String(body.reply_to).trim() : null;
   const email_sender_id = body.email_sender_id || null;
+  // Smart scheduling timezone-aware (cf /lib/timezone-detector.js). On accepte
+  // explicitement true/false ; toute autre valeur => false (legacy/safe default).
+  const smart_scheduling = body.smart_scheduling === true;
+
+  // A/B testing : 1 (par défaut) à 3 variants de subject. Les variants 2/3 sont
+  // optionnels — s'ils sont vides/null, pas d'A/B test (legacy behavior).
+  const subject_variant_2 = body.subject_variant_2 ? String(body.subject_variant_2).trim() : null;
+  const subject_variant_3 = body.subject_variant_3 ? String(body.subject_variant_3).trim() : null;
+  const ab_test_sample_size = Number.isInteger(body.ab_test_sample_size)
+    ? Math.max(10, Math.min(10000, body.ab_test_sample_size))
+    : 100;
 
   if (!name || !subject || !body_html || !list_id) {
     return NextResponse.json({ error: 'name, subject, body_html, list_id requis' }, { status: 400 });
   }
   if (name.length > 120 || subject.length > 200) {
     return NextResponse.json({ error: 'name max 120 chars, subject max 200' }, { status: 400 });
+  }
+  if (subject_variant_2 && subject_variant_2.length > 200) {
+    return NextResponse.json({ error: 'subject_variant_2 max 200 chars' }, { status: 400 });
+  }
+  if (subject_variant_3 && subject_variant_3.length > 200) {
+    return NextResponse.json({ error: 'subject_variant_3 max 200 chars' }, { status: 400 });
+  }
+  // variant 3 ne peut exister sans variant 2 (UX : on ajoute 2 puis 3)
+  if (subject_variant_3 && !subject_variant_2) {
+    return NextResponse.json({ error: 'subject_variant_2 requis si subject_variant_3 fourni' }, { status: 400 });
   }
 
   // Vérifie que la liste appartient au user
@@ -100,11 +121,15 @@ export async function POST(request) {
       list_id,
       name,
       subject,
+      subject_variant_2,
+      subject_variant_3,
+      ab_test_sample_size,
       body_html,
       from_name,
       from_email,
       reply_to,
       email_sender_id,
+      smart_scheduling,
       status: 'draft',
       total_recipients: totalRecipients,
     })

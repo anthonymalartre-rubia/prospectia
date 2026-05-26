@@ -107,3 +107,44 @@ export function isInboundDomain(domain) {
   if (!domain) return false;
   return String(domain).toLowerCase().trim() === getInboundReplyDomain();
 }
+
+/**
+ * Construit une adresse reply-to unique par enrollment de séquence.
+ * Format : s-{enrollment_id_sans_tirets}@reply.volia.fr
+ *
+ * Permet de matcher un reply à un enrollment précis (donc à un contact
+ * + une séquence) pour stopper les follow-ups (stop-on-reply).
+ *
+ * @param {string} enrollmentId UUID de la row sequence_enrollments
+ * @returns {string|null}
+ */
+export function buildSequenceReplyAddress(enrollmentId) {
+  if (!enrollmentId || typeof enrollmentId !== 'string') return null;
+  const clean = enrollmentId.replace(/-/g, '').toLowerCase();
+  if (!/^[0-9a-f]{32}$/.test(clean)) return null;
+  return `s-${clean}@${getInboundReplyDomain()}`;
+}
+
+/**
+ * Parse une adresse reply-to inbound de séquence pour récupérer l'enrollment_id.
+ * @param {string} addressLike
+ * @returns {string|null} UUID au format standard (avec tirets) ou null
+ */
+export function parseSequenceReplyAddress(addressLike) {
+  if (!addressLike) return null;
+  const match = String(addressLike).match(/<?([^<>\s]+@[^<>\s]+)>?/);
+  const email = match?.[1] || String(addressLike);
+  const atIdx = email.indexOf('@');
+  if (atIdx < 0) return null;
+  const localPart = email.slice(0, atIdx).toLowerCase().trim();
+  const m = localPart.match(/^s-([0-9a-f]{32})/);
+  if (!m) return null;
+  const hex = m[1];
+  return [
+    hex.slice(0, 8),
+    hex.slice(8, 12),
+    hex.slice(12, 16),
+    hex.slice(16, 20),
+    hex.slice(20, 32),
+  ].join('-');
+}

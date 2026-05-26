@@ -74,8 +74,16 @@
       "schedule": "*/5 * * * *"
     },
     {
+      "path": "/api/cron/process-sequences",
+      "schedule": "*/5 * * * *"
+    },
+    {
       "path": "/api/cron/newsletter-monthly",
       "schedule": "0 9 1 * *"
+    },
+    {
+      "path": "/api/cron/process-warmup-peer",
+      "schedule": "0 */6 * * *"
     }
   ]
 }

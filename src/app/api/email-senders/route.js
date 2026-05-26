@@ -53,8 +53,27 @@ export async function GET() {
       .in('sender_id', senderIds);
 
     const sessionMap = new Map((sessions || []).map((sess) => [sess.sender_id, sess]));
+
+    // Bulk fetch des peer_pool entries (Phase 3 peer-to-peer)
+    const { data: peers } = await supabase
+      .from('warmup_peer_pool')
+      .select('sender_id, peer_email, active, total_sent, total_received, total_opened, total_clicked, total_replied, joined_at')
+      .in('sender_id', senderIds);
+    const peerMap = new Map((peers || []).map((p) => [p.sender_id, p]));
+
+    // Taille du pool global (info pour le bloc "vous contribuez à X+ domaines")
+    const { count: poolCount } = await supabase
+      .from('warmup_peer_pool')
+      .select('id', { count: 'exact', head: true })
+      .eq('active', true);
+
     for (const s of senders) {
-      s.warmup = sessionMap.get(s.id) || null;
+      const sess = sessionMap.get(s.id) || null;
+      if (sess) {
+        const peerRow = peerMap.get(s.id) || null;
+        sess.peer = peerRow ? { ...peerRow, pool_size: poolCount || 0 } : { enrolled: false, pool_size: poolCount || 0 };
+      }
+      s.warmup = sess;
     }
   }
 
