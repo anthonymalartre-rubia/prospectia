@@ -8,6 +8,7 @@ import {
   CheckCircle, AlertCircle, FileText, Search, Send, MessageSquare,
 } from 'lucide-react';
 import { getSupabase } from '@/lib/supabase';
+import { SMS_CAMPAIGNS_ENABLED } from '@/lib/feature-flags';
 
 export default function ListDetailPage() {
   const router = useRouter();
@@ -148,13 +149,15 @@ export default function ListDetailPage() {
               <Send size={14} />
               Campagne email
             </Link>
-            <Link
-              href={`/admin/prospection/sms/new?list=${listId}`}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold transition"
-            >
-              <MessageSquare size={14} />
-              Campagne SMS
-            </Link>
+            {SMS_CAMPAIGNS_ENABLED && (
+              <Link
+                href={`/admin/prospection/sms/new?list=${listId}`}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold transition"
+              >
+                <MessageSquare size={14} />
+                Campagne SMS
+              </Link>
+            )}
             <button onClick={deleteList} className="inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-red-500/30 text-red-400 hover:bg-red-500/10 text-sm font-medium transition" title="Supprimer la liste">
               <Trash2 size={14} />
             </button>
