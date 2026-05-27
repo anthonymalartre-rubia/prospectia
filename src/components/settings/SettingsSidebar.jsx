@@ -220,10 +220,16 @@ export default function SettingsSidebar({ isOpen, onClose }) {
                 return (
                   <button
                     key={item.id}
+                    type="button"
                     onClick={() => {
                       if (typeof window !== 'undefined') {
-                        window.history.replaceState(null, '', `#${mappedSection}`);
-                        window.dispatchEvent(new HashChangeEvent('hashchange'));
+                        // window.location.hash = X déclenche AUTOMATIQUEMENT
+                        // l'événement 'hashchange' que la page écoute (et
+                        // ça marche cross-browser, contrairement à
+                        // dispatchEvent(new HashChangeEvent(...)) qui requiert
+                        // oldURL/newURL et est ignoré par certains browsers).
+                        // Bug fix 27 mai 2026.
+                        window.location.hash = mappedSection;
                         // Scroll au top de la page (chaque section commence en haut)
                         window.scrollTo({ top: 0, behavior: 'smooth' });
                       }
