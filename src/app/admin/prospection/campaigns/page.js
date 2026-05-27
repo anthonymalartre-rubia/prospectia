@@ -96,7 +96,7 @@ export default function CampaignsHubPage() {
               Campagnes email
             </h1>
             <p className="text-sm text-content-secondary mt-1">
-              Pilotez vos envois, suivez les ouvertures, clics, réponses et désabonnements.
+              Envoie, suis les ouvertures, les clics, les réponses. C&apos;est tout.
             </p>
           </div>
           <Link
@@ -114,25 +114,25 @@ export default function CampaignsHubPage() {
             // liste (sans liste, /campaigns/new échoue car list_id est requis).
             <div className="rounded-2xl border border-dashed border-line p-12 text-center">
               <Mail size={28} className="mx-auto mb-2 text-content-tertiary opacity-50" />
-              <p className="text-content-tertiary mb-1">Commencez par créer une liste de prospects.</p>
+              <p className="text-content-tertiary mb-1">Avant la campagne, il te faut une liste.</p>
               <p className="text-xs text-content-tertiary mb-4">
-                Une campagne email cible toujours une liste. Importez d&apos;abord vos contacts, puis créez votre campagne ciblée.
+                Une campagne sans destinataires, ça envoie pas grand-chose. Commence par là.
               </p>
               <Link href="/admin/prospection" className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-violet-600 hover:bg-violet-500 text-white text-sm font-semibold transition">
                 <Plus size={14} />
-                Créer ma première liste
+                Créer une liste
               </Link>
             </div>
           ) : (
             <div className="rounded-2xl border border-dashed border-line p-12 text-center">
               <Mail size={28} className="mx-auto mb-2 text-content-tertiary opacity-50" />
-              <p className="text-content-tertiary mb-1">Aucune campagne pour le moment.</p>
+              <p className="text-content-tertiary mb-1">Pas encore de campagne. Plus elle est petite, mieux c&apos;est pour commencer.</p>
               <p className="text-xs text-content-tertiary mb-4">
-                Vous avez déjà {listsCount} liste{listsCount > 1 ? 's' : ''} prête{listsCount > 1 ? 's' : ''}. Lancez votre première campagne ciblée.
+                {listsCount} liste{listsCount > 1 ? 's' : ''} dispo{listsCount > 1 ? 's' : ''}. Une cible bien choisie vaut mieux qu&apos;un blast à 10k.
               </p>
               <Link href="/admin/prospection/campaigns/new" className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-violet-600 hover:bg-violet-500 text-white text-sm font-semibold transition">
                 <Plus size={14} />
-                Créer ma première campagne
+                Première campagne
               </Link>
             </div>
           )

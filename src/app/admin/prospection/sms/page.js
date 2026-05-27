@@ -109,9 +109,9 @@ export default function SmsHubPage() {
         {campaigns.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-line p-12 text-center">
             <MessageSquare size={28} className="mx-auto mb-2 text-content-tertiary opacity-50" />
-            <p className="text-content-tertiary mb-1">Aucune campagne SMS.</p>
+            <p className="text-content-tertiary mb-1">Aucune campagne SMS. Le mobile, c&apos;est 90% de taux d&apos;ouverture.</p>
             <p className="text-xs text-content-tertiary">
-              Vous devez avoir une liste avec des numéros mobiles FR (+33 6 / +33 7) au format E.164.
+              Il te faut une liste avec des mobiles FR (+33 6 / +33 7) au format E.164.
             </p>
           </div>
         ) : (

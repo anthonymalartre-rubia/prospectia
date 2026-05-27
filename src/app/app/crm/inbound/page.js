@@ -121,11 +121,11 @@ export default function InboundEventsPage() {
               <div className="text-center py-16 border border-dashed border-line-default rounded-lg">
                 <Inbox className="w-10 h-10 mx-auto mb-3 text-content-tertiary" />
                 <p className="text-content-secondary">
-                  Aucune réponse entrante pour le moment.
+                  Personne n&apos;a répondu. Encore.
                 </p>
                 <p className="text-xs text-content-tertiary mt-2">
-                  Dès qu'un prospect répondra à un email ou SMS de campagne,
-                  un contact + deal seront créés automatiquement ici.
+                  Dès qu&apos;un prospect répond à un email ou SMS, un contact + deal
+                  se créent ici, tout seuls.
                 </p>
               </div>
             ) : (

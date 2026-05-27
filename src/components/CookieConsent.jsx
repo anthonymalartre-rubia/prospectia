@@ -118,12 +118,12 @@ function CookieBanner({ onAcceptAll, onRejectAll, onCustomize }) {
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold text-content-primary mb-1">
-                Volia utilise des cookies
+                Cookies : on vous demande.
               </p>
               <p className="text-xs sm:text-[13px] text-content-secondary leading-relaxed">
-                Nous utilisons des cookies pour faire fonctionner le site et améliorer votre
-                expérience. Vous pouvez accepter tout, refuser tout, ou personnaliser vos choix.
-                Vos préférences peuvent être modifiées à tout moment depuis le footer ou la page{' '}
+                On utilise des cookies pour faire tourner le site et améliorer l&apos;expérience.
+                Acceptez tout, refusez tout, ou personnalisez. Vous changez d&apos;avis quand vous
+                voulez via le footer ou la page{' '}
                 <Link href="/cookies" className="text-violet-400 hover:text-violet-300 underline-offset-2 hover:underline">
                   Gérer mes cookies
                 </Link>

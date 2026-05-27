@@ -375,10 +375,10 @@ function ProblemSolutionSection() {
               Avant / Après
             </span>
             <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-4 tracking-tight bg-gradient-to-b from-zinc-900 to-zinc-600 bg-clip-text text-transparent">
-              Le stack outbound, refait correctement.
+              Le stack outbound. Refait droit.
             </h2>
             <p className="text-content-tertiary text-lg max-w-2xl mx-auto">
-              Si vous reconnaissez la colonne de gauche, vous payez 3 outils pour faire le travail d&apos;un seul.
+              Vous reconnaissez la colonne de gauche ? Vous payez 3 outils pour le boulot d&apos;un seul.
             </p>
           </div>
         </MotionInView>
@@ -859,11 +859,11 @@ export default function CampagnesProductPage() {
         }
         faq={FAQ}
         finalCta={{
-          title: 'Cold email qui marche, pour le prix d\'un café.',
-          subtitle: 'Divisez votre stack par 3, multipliez votre deliverability par 2. Templates prêts, warmup auto, replies dans le CRM — vous n\'avez qu\'à appuyer sur Play.',
-          primary: { label: 'Démarrer gratuitement', href: '/signup?plan=pro' },
-          secondary: { label: 'Voir une démo en direct', href: '#demo' },
-          trust: 'Inclus dans Pro · 14 jours d\'essai · Migration Lemlist assistée · Conformité RGPD by default',
+          title: 'Du cold email qui marche, au prix d\'un café.',
+          subtitle: 'Stack divisé par 3, deliverability ×2. Templates prêts, warmup auto, replies qui atterrissent dans le CRM — vous appuyez sur Play.',
+          primary: { label: 'Commencer gratuitement', href: '/signup?plan=pro' },
+          secondary: { label: 'Voir une démo live', href: '#demo' },
+          trust: 'Inclus dans Pro · 14 jours d\'essai · Migration Lemlist offerte · RGPD by default',
         }}
       />
     </>

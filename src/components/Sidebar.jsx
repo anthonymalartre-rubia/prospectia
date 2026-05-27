@@ -42,9 +42,9 @@ function hasAccess(userPlanId, requiredPlanId) {
 
 // Métadonnées plans pour les badges et l'encart "next step"
 const PLAN_META = {
-  solo: { name: 'Solo', price: 19, hint: 'Passez à Solo pour 10× plus de prospects' },
-  pro: { name: 'Pro', price: 49, hint: 'Passez à Pro pour la vérification email illimitée' },
-  business: { name: 'Business', price: 99, hint: 'Passez à Business pour le CRM intégré + API' },
+  solo: { name: 'Solo', price: 19, hint: 'Passe Solo : 10× plus de prospects' },
+  pro: { name: 'Pro', price: 49, hint: 'Passe Pro : vérif emails illimitée' },
+  business: { name: 'Business', price: 99, hint: 'Passe Business : CRM intégré + API' },
 };
 
 // Plan suivant à proposer dans l'encart de bas de sidebar

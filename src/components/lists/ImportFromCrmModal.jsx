@@ -321,11 +321,10 @@ export default function ImportFromCrmModal({ open, onClose, listId, onSuccess })
                         <Inbox size={22} className="text-emerald-600" />
                       </div>
                       <p className="text-base font-bold text-content-primary mb-1">
-                        Aucun contact CRM
+                        CRM vide.
                       </p>
                       <p className="text-sm text-content-tertiary max-w-sm mb-4">
-                        Ajoutez vos premiers contacts CRM pour les importer dans vos
-                        listes Campagnes.
+                        Ajoute des contacts au CRM pour les importer dans tes listes Campagnes.
                       </p>
                       <Link
                         href="/app/crm/contacts"

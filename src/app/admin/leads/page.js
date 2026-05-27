@@ -247,7 +247,7 @@ export default function AdminLeadsPage() {
               </thead>
               <tbody>
                 {filtered.length === 0 ? (
-                  <tr><td colSpan={6} className="p-12 text-center text-content-tertiary">Aucun lead pour ce filtre.</td></tr>
+                  <tr><td colSpan={6} className="p-12 text-center text-content-tertiary">Aucun lead avec ce filtre. Élargis la recherche.</td></tr>
                 ) : filtered.map((l) => (
                   <tr key={l.id} className="border-t border-line">
                     <td className="p-3">

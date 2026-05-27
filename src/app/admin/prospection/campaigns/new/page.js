@@ -301,9 +301,9 @@ function NewCampaignContent() {
           </Link>
           <div className="rounded-2xl border border-amber-400/30 bg-amber-500/5 p-8 text-center">
             <AlertTriangle size={28} className="mx-auto mb-3 text-amber-500" />
-            <h2 className="text-lg font-semibold text-content-primary mb-2">Aucune liste de prospects</h2>
+            <h2 className="text-lg font-semibold text-content-primary mb-2">Pas de liste, pas de campagne.</h2>
             <p className="text-sm text-content-secondary mb-5 max-w-md mx-auto">
-              Créez une liste et importez votre CSV pour pouvoir lancer une campagne.
+              Crée une liste et importe ton CSV. Tu pourras envoyer juste après.
             </p>
             <Link href="/admin/prospection" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-500 text-white text-sm font-semibold transition shadow-lg shadow-violet-500/20">
               <Users size={14} />

@@ -17,10 +17,10 @@ export default function FAQSection() {
         <div className="text-center mb-16">
           <p className="text-sm font-semibold text-violet-400 mb-3">FAQ</p>
           <h2 className="text-3xl sm:text-4xl font-bold mb-4">
-            Questions frequentes
+            Les vraies questions.
           </h2>
           <p className="text-content-tertiary text-lg max-w-xl mx-auto">
-            Tout ce que vous devez savoir sur Volia.fr
+            On vous a vu venir. Réponses directes.
           </p>
         </div>
 

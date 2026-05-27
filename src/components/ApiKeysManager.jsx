@@ -153,7 +153,7 @@ export default function ApiKeysManager() {
       {keys.length === 0 ? (
         <div className="text-center text-content-tertiary text-sm py-6 border border-dashed border-line rounded-xl">
           <Key size={20} className="mx-auto mb-2 opacity-50" />
-          Aucune clé API encore. Créez-en une ci-dessus pour démarrer.
+          Aucune clé API. Crée-en une ci-dessus pour démarrer.
         </div>
       ) : (
         <div className="rounded-xl border border-line overflow-hidden">

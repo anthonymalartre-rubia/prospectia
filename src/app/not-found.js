@@ -10,10 +10,10 @@ export default function NotFound() {
         </div>
 
         <h1 className="text-2xl font-semibold text-content-primary mb-3">
-          Page non trouv&eacute;e
+          Cette page n&apos;existe pas.
         </h1>
         <p className="text-sm text-content-secondary mb-8 leading-relaxed">
-          La page que vous recherchez n&apos;existe pas ou a &eacute;t&eacute; d&eacute;plac&eacute;e.
+          Mais on peut t&apos;aider à trouver mieux.
         </p>
 
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
@@ -21,13 +21,13 @@ export default function NotFound() {
             href="/dashboard"
             className="py-2.5 px-6 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 text-white text-sm font-semibold hover:from-violet-500 hover:to-indigo-500 transition shadow-lg shadow-violet-500/20 text-center"
           >
-            Aller au tableau de bord
+            Aller au dashboard
           </Link>
           <Link
             href="/"
             className="py-2.5 px-6 rounded-xl border border-line text-content-secondary text-sm font-medium hover:bg-surface-hover transition text-center"
           >
-            Retour &agrave; l&apos;accueil
+            Retour à l&apos;accueil
           </Link>
         </div>
       </div>

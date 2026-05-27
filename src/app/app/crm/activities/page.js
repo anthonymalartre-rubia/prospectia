@@ -440,11 +440,10 @@ export default function CrmActivitiesPage() {
                   <Activity size={26} className="text-emerald-600" />
                 </div>
                 <h3 className="text-lg font-bold text-content-primary mb-1">
-                  Aucune activité pour le moment
+                  Le journal est vide.
                 </h3>
                 <p className="text-sm text-content-tertiary mb-5">
-                  Les notes, appels, meetings et tâches que vous ajoutez à vos deals
-                  et contacts apparaîtront ici.
+                  Notes, calls, meetings et tâches sur tes deals et contacts atterriront ici.
                 </p>
                 <Link
                   href="/app/crm"
@@ -549,7 +548,7 @@ export default function CrmActivitiesPage() {
               <div className="space-y-2 max-w-4xl">
                 {activities.length === 0 ? (
                   <div className="text-center py-12 text-content-tertiary">
-                    <p className="text-sm">Aucune activité avec ces filtres.</p>
+                    <p className="text-sm">Rien avec ces filtres. Élargis.</p>
                   </div>
                 ) : (
                   activities.map((a) => (

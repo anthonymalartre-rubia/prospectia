@@ -276,10 +276,10 @@ export default function OnboardingPage() {
                 </span>
               </div>
               <h1 className="text-2xl sm:text-3xl font-bold text-content-primary">
-                Commençons par 30 secondes de setup
+                30 secondes. Promis.
               </h1>
               <p className="mt-2 text-sm text-content-tertiary">
-                On personnalise votre espace et on lance votre première recherche.
+                On configure ton espace et on lance ta première recherche.
               </p>
             </div>
           )}

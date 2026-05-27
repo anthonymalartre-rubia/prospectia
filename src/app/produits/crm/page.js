@@ -812,11 +812,11 @@ export default function CrmProductPage() {
         beforeFaq={<PullQuoteSection />}
         faq={FAQ}
         finalCta={{
-          title: 'Le CRM qui se remplit tout seul, pour 90 €/mois en moins.',
-          subtitle: 'Stop le bazar HubSpot + Apollo + Lemlist + Zapier. Passez à Volia Business : un seul produit, un seul login, une seule facture. Annulation 1 clic.',
+          title: 'Le CRM qui se remplit tout seul. 90 €/mois en moins.',
+          subtitle: 'Stop le bazar HubSpot + Apollo + Lemlist + Zapier. Volia Business : un produit, un login, une facture. Résiliable en 1 clic.',
           primary: { label: 'Passer à Business 99 €', href: '/signup?plan=business' },
           secondary: { label: 'Voir une démo CRM', href: '/#demo' },
-          trust: '99 €/mo tout inclus · 5 seats · 10 000 prospects en pipeline · Annulation 1 clic · Conformité RGPD by default',
+          trust: '99 €/mo tout inclus · 5 seats · 10 000 prospects en pipeline · Annulation 1 clic · RGPD by default',
         }}
       />
     </>

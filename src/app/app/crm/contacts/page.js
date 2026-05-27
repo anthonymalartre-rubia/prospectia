@@ -526,10 +526,10 @@ export default function CrmContactsPage() {
                       <Search size={22} className="text-content-tertiary" />
                     </div>
                     <h3 className="text-base font-bold text-content-primary mb-1">
-                      Aucun contact trouvé
+                      Rien trouvé.
                     </h3>
                     <p className="text-sm text-content-tertiary">
-                      Essayez un autre mot-clé ou créez un nouveau contact.
+                      Essaie un autre mot-clé ou crée un nouveau contact.
                     </p>
                   </div>
                 ) : (
@@ -538,10 +538,10 @@ export default function CrmContactsPage() {
                       <Users size={26} className="text-emerald-600" />
                     </div>
                     <h3 className="text-lg font-bold text-content-primary mb-1">
-                      Aucun contact pour le moment
+                      Ton carnet est vide.
                     </h3>
                     <p className="text-sm text-content-tertiary mb-5">
-                      Créez votre premier contact ou poussez vos prospects depuis la Prospection.
+                      Crée un premier contact ou pousse tes prospects depuis Prospection.
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-2">
                       <button

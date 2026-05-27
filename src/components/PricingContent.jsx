@@ -197,52 +197,52 @@ const STACK_COMPETITORS = [
 // ─── Section 8 : FAQ pricing ─────────────────────────────────────
 const FAQ_PRICING = [
   {
-    q: 'Y a-t-il un essai gratuit ?',
-    a: 'Oui : à l’inscription, vous bénéficiez de 14 jours d’accès complet au plan Pro sans carte bancaire (5 000 prospects, cascade waterfall, vérif emails, campagnes). À l’expiration, votre compte passe automatiquement sur le plan Starter gratuit à vie (100 prospects/mois) — aucun prélèvement, aucune surprise.',
+    q: 'C\'est vraiment 19€/mois ? Y a un piège ?',
+    a: 'Non. Solo c\'est 19€/mois, point. Pas de frais de setup, pas de surcoût à l\'export. La seule limite, c\'est le nombre de prospects/mois — au-delà, la recherche se met en pause jusqu\'au renouvellement (on ne facture rien en plus, jamais).',
   },
   {
-    q: 'Puis-je changer de plan à tout moment ?',
-    a: 'Oui, l’upgrade ou le downgrade se fait en 1 clic depuis vos paramètres. Le pro-rata est calculé automatiquement — vous ne payez que la différence sur le mois en cours.',
+    q: 'Essai gratuit ?',
+    a: '14 jours d\'accès complet au plan Pro sans CB (5 000 prospects, cascade waterfall, campagnes). À J+14, le compte bascule sur Starter gratuit à vie (100 prospects/mois). Zéro prélèvement automatique sans votre accord explicite.',
   },
   {
-    q: 'Que se passe-t-il si j’atteins ma limite mensuelle ?',
-    a: 'Vous recevez une alerte email à 80 % et 100 % d’utilisation. Au-delà de la limite, la recherche est mise en pause jusqu’au renouvellement mensuel ou jusqu’à votre upgrade. Aucun frais surprise.',
+    q: 'Je peux changer de plan quand je veux ?',
+    a: 'Oui, en 1 clic depuis les paramètres. Upgrade ou downgrade, le pro-rata se calcule tout seul — vous payez juste la différence du mois en cours.',
   },
   {
-    q: 'Comment fonctionne la facturation annuelle (-2 mois) ?',
-    a: 'En annuel, vous payez 10 mois et bénéficiez de 12 mois d’accès. Exemple : Pro = 490 €/an au lieu de 588 € (49 € × 12), soit 98 € économisés. Facturation en une fois par CB ou virement.',
+    q: 'Et si j\'atteins la limite mensuelle ?',
+    a: 'Alerte email à 80% et 100%. Au-delà, la recherche se met en pause jusqu\'au renouvellement ou jusqu\'à l\'upgrade. Pas de facture surprise, jamais.',
   },
   {
-    q: 'Y a-t-il des frais cachés ?',
-    a: 'Aucun. Le prix affiché TTC est le seul prélèvement. Pas de frais de mise en route, pas de surcharge à l’export, pas de paywall sur les fonctionnalités annoncées dans votre plan.',
+    q: 'Annuel -2 mois, comment ça marche ?',
+    a: 'Vous payez 10 mois, vous accédez 12. Exemple Pro : 490€/an au lieu de 588€, soit 98€ gardés dans votre poche. Facturé en une fois (CB ou virement).',
   },
   {
-    q: 'Comment annuler mon abonnement ?',
-    a: 'Depuis vos paramètres > Plan > "Gérer mon abonnement" (portail Stripe). Annulation en 1 clic, l’accès reste actif jusqu’à la fin de la période payée. Aucune justification demandée.',
+    q: 'Comment je résilie ?',
+    a: 'Paramètres > Plan > "Gérer mon abonnement". 1 clic, sans justification, sans email passif-agressif. L\'accès reste actif jusqu\'à la fin de la période payée.',
   },
   {
-    q: 'Acceptez-vous le paiement par virement (entreprises) ?',
-    a: 'Oui pour les plans annuels Business et au-delà. Contactez-nous à contact@volia.fr avec votre n° SIRET, on émet une facture pro forma sous 24 h.',
+    q: 'Virement bancaire possible ?',
+    a: 'Oui sur les plans annuels Business+. Envoyez votre SIRET à contact@volia.fr, on vous fait une facture pro forma sous 24h.',
   },
   {
-    q: 'Quelles données sont incluses dans le prix ?',
-    a: 'L’accès complet à la base 287 000+ entreprises françaises (101 départements × 150+ secteurs), la cascade waterfall multi-sources, les exports CSV et les emails transactionnels. Aucune option payante cachée.',
+    q: 'Tout est vraiment inclus dans le prix ?',
+    a: 'Oui. Accès aux 287 000+ entreprises FR (101 départements × 150+ secteurs), cascade waterfall multi-sources, exports CSV, emails transactionnels. Aucune option cachée derrière un paywall.',
   },
   {
-    q: 'Le CRM est-il vraiment inclus dans Business ?',
-    a: 'Oui, intégralement. Kanban drag & drop, auto-création de deals depuis vos réponses email, timeline 360° par contact, activities (notes, calls, meetings). Pas besoin de HubSpot ou Pipedrive en parallèle.',
+    q: 'Le CRM est vraiment dans le plan Business ?',
+    a: 'Oui, intégralement. Kanban drag-and-drop, deals auto-créés depuis vos réponses email, timeline 360° par contact, activities (notes, calls, meetings). Vous pouvez désinstaller HubSpot.',
   },
   {
-    q: 'Quels moyens de paiement acceptez-vous ?',
-    a: 'Carte bancaire (Visa, Mastercard, Amex) via Stripe pour tous les plans. SEPA et virement bancaire pour les abonnements annuels Business+. PayPal disponible sur demande.',
+    q: 'Moyens de paiement ?',
+    a: 'CB (Visa, Mastercard, Amex) via Stripe sur tous les plans. SEPA et virement sur l\'annuel Business+. PayPal sur demande.',
   },
   {
-    q: 'Remboursement possible ?',
-    a: 'Oui, satisfait ou remboursé sous 14 jours sur le premier paiement, sans justification — il suffit d’écrire à contact@volia.fr. Au-delà, l’annulation 1-clic vous laisse profiter de la période payée.',
+    q: 'Remboursement ?',
+    a: 'Satisfait ou remboursé 14 jours sur le premier paiement, sans justification — un email à contact@volia.fr suffit. Au-delà, la résiliation 1 clic vous laisse profiter de la période payée.',
   },
   {
-    q: 'Tarifs spéciaux pour associations ou étudiants ?',
-    a: 'Oui : -50 % sur le plan Solo ou Pro pour les associations loi 1901 et les étudiants (sur présentation d’un justificatif). Écrivez à contact@volia.fr depuis votre email institutionnel.',
+    q: 'Tarif assos / étudiants ?',
+    a: '-50% sur Solo ou Pro pour les assos loi 1901 et les étudiants (sur justificatif). Écrivez à contact@volia.fr depuis votre email institutionnel.',
   },
 ];
 
@@ -282,15 +282,14 @@ export default function PricingContent() {
           <MotionInView>
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-violet-100 border border-violet-200 text-xs font-medium text-violet-700 mb-6">
               <Sparkles size={12} />
-              Tarification simple et transparente
+              Les prix. Sans bullshit.
             </div>
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight leading-[1.05] mb-6">
-              Le tarif le plus juste<br />du marché B2B français.
+              On a recodé Apollo + Lemlist<br />pour 19€/mois.
             </h1>
             <p className="text-lg sm:text-xl text-content-secondary leading-relaxed max-w-2xl mx-auto mb-8">
-              À partir de <strong className="text-content-primary">0 €</strong> pour tester, jusqu&apos;à{' '}
-              <strong className="text-content-primary">99 €/mois</strong> pour la suite complète (Prospection + Campagnes + CRM).
-              Sans engagement, annulation 1 clic.
+              <strong className="text-content-primary">0€</strong> pour tester. <strong className="text-content-primary">99€/mois</strong> pour tout (Prospection + Campagnes + CRM + Formulaires).
+              C&apos;est viable parce que vous payez.
             </p>
 
             {/* Toggle Mensuel / Annuel */}
@@ -503,10 +502,10 @@ export default function PricingContent() {
             <div className="text-center mb-10">
               <p className="text-sm font-semibold text-violet-600 mb-3">COMPARATIF DÉTAILLÉ</p>
               <h2 className="text-3xl sm:text-4xl font-bold mb-3">
-                Toutes les fonctionnalités, plan par plan
+                Tout, plan par plan.
               </h2>
               <p className="text-content-tertiary text-base max-w-xl mx-auto">
-                Aucune surprise, aucune feature cachée derrière un paywall.
+                Zéro feature cachée derrière un paywall. Si c&apos;est dans le tableau, c&apos;est dans le plan.
               </p>
             </div>
 
@@ -543,10 +542,10 @@ export default function PricingContent() {
             <div className="text-center mb-10">
               <p className="text-sm font-semibold text-violet-600 mb-3">GUIDE DE CHOIX</p>
               <h2 className="text-3xl sm:text-4xl font-bold mb-3">
-                Quel plan pour vous ?
+                Lequel pour vous ?
               </h2>
               <p className="text-content-tertiary text-base max-w-xl mx-auto">
-                Choisissez selon votre profil — vous pourrez changer en 1 clic.
+                Choisissez au feeling. Vous changez d&apos;avis demain ? 1 clic et c&apos;est fait.
               </p>
             </div>
 

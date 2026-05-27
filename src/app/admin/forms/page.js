@@ -97,11 +97,11 @@ export default function FormsHubPage() {
           </p>
         </div>
         <h1 className="text-3xl sm:text-4xl font-bold text-content-primary tracking-tight">
-          Volia Formulaires
+          Formulaires
         </h1>
         <p className="mt-2 text-content-tertiary text-sm sm:text-base max-w-2xl">
-          Créez des formulaires multi-étapes connectés nativement à votre
-          CRM et vos Campagnes. Aucun copier-coller, aucune intégration Zapier.
+          Attrape des leads par l&apos;autre bout. Ils atterrissent direct dans
+          ton CRM et tes Campagnes — zéro copier-coller, zéro Zapier.
         </p>
       </div>
 
@@ -111,7 +111,7 @@ export default function FormsHubPage() {
           {loading
             ? 'Chargement…'
             : forms.length === 0
-            ? 'Aucun formulaire pour l\'instant.'
+            ? 'Aucun form. C\'est le moment d\'en faire un.'
             : `${forms.length} formulaire${forms.length > 1 ? 's' : ''}`}
         </p>
         <button
@@ -166,12 +166,11 @@ export default function FormsHubPage() {
           </div>
 
           <h3 className="relative text-xl font-bold text-content-primary mb-2">
-            Vous n&apos;avez pas encore créé de formulaire
+            Aucun form. C&apos;est le moment d&apos;attraper des leads.
           </h3>
           <p className="relative text-sm text-content-tertiary max-w-md mx-auto leading-relaxed">
-            C&apos;est le moment de capturer vos premiers leads. Volia Formulaires
-            les pousse automatiquement vers votre CRM et vos Campagnes — zéro
-            copier-coller.
+            Tes prochains leads se collent direct dans le CRM et les Campagnes.
+            Pas d&apos;export CSV, pas de Zapier. Juste un lien à coller.
           </p>
           <div className="relative mt-6 flex flex-col sm:flex-row items-center justify-center gap-2">
             <Link
@@ -186,7 +185,7 @@ export default function FormsHubPage() {
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white border border-line hover:border-pink-300 hover:bg-pink-50 text-content-primary text-sm font-medium transition-all disabled:opacity-50"
             >
               {creating ? <Loader2 size={14} className="animate-spin" /> : <Plus size={14} />}
-              Créer un form vide
+              Form vide
             </button>
           </div>
         </div>

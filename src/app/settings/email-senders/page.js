@@ -403,11 +403,11 @@ export default function EmailSendersPage() {
       setSenders((prev) => prev.map((s) => (s.id === id ? data.sender : s)));
       if (!silent) {
         if (data.sender.status === 'verified') {
-          showToast('Domaine vérifié ✓ vous pouvez créer une campagne.', 'success');
+          showToast('Domaine vérifié. Tu peux lancer une campagne.', 'success');
         } else if (data.sender.status === 'failed') {
-          showToast('Vérification échouée — vérifiez vos DNS.', 'error');
+          showToast('La vérif a échoué. Check tes DNS.', 'error');
         } else {
-          showToast('DNS en cours de propagation (peut prendre 1-24h).', 'success');
+          showToast('DNS en cours de propagation (1-24h).', 'success');
         }
       }
       return data.sender;
@@ -431,7 +431,7 @@ export default function EmailSendersPage() {
       setSenders((prev) =>
         prev.map((s) => (s.id === senderId ? { ...s, warmup: data.warmup } : s))
       );
-      showToast('Warmup 28 jours démarré.', 'success');
+      showToast('Warmup lancé. 28 jours, on s\'occupe du reste.', 'success');
     } catch {
       showToast('Erreur réseau', 'error');
     } finally {

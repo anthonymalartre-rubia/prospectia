@@ -224,7 +224,7 @@ export default function SequenceDetailPage() {
           {enrollments.length === 0 ? (
             <div className="p-8 text-center text-content-tertiary text-sm">
               <Users size={24} className="mx-auto mb-2 opacity-50" />
-              Aucun contact enrôlé. Cliquez sur Démarrer pour enrôler les contacts de la liste.
+              Aucun contact enrôlé. Clique sur Démarrer pour enrôler les contacts de la liste.
             </div>
           ) : (
             <table className="w-full text-sm">

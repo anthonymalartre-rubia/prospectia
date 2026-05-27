@@ -566,13 +566,13 @@ export default function FormulairesProductPage() {
         module="formulaires"
         status="LIVE"
         hero={{
-          eyebrow: 'Alternative française à Typeform + Tally',
-          h1Before: 'Capturez. Convertissez.',
-          h1Highlight: 'Le tout dans Volia.',
+          eyebrow: 'Typeform + Tally, refait pour la France',
+          h1Before: 'Vos leads, attrapés.',
+          h1Highlight: 'Direct dans le CRM.',
           h1After: '',
           subtitle: (
             <>
-              Le seul form builder qui parle nativement à votre CRM et vos cold emails. <strong className="text-content-primary font-semibold">Plus jamais de Tally → Zapier → HubSpot</strong>. Tout dans Volia, <strong className="text-pink-700 font-semibold">dès 19 €/mois</strong>.
+              Le seul form builder qui parle nativement à votre CRM et à vos cold emails. <strong className="text-content-primary font-semibold">Plus jamais de Tally → Zapier → HubSpot</strong>. Dans Volia, <strong className="text-pink-700 font-semibold">dès 19 €/mois</strong>.
             </>
           ),
           ctaPrimary: { label: 'Démarrer gratuitement', href: '/signup?plan=solo' },
@@ -612,9 +612,9 @@ export default function FormulairesProductPage() {
         beforeFaq={null}
         faq={FAQ}
         finalCta={{
-          title: 'Vos prochains leads vous attendent.',
-          subtitle: 'Créez votre premier formulaire en 2 minutes, branchez-le à votre CRM en 2 clics, partagez-le partout. Le tout dans Volia, pour le prix d\'un café.',
-          primary: { label: 'Démarrer gratuitement', href: '/signup?plan=solo' },
+          title: 'Vos prochains leads sont à 2 minutes.',
+          subtitle: 'Premier form en 2 min, branché au CRM en 2 clics, partagé partout. Tout dans Volia, pour le prix d\'un café.',
+          primary: { label: 'Commencer gratuitement', href: '/signup?plan=solo' },
           secondary: { label: 'Voir les tarifs', href: '/pricing' },
           trust: 'Inclus dans Solo (19 €) · 14 jours d\'essai · Migration assistée · RGPD by default',
         }}

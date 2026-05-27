@@ -179,10 +179,10 @@ export default function FormResponsesPage() {
             <Inbox size={22} />
           </div>
           <h3 className="text-lg font-semibold text-content-primary">
-            Aucune réponse pour l&apos;instant
+            Personne n&apos;a répondu. Encore.
           </h3>
           <p className="mt-1 text-sm text-content-tertiary max-w-md mx-auto">
-            Partagez votre formulaire pour commencer à collecter des soumissions.
+            Partage ton form (lien, iframe, QR) pour commencer à choper des réponses.
           </p>
           {form?.slug && (
             <Link

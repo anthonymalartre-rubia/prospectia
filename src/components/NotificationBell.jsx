@@ -197,8 +197,8 @@ export default function NotificationBell() {
             {items.length === 0 ? (
               <div className="px-4 py-12 text-center text-content-tertiary">
                 <Inbox size={28} className="mx-auto mb-2 opacity-50" />
-                <p className="text-sm">Aucune notification</p>
-                <p className="text-xs mt-1">Tout est calme pour le moment !</p>
+                <p className="text-sm">Tout est calme.</p>
+                <p className="text-xs mt-1">Profite.</p>
               </div>
             ) : (
               items.map((n) => {

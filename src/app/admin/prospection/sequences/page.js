@@ -121,13 +121,13 @@ export default function SequencesHubPage() {
           ) : (
             <div className="rounded-2xl border border-dashed border-line p-12 text-center">
               <GitBranch size={28} className="mx-auto mb-2 text-content-tertiary opacity-50" />
-              <p className="text-content-tertiary mb-1">Aucune séquence pour le moment.</p>
+              <p className="text-content-tertiary mb-1">Aucune séquence. C&apos;est là que ça devient marrant.</p>
               <p className="text-xs text-content-tertiary mb-4">
-                Une séquence = 3 à 5 emails de relance espacés (J+0, J+3, J+7…) avec stop automatique sur réponse.
+                Une séquence = 3 à 5 emails de relance (J+0, J+3, J+7…) qui s&apos;arrêtent dès que le prospect répond.
               </p>
               <Link href="/admin/prospection/sequences/new" className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold transition">
                 <Plus size={14} />
-                Créer ma première séquence
+                Première séquence
               </Link>
             </div>
           )

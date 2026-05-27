@@ -729,11 +729,10 @@ export default memo(function ResultsPanel({
           <Inbox size={28} className="text-indigo-400" />
         </div>
         <h3 className="text-xl sm:text-2xl font-bold text-content-primary mb-2 text-center">
-          {t('results.noProspects') || 'Aucun prospect pour le moment'}
+          {t('results.noProspects') || 'On va te trouver des prospects.'}
         </h3>
         <p className="text-sm text-content-tertiary text-center max-w-md mb-7 leading-relaxed">
-          Lancez votre première recherche pour découvrir les entreprises de votre cible —
-          le résultat apparaîtra ici en quelques secondes.
+          Dis-moi qui tu cherches et dans quel département. Tu auras une liste avec emails dans 30 secondes.
         </p>
         <button
           type="button"
@@ -741,11 +740,11 @@ export default memo(function ResultsPanel({
           className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold transition-all shadow-lg shadow-indigo-500/25 hover:shadow-indigo-500/40 hover:scale-[1.02]"
         >
           <Search size={16} />
-          Lancer ma première recherche
+          Lancer une recherche
         </button>
         {/* Suggestions de recherches populaires pour inspirer */}
         <div className="mt-7 flex flex-wrap items-center justify-center gap-2">
-          <span className="text-[11px] uppercase tracking-wider text-content-muted font-semibold">Idées :</span>
+          <span className="text-[11px] uppercase tracking-wider text-content-muted font-semibold">Inspire-toi :</span>
           {['Restaurants à Paris', 'Avocats à Lyon', 'Agences web 75'].map((idea) => (
             <button
               key={idea}

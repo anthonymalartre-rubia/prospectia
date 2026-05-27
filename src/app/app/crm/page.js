@@ -328,11 +328,11 @@ export default function CrmAppPage() {
                 Volia CRM
               </h1>
               <p className="text-base sm:text-lg text-content-secondary leading-relaxed max-w-xl mx-auto mb-2">
-                Le module CRM est réservé au plan{' '}
+                Le CRM, c&apos;est sur le plan{' '}
                 <strong className="text-content-primary">Business</strong>.
               </p>
               <p className="text-sm text-content-tertiary">
-                Pipeline Kanban, contacts auto-créés depuis Campagnes, reporting natif.
+                Pipeline Kanban, contacts auto-créés depuis les Campagnes, reporting natif. Zéro saisie manuelle.
               </p>
             </div>
 
@@ -362,7 +362,7 @@ export default function CrmAppPage() {
             <div className="mt-10">
               <div className="text-center mb-4">
                 <p className="text-xs text-content-tertiary uppercase tracking-wider font-semibold">
-                  Ou rejoindre la waitlist beta
+                  Ou rejoins la waitlist beta
                 </p>
               </div>
               <WaitlistForm />
@@ -606,11 +606,10 @@ export default function CrmAppPage() {
                   <KanbanSquare size={32} className="text-emerald-600" />
                 </div>
                 <h2 className="text-xl sm:text-2xl font-bold text-content-primary mb-2">
-                  Démarrons votre pipeline
+                  Ton pipeline est tout neuf.
                 </h2>
                 <p className="text-sm text-content-secondary mb-6">
-                  Créez votre premier deal pour suivre vos opportunités commerciales
-                  de bout en bout : du lead qualifié au closing.
+                  C&apos;est l&apos;occasion de le remplir. Crée un premier deal et trace-le du lead au closing.
                 </p>
                 <button
                   type="button"
@@ -618,10 +617,10 @@ export default function CrmAppPage() {
                   className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-semibold shadow-lg shadow-emerald-500/25 hover:shadow-xl hover:-translate-y-0.5 transition-all"
                 >
                   <Plus size={16} />
-                  Créer mon premier deal
+                  Premier deal
                 </button>
                 <p className="text-[11px] text-content-tertiary mt-4">
-                  Astuce : drag-drop pour faire avancer vos deals d&apos;une étape à l&apos;autre.
+                  Tip : drag-and-drop pour faire avancer les deals d&apos;une étape à l&apos;autre.
                 </p>
               </div>
             ) : (

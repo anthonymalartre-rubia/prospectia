@@ -248,7 +248,7 @@ export default function ContactsList({
     return (
       <div className="py-16 text-center">
         {emptyState || (
-          <p className="text-sm text-content-tertiary">Aucun contact pour le moment.</p>
+          <p className="text-sm text-content-tertiary">Aucun contact. Une réponse à une campagne, et le premier apparaît ici.</p>
         )}
       </div>
     );

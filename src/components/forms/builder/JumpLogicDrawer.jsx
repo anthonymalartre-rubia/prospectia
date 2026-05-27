@@ -108,8 +108,7 @@ export default function JumpLogicDrawer({
           {rules.length === 0 ? (
             <div className="p-6 text-center rounded-lg border border-dashed border-line">
               <p className="text-xs text-content-tertiary">
-                Aucune règle de saut. Ajoutes-en une pour rediriger l&apos;utilisateur
-                vers une page différente selon ses réponses.
+                Aucune règle. Ajoute-en une pour rediriger selon les réponses.
               </p>
             </div>
           ) : (

@@ -105,10 +105,10 @@ export default function ProspectionHubPage() {
             </Link>
             <h1 className="text-2xl sm:text-3xl font-bold flex items-center gap-2">
               <Users size={24} className="text-violet-400" />
-              Prospection — Listes de contacts
+              Listes de prospects
             </h1>
             <p className="text-sm text-content-secondary mt-1">
-              Importez vos listes (CSV) puis lancez des campagnes email automatisées.
+              Importe ton CSV, lance une campagne. On s&apos;occupe du reste.
             </p>
           </div>
           <div className="flex items-center gap-2 flex-wrap">
@@ -141,7 +141,7 @@ export default function ProspectionHubPage() {
         {/* Formulaire création */}
         {showCreate && (
           <form onSubmit={handleCreate} className="mb-6 rounded-2xl border border-violet-500/30 bg-violet-500/[0.04] p-5">
-            <h2 className="text-base font-semibold mb-3">Nouvelle liste de prospects</h2>
+            <h2 className="text-base font-semibold mb-3">Nouvelle liste</h2>
             {error && (
               <div className="mb-3 p-2.5 rounded-lg bg-red-500/10 border border-red-500/30 text-sm text-red-300">
                 {error}
@@ -193,8 +193,8 @@ export default function ProspectionHubPage() {
         {lists.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-line p-12 text-center">
             <Users size={28} className="mx-auto mb-2 text-content-tertiary opacity-50" />
-            <p className="text-content-tertiary mb-1">Aucune liste de prospects pour le moment.</p>
-            <p className="text-xs text-content-tertiary">Créez-en une et importez votre CSV pour lancer votre première campagne.</p>
+            <p className="text-content-tertiary mb-1">On va te trouver des prospects. Dis-moi qui tu cherches.</p>
+            <p className="text-xs text-content-tertiary">Crée une liste, colle ton CSV. Première campagne dans 2 minutes.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -233,8 +233,8 @@ export default function ProspectionHubPage() {
         )}
 
         <p className="text-xs text-content-tertiary mt-6 leading-relaxed">
-          <strong className="text-content-primary">RGPD :</strong> chaque liste doit avoir une <em>base légale</em> et une <em>source</em> documentées
-          (registre des traitements art. 30 RGPD). Toutes les campagnes incluent automatiquement un lien d&apos;opt-out 1 clic.
+          <strong className="text-content-primary">RGPD :</strong> chaque liste a une <em>base légale</em> et une <em>source</em> tracées
+          (registre art. 30). Toutes les campagnes ajoutent un opt-out 1 clic — c&apos;est non négociable.
         </p>
       </div>
     </div>

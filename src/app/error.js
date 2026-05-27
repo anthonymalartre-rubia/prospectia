@@ -21,10 +21,10 @@ export default function GlobalError({ error, reset }) {
         </div>
 
         <h2 className="text-xl font-semibold text-content-primary mb-2">
-          Une erreur est survenue
+          Ça a planté.
         </h2>
         <p className="text-sm text-content-secondary mb-6 leading-relaxed">
-          Quelque chose s&apos;est mal pass&eacute;. Veuillez r&eacute;essayer ou revenir &agrave; l&apos;accueil.
+          On regarde. Retentez dans 30 secondes — si ça persiste, écrivez-nous à hello@volia.fr.
         </p>
 
         {process.env.NODE_ENV === 'development' && error?.message && (
@@ -38,13 +38,13 @@ export default function GlobalError({ error, reset }) {
             onClick={() => reset()}
             className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 text-white text-sm font-semibold hover:from-violet-500 hover:to-indigo-500 transition shadow-lg shadow-violet-500/20"
           >
-            R&eacute;essayer
+            Réessayer
           </button>
           <a
             href="/"
             className="w-full py-2.5 px-4 rounded-xl border border-line text-content-secondary text-sm font-medium hover:bg-surface-hover transition text-center"
           >
-            Retour &agrave; l&apos;accueil
+            Retour à l&apos;accueil
           </a>
         </div>
       </div>

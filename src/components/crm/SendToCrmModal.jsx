@@ -302,7 +302,7 @@ export default function SendToCrmModal({
               <div className="flex items-start gap-2 px-3 py-2 rounded-lg bg-amber-50 border border-amber-200 text-amber-800">
                 <AlertCircle size={14} className="flex-shrink-0 mt-0.5" />
                 <p className="text-xs font-medium">
-                  Aucun prospect sélectionné. Cochez les prospects à envoyer dans la liste.
+                  Rien de coché. Sélectionne au moins un prospect dans la liste.
                 </p>
               </div>
             )}

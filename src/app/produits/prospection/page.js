@@ -274,10 +274,10 @@ function ProblemSolutionSection() {
               Problème → solution
             </span>
             <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-4 tracking-tight bg-gradient-to-b from-zinc-900 to-zinc-600 bg-clip-text text-transparent">
-              Arrêtez d&apos;empiler 3 outils US à 237 €/mois.
+              237€/mois pour 3 outils US. Sérieux ?
             </h2>
             <p className="text-content-tertiary text-lg max-w-2xl mx-auto">
-              Volia Prospection remplace Apollo + Hunter + LinkedIn Sales Nav pour 19 €/mois, avec une meilleure couverture France.
+              On a recodé Apollo + Hunter + LinkedIn Sales Nav pour 19€/mois. Meilleure couverture France, support en français.
             </p>
           </div>
         </MotionInView>
@@ -374,10 +374,10 @@ function ComparatifSection() {
               Comparatif honnête
             </span>
             <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-4 tracking-tight bg-gradient-to-b from-zinc-900 to-zinc-600 bg-clip-text text-transparent">
-              Volia vs. Apollo, Hunter, Lemlist.
+              Volia vs Apollo, Hunter, Lemlist.
             </h2>
             <p className="text-content-tertiary text-lg max-w-2xl mx-auto">
-              Sur le marché B2B français, Volia n&apos;a aucune concurrence sérieuse. Voici pourquoi.
+              Sur le marché B2B français, on est tout seuls. Le tableau parle.
             </p>
           </div>
         </MotionInView>

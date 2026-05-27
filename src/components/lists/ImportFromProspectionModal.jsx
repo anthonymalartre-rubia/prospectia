@@ -272,11 +272,10 @@ export default function ImportFromProspectionModal({ open, onClose, listId, onSu
                 <Inbox size={22} className="text-violet-600" />
               </div>
               <p className="text-base font-bold text-content-primary mb-1">
-                Aucune session de prospection
+                Aucune recherche encore.
               </p>
               <p className="text-sm text-content-tertiary max-w-sm mb-4">
-                Lancez votre première recherche dans Volia Prospection pour générer des
-                prospects à importer ici.
+                Lance une recherche dans Prospection pour générer des prospects à importer ici.
               </p>
               <Link
                 href="/dashboard"

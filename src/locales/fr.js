@@ -276,8 +276,8 @@ const fr = {
       probableShort: 'Probable',
     },
     // Empty state
-    noProspects: 'Aucun prospect',
-    noProspectsDesc: 'Lancez une recherche pour commencer a collecter des prospects B2B et coproprietes.',
+    noProspects: 'On va te trouver des prospects.',
+    noProspectsDesc: 'Dis-moi qui tu cherches et dans quel departement. Resultats dans 30 secondes.',
     // Folder tabs
     allFolders: 'Tous',
     unclassified: 'Non classes',
@@ -523,7 +523,7 @@ const fr = {
     planLabel: 'Plan',
     renewalOn: 'Renouvellement le',
     used: 'utilise(s)',
-    upgradeProPrompt: 'Passez Pro pour des limites plus elevees',
+    upgradeProPrompt: 'Passe Pro. Plus de limite, c\'est moins de prise de tete.',
     upgradePro: 'Passer Pro',
     // Plan & Billing section
     planAndBilling: 'Plan & Facturation',
@@ -537,8 +537,8 @@ const fr = {
     eurPerMonth: 'EUR/mois',
     // Danger zone
     dangerZone: 'Zone dangereuse',
-    dangerZoneDesc: 'Actions irreversibles sur votre compte',
-    deleteAccountWarning: 'La suppression de votre compte est definitive. Toutes vos donnees (prospects, dossiers, tags, historique) seront supprimees.',
+    dangerZoneDesc: 'Actions sans retour. Reflechis.',
+    deleteAccountWarning: 'Supprimer le compte = supprimer pour de bon. Tout part : prospects, dossiers, tags, historique. Pas de undo.',
     deleteMyAccount: 'Supprimer mon compte',
     deleteIrreversible: 'Cette action est irreversible. Toutes vos donnees seront definitivement supprimees :',
     deleteDataProspects: 'Tous vos prospects',

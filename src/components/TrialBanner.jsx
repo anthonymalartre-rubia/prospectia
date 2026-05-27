@@ -67,8 +67,8 @@ export default function TrialBanner({ profile }) {
     icon = '🛑';
     message = (
       <>
-        <strong>Trial Pro expiré.</strong> Passez à Pro pour réactiver vos features
-        (cascade waterfall, campagnes, 5&nbsp;000 prospects/mois).
+        <strong>Trial terminé.</strong> Passez Pro pour récupérer cascade waterfall,
+        campagnes et 5&nbsp;000 prospects/mois.
       </>
     );
     cta = (
@@ -89,9 +89,9 @@ export default function TrialBanner({ profile }) {
     message = (
       <>
         <strong>
-          Plus que {days} {days > 1 ? 'jours' : 'jour'} de Pro.
+          {days} {days > 1 ? 'jours' : 'jour'} de Pro restants.
         </strong>{' '}
-        Passez à Pro pour conserver vos features et éviter la coupure.
+        Passez Pro pour garder vos features sans interruption.
       </>
     );
     cta = (
@@ -111,8 +111,8 @@ export default function TrialBanner({ profile }) {
     icon = '🎉';
     message = (
       <>
-        <strong>Trial Pro actif</strong> — il vous reste {days} jours pour
-        explorer toutes les features Pro.
+        <strong>Trial Pro actif</strong> — {days} jours restants pour
+        tester toutes les features.
       </>
     );
     cta = (

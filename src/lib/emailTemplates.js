@@ -257,46 +257,46 @@ function signOff(text = 'L’équipe Volia') {
 export function welcomeEmail(userName) {
   const name = userName || 'là';
   return {
-    subject: 'Bienvenue sur Volia 👋',
+    subject: 'Bienvenue. On commence ?',
     html: layout({
-      preheader: 'Votre compte est prêt. Lancez votre première recherche en 30 secondes.',
+      preheader: 'Votre compte est prêt. Première recherche dans 30 secondes.',
       accent: COLORS.brand,
       content: `
         ${hero({
           emoji: '👋',
-          title: `Bienvenue ${name} !`,
-          greeting: 'Votre compte Volia est prêt. Voici 3 choses à essayer dès maintenant.',
+          title: `Bienvenue ${name}.`,
+          greeting: 'Votre compte est prêt. Voici 3 trucs à tester maintenant.',
         })}
 
         <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;margin:0 0 8px;">
           <tr>
             <td style="padding:16px 18px;background-color:${COLORS.brandLight};border-radius:10px;margin-bottom:8px;">
-              <p style="margin:0;font-size:15px;font-weight:600;color:${COLORS.text};">🔍 Lancez une recherche en 1 clic</p>
-              <p style="margin:6px 0 0;font-size:13px;color:${COLORS.textMuted};line-height:1.5;">Restaurants Paris, BTP Lyon, syndics France entière… ou décrivez votre cible en langage naturel.</p>
+              <p style="margin:0;font-size:15px;font-weight:600;color:${COLORS.text};">🔍 Une recherche en 1 clic</p>
+              <p style="margin:6px 0 0;font-size:13px;color:${COLORS.textMuted};line-height:1.5;">Restaurants Paris, BTP Lyon, syndics France entière… ou décrivez votre cible en français.</p>
             </td>
           </tr>
         </table>
         <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;margin:8px 0;">
           <tr>
             <td style="padding:16px 18px;background-color:${COLORS.brandLight};border-radius:10px;">
-              <p style="margin:0;font-size:15px;font-weight:600;color:${COLORS.text};">✉️ Enrichissez les emails automatiquement</p>
-              <p style="margin:6px 0 0;font-size:13px;color:${COLORS.textMuted};line-height:1.5;">Notre cascade waterfall teste 7 sources (scraping, Apollo, Findymail…) jusqu'à trouver le bon email.</p>
+              <p style="margin:0;font-size:15px;font-weight:600;color:${COLORS.text};">✉️ Les emails arrivent tout seuls</p>
+              <p style="margin:6px 0 0;font-size:13px;color:${COLORS.textMuted};line-height:1.5;">Cascade waterfall : on teste 7 sources jusqu'à choper le bon email. Score de confiance à chaque ligne.</p>
             </td>
           </tr>
         </table>
         <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;margin:8px 0;">
           <tr>
             <td style="padding:16px 18px;background-color:${COLORS.brandLight};border-radius:10px;">
-              <p style="margin:0;font-size:15px;font-weight:600;color:${COLORS.text};">📥 Exportez en CSV vers n'importe quel CRM</p>
-              <p style="margin:6px 0 0;font-size:13px;color:${COLORS.textMuted};line-height:1.5;">HubSpot, Salesforce, Zoho, Pipedrive… ou directement dans votre outil d'outreach.</p>
+              <p style="margin:0;font-size:15px;font-weight:600;color:${COLORS.text};">📥 Export CSV vers n'importe quel CRM</p>
+              <p style="margin:6px 0 0;font-size:13px;color:${COLORS.textMuted};line-height:1.5;">HubSpot, Salesforce, Zoho, Pipedrive… ou direct dans Lemlist / Apollo / Smartlead.</p>
             </td>
           </tr>
         </table>
 
-        <div align="center">${ctaPrimary('Lancer ma première recherche', DASHBOARD_URL)}</div>
+        <div align="center">${ctaPrimary('Première recherche', DASHBOARD_URL)}</div>
 
         <p style="margin:20px 0 0;font-size:13px;color:${COLORS.textMuted};text-align:center;line-height:1.5;">
-          Plan Starter offert : <strong style="color:${COLORS.text};">100 prospects/mois</strong>, sans carte bancaire requise.
+          Plan Starter offert : <strong style="color:${COLORS.text};">100 prospects/mois</strong>, sans CB.
         </p>
 
         <!-- PS parrainage : touchpoint discret en bas du welcome (push #5) -->
@@ -325,15 +325,15 @@ export function usageWarningEmail(userName, usagePercent, planName, limitType) {
   const name = userName || 'là';
   const limitLabel = limitType === 'searches' ? 'prospects' : limitType === 'enrichments' ? 'enrichissements' : 'exports';
   return {
-    subject: `⚠️ ${usagePercent}% de vos ${limitLabel} utilisés ce mois`,
+    subject: `${usagePercent}% utilisés. Heads up.`,
     html: layout({
-      preheader: `Plus que ${100 - usagePercent}% restants sur votre plan ${planName}. Pensez à upgrader pour éviter la coupure.`,
+      preheader: `Plus que ${100 - usagePercent}% restants sur ${planName}. Upgrade en 1 clic si besoin.`,
       accent: COLORS.warning,
       content: `
         ${hero({
           emoji: '⚠️',
           title: `${usagePercent}% atteints`,
-          greeting: `Bonjour ${name}, vous approchez de la limite mensuelle de votre plan <strong style="color:${COLORS.text};">${planName}</strong>.`,
+          greeting: `Salut ${name}, vous approchez de la limite mensuelle de votre plan <strong style="color:${COLORS.text};">${planName}</strong>.`,
         })}
 
         <p style="margin:0 0 8px;font-size:13px;font-weight:600;color:${COLORS.text};text-align:center;">
@@ -343,11 +343,11 @@ export function usageWarningEmail(userName, usagePercent, planName, limitType) {
         <p style="margin:8px 0 24px;font-size:12px;color:${COLORS.textMuted};text-align:center;">${usagePercent}% utilisés &middot; ${100 - usagePercent}% restants</p>
 
         <p style="margin:0 0 20px;font-size:14px;line-height:1.6;color:${COLORS.textMuted};text-align:center;">
-          Pour continuer à prospecter sans interruption, le plan <strong style="color:${COLORS.text};">Pro à 49€/mois</strong> vous offre des <strong style="color:${COLORS.text};">prospects illimités</strong> et la cascade waterfall complète.
+          Pour ne pas vous faire couper la prospection, <strong style="color:${COLORS.text};">Pro à 49€/mois</strong> = 5 000 prospects + cascade waterfall complète.
         </p>
 
-        <div align="center">${ctaPrimary('Passer Pro maintenant', SETTINGS_URL)}</div>
-        <div align="center">${ctaSecondary('Voir mon dashboard', DASHBOARD_URL)}</div>
+        <div align="center">${ctaPrimary('Passer Pro', SETTINGS_URL)}</div>
+        <div align="center">${ctaSecondary('Voir le dashboard', DASHBOARD_URL)}</div>
 
         ${signOff()}
       `,
@@ -362,15 +362,15 @@ export function usageLimitReachedEmail(userName, planName, limitType) {
   const name = userName || 'là';
   const limitLabel = limitType === 'searches' ? 'prospects' : limitType === 'enrichments' ? 'enrichissements' : 'exports';
   return {
-    subject: `🛑 Limite de ${limitLabel} atteinte`,
+    subject: `Limite atteinte. On fait quoi ?`,
     html: layout({
-      preheader: `Vous avez atteint 100% de votre quota ${limitLabel}. Upgradez pour reprendre dès maintenant.`,
+      preheader: `Vous avez taqué 100% du quota ${limitLabel}. Upgrade en 1 clic pour reprendre tout de suite.`,
       accent: COLORS.danger,
       content: `
         ${hero({
           emoji: '🛑',
           title: `Limite atteinte`,
-          greeting: `Bonjour ${name}, vous avez atteint 100% de votre quota mensuel de ${limitLabel} sur le plan <strong style="color:${COLORS.text};">${planName}</strong>.`,
+          greeting: `Salut ${name}, vous avez atteint 100% du quota mensuel de ${limitLabel} sur <strong style="color:${COLORS.text};">${planName}</strong>.`,
         })}
 
         <p style="margin:0 0 8px;font-size:13px;font-weight:600;color:${COLORS.text};text-align:center;">${limitLabel.charAt(0).toUpperCase() + limitLabel.slice(1)} ce mois</p>
@@ -378,10 +378,10 @@ export function usageLimitReachedEmail(userName, planName, limitType) {
         <p style="margin:8px 0 24px;font-size:12px;color:${COLORS.danger};text-align:center;font-weight:600;">100% utilisés &middot; 0% restants</p>
 
         <p style="margin:0 0 20px;font-size:14px;line-height:1.6;color:${COLORS.textMuted};text-align:center;">
-          Vos données et leads existants restent accessibles. Pour reprendre la prospection <strong style="color:${COLORS.text};">immédiatement</strong>, passez Pro. Sinon vos quotas se renouvellent en début de mois prochain.
+          Vos leads existants restent intacts. Pour reprendre <strong style="color:${COLORS.text};">tout de suite</strong>, passez Pro. Sinon, le quota se reset au premier du mois prochain.
         </p>
 
-        <div align="center">${ctaPrimary('Passer Pro pour 49€/mois', SETTINGS_URL)}</div>
+        <div align="center">${ctaPrimary('Passer Pro · 49€/mois', SETTINGS_URL)}</div>
         <div align="center">${ctaSecondary('Attendre le renouvellement', DASHBOARD_URL)}</div>
 
         ${signOff()}
@@ -412,15 +412,15 @@ export function paymentSuccessEmail(userName, planName, amount, period = 'monthl
   ];
   const featureList = features && features.length > 0 ? features : defaultFeatures;
   return {
-    subject: `✅ Bienvenue sur le plan ${planName} !`,
+    subject: `${planName}, c'est fait. Bienvenue.`,
     html: layout({
-      preheader: `Votre paiement de ${formattedAmount} est confirmé. Toutes les fonctionnalités ${planName} sont actives.`,
+      preheader: `Paiement de ${formattedAmount} validé. Toutes les fonctionnalités ${planName} sont actives.`,
       accent: COLORS.success,
       content: `
         ${hero({
           emoji: '🎉',
-          title: `Bienvenue sur ${planName} !`,
-          greeting: `Bonjour ${name}, votre paiement est confirmé et toutes les fonctionnalités sont actives.`,
+          title: `Bienvenue sur ${planName}.`,
+          greeting: `Salut ${name}, paiement validé. Toutes les fonctionnalités sont actives.`,
         })}
 
         ${receiptCard([
@@ -431,7 +431,7 @@ export function paymentSuccessEmail(userName, planName, amount, period = 'monthl
           { label: 'Statut', value: '✓ Actif', color: COLORS.success },
         ])}
 
-        <p style="margin:24px 0 16px;font-size:13px;font-weight:600;color:${COLORS.text};">Ce qui est maintenant débloqué :</p>
+        <p style="margin:24px 0 16px;font-size:13px;font-weight:600;color:${COLORS.text};">Ce que vous avez débloqué :</p>
         <ul style="margin:0 0 24px;padding:0 0 0 20px;color:${COLORS.textMuted};font-size:14px;line-height:1.8;">
           ${featureList.map((f) => `<li>${f}</li>`).join('\n          ')}
         </ul>
@@ -454,15 +454,15 @@ export function paymentSuccessEmail(userName, planName, amount, period = 'monthl
 export function subscriptionCancelledEmail(userName) {
   const name = userName || 'là';
   return {
-    subject: 'Votre abonnement a été annulé',
+    subject: 'Abonnement annulé. Vos données restent.',
     html: layout({
-      preheader: 'Aucune action requise. Vos données sont conservées.',
+      preheader: 'Aucune action requise. Vos leads sont gardés.',
       accent: COLORS.textMuted,
       content: `
         ${hero({
           emoji: '👋',
           title: 'Abonnement annulé',
-          greeting: `Bonjour ${name}, votre abonnement Volia est désormais annulé. Votre compte est repassé sur le plan <strong style="color:${COLORS.text};">Starter (gratuit)</strong>.`,
+          greeting: `Salut ${name}, votre abonnement est annulé. Vous repassez sur <strong style="color:${COLORS.text};">Starter (gratuit)</strong>.`,
         })}
 
         <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;background-color:${COLORS.brandLight};border-radius:12px;padding:18px 20px;margin:0 0 24px;">
@@ -477,11 +477,11 @@ export function subscriptionCancelledEmail(userName) {
         </table>
 
         <p style="margin:0 0 24px;font-size:14px;color:${COLORS.textMuted};line-height:1.6;text-align:center;">
-          Si vous changez d'avis, vous pouvez réactiver votre abonnement à tout moment. <strong style="color:${COLORS.text};">Les outils que vous aimiez sont toujours là.</strong>
+          Si vous changez d'avis, vous reprenez quand vous voulez. <strong style="color:${COLORS.text};">L'outil ne bouge pas, vos données non plus.</strong>
         </p>
 
         <div align="center">${ctaPrimary('Reprendre un abonnement', SETTINGS_URL)}</div>
-        <div align="center">${ctaSecondary('Continuer en gratuit', DASHBOARD_URL)}</div>
+        <div align="center">${ctaSecondary('Rester en gratuit', DASHBOARD_URL)}</div>
 
         <p style="margin:24px 0 0;font-size:13px;color:${COLORS.textMuted};text-align:center;line-height:1.5;">
           On peut faire mieux ? <a href="mailto:hello@volia.fr?subject=Feedback%20annulation" style="color:${COLORS.brand};text-decoration:none;">Dites-nous pourquoi</a> — on lit chaque message.
@@ -499,15 +499,15 @@ export function subscriptionCancelledEmail(userName) {
 export function planChangedEmail(userName, oldPlanName, newPlanName) {
   const name = userName || 'là';
   return {
-    subject: `Votre plan est maintenant ${newPlanName}`,
+    subject: `Vous êtes maintenant sur ${newPlanName}`,
     html: layout({
-      preheader: `Vous êtes passé du plan ${oldPlanName} au plan ${newPlanName}. Les nouvelles limites sont actives.`,
+      preheader: `Du plan ${oldPlanName} au plan ${newPlanName}. Les nouvelles limites sont actives.`,
       accent: COLORS.brand,
       content: `
         ${hero({
           emoji: '🔄',
           title: 'Changement de plan',
-          greeting: `Bonjour ${name}, votre abonnement Volia a été mis à jour avec succès.`,
+          greeting: `Salut ${name}, c'est fait. Votre abonnement est à jour.`,
         })}
 
         ${receiptCard([
@@ -534,15 +534,15 @@ export function paymentFailedEmail(userName, amountCents, hostedInvoiceUrl) {
   const name = userName || 'là';
   const formattedAmount = (amountCents / 100).toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' });
   return {
-    subject: `⚠️ Échec du paiement de votre abonnement`,
+    subject: `Le paiement n'est pas passé`,
     html: layout({
-      preheader: `Le renouvellement de ${formattedAmount} n'a pas pu être effectué. Mettez à jour votre moyen de paiement.`,
+      preheader: `Renouvellement de ${formattedAmount} échoué. Mettez à jour la CB en 30 secondes.`,
       accent: COLORS.danger,
       content: `
         ${hero({
           emoji: '⚠️',
           title: 'Paiement échoué',
-          greeting: `Bonjour ${name}, le renouvellement de votre abonnement Volia (<strong style="color:${COLORS.text};">${formattedAmount}</strong>) n'a pas pu être effectué.`,
+          greeting: `Salut ${name}, le renouvellement de votre abonnement (<strong style="color:${COLORS.text};">${formattedAmount}</strong>) n'est pas passé.`,
         })}
 
         <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;background-color:${COLORS.dangerLight};border:1px solid ${COLORS.danger}30;border-radius:12px;padding:18px 20px;margin:0 0 20px;">
@@ -592,8 +592,8 @@ export function monthlyUpgradeNudgeEmail(userName, stats = {}) {
 
   const isActive = prospectsFound > 0 || emailsEnriched > 0;
   const subject = isActive
-    ? `${prospectsFound > 0 ? prospectsFound : emailsEnriched}× plus de prospects ce mois avec Pro ?`
-    : `Vous n'avez pas encore essayé Volia ?`;
+    ? `${prospectsFound > 0 ? prospectsFound : emailsEnriched} prospects ce mois. Imagine en illimité.`
+    : `Tu n'as pas encore essayé. C'est dommage.`;
 
   return {
     subject,
@@ -605,10 +605,10 @@ export function monthlyUpgradeNudgeEmail(userName, stats = {}) {
       content: `
         ${hero({
           emoji: isActive ? '🚀' : '👋',
-          title: isActive ? `Bilan de ${monthName}` : 'On vous attend !',
+          title: isActive ? `Bilan de ${monthName}` : 'On t\'attend.',
           greeting: isActive
-            ? `Bonjour ${name}, voici ce que vous avez accompli ce mois-ci sur le plan gratuit.`
-            : `Bonjour ${name}, votre compte Volia est prêt mais vous n'avez pas encore lancé de recherche. Voici comment démarrer en 30 secondes.`,
+            ? `Salut ${name}, voici ce que tu as fait ce mois en gratuit.`
+            : `Salut ${name}, ton compte est prêt mais tu n'as pas encore lancé de recherche. Voici comment démarrer en 30 secondes.`,
         })}
 
         ${isActive ? `
@@ -713,15 +713,15 @@ export function trialStartedEmail(userName, trialEndsAt) {
     year: 'numeric',
   });
   return {
-    subject: '🎉 14 jours de Pro offerts — bienvenue sur Volia',
+    subject: '14 jours de Pro. Sans CB. Go.',
     html: layout({
-      preheader: `Votre trial Pro est actif jusqu'au ${endDate}. Aucune carte requise.`,
+      preheader: `Trial Pro actif jusqu'au ${endDate}. Aucune carte requise.`,
       accent: COLORS.brand,
       content: `
         ${hero({
           emoji: '🎉',
-          title: `${name}, vous avez 14 jours de Pro`,
-          greeting: `On vous offre <strong style="color:${COLORS.text};">l'accès complet au plan Pro</strong> pendant 14 jours pour explorer la vraie puissance de Volia. Aucune carte bancaire requise.`,
+          title: `${name}, 14 jours de Pro. Sans CB.`,
+          greeting: `Accès complet au plan Pro pendant 14 jours. Pas de CB demandée, on coupe pas, on relance pas.`,
         })}
 
         ${receiptCard([
@@ -761,15 +761,15 @@ export function trialStartedEmail(userName, trialEndsAt) {
 export function trialExpiringEmail(userName, daysRemaining = 3) {
   const name = userName || 'là';
   return {
-    subject: `⏱️ Plus que ${daysRemaining} jours de Pro`,
+    subject: `${daysRemaining} jours de Pro restants`,
     html: layout({
-      preheader: `Conservez vos features Pro (cascade waterfall, campagnes, 5000 prospects/mois) en passant à Pro.`,
+      preheader: `Pour garder cascade waterfall, campagnes et 5000 prospects/mois, c'est maintenant.`,
       accent: COLORS.warning,
       content: `
         ${hero({
           emoji: '⏱️',
-          title: `Plus que ${daysRemaining} jours de Pro`,
-          greeting: `Bonjour ${name}, votre trial Pro se termine dans <strong style="color:${COLORS.text};">${daysRemaining} jours</strong>. Voici ce que vous garderez ou perdrez à l'expiration.`,
+          title: `${daysRemaining} jours. Après, retour au gratuit.`,
+          greeting: `Salut ${name}, votre trial Pro se termine dans <strong style="color:${COLORS.text};">${daysRemaining} jours</strong>. Voici ce que vous gardez ou perdez à l'expiration.`,
         })}
 
         <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;background-color:${COLORS.warningLight};border:1px solid ${COLORS.warning}30;border-radius:12px;padding:18px 20px;margin:0 0 20px;">
@@ -817,15 +817,15 @@ export function trialExpiringEmail(userName, daysRemaining = 3) {
 export function trialExpiredEmail(userName) {
   const name = userName || 'là';
   return {
-    subject: '🛑 Votre trial Pro est terminé',
+    subject: 'Trial Pro terminé. Bilan rapide.',
     html: layout({
-      preheader: `Votre compte est repassé sur Starter. Réactivez Pro en 1 clic pour récupérer toutes vos features.`,
+      preheader: `Vous repassez sur Starter. Reprendre Pro = 1 clic.`,
       accent: COLORS.danger,
       content: `
         ${hero({
           emoji: '🛑',
-          title: 'Trial Pro terminé',
-          greeting: `Bonjour ${name}, votre trial Pro de 14 jours est arrivé à son terme. Votre compte est désormais sur le plan <strong style="color:${COLORS.text};">Starter (gratuit)</strong>.`,
+          title: 'Trial terminé. Vos données restent.',
+          greeting: `Salut ${name}, vos 14 jours de Pro sont écoulés. Vous repassez sur <strong style="color:${COLORS.text};">Starter (gratuit)</strong>.`,
         })}
 
         <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="width:100%;background-color:${COLORS.brandLight};border-radius:12px;padding:18px 20px;margin:0 0 20px;">
@@ -878,15 +878,15 @@ export function trialExpiredEmail(userName) {
 // ───────────────────────────────────────────────────────────────
 export function authSignupConfirm({ confirmUrl, email }) {
   return {
-    subject: 'Bienvenue sur Volia — confirmez votre adresse email',
+    subject: 'Confirmez votre email — Volia',
     html: layout({
-      preheader: 'Confirmez votre email pour activer votre compte Volia (lien valide 24h).',
+      preheader: '1 clic pour activer votre compte (lien valide 24h).',
       accent: COLORS.brand,
       content: `
         ${hero({
           emoji: '👋',
-          title: 'Bienvenue sur Volia',
-          greeting: `Pour activer votre compte <strong style="color:${COLORS.text};">${email}</strong>, cliquez sur le bouton ci-dessous.`,
+          title: 'Bienvenue. Un dernier truc.',
+          greeting: `Pour activer le compte <strong style="color:${COLORS.text};">${email}</strong>, cliquez ci-dessous.`,
         })}
 
         <div align="center">${ctaPrimary('Confirmer mon email', confirmUrl)}</div>
@@ -913,15 +913,15 @@ export function authSignupConfirm({ confirmUrl, email }) {
 // ───────────────────────────────────────────────────────────────
 export function authPasswordReset({ resetUrl, email }) {
   return {
-    subject: 'Réinitialisez votre mot de passe Volia',
+    subject: 'Nouveau mot de passe — Volia',
     html: layout({
-      preheader: 'Cliquez pour définir un nouveau mot de passe (lien valide 1h).',
+      preheader: 'Cliquez pour choisir un nouveau mot de passe (valide 1h).',
       accent: COLORS.warning,
       content: `
         ${hero({
           emoji: '🔐',
-          title: 'Réinitialisation de mot de passe',
-          greeting: `Quelqu'un (vous, on espère) a demandé à réinitialiser le mot de passe du compte <strong style="color:${COLORS.text};">${email}</strong>.`,
+          title: 'Nouveau mot de passe',
+          greeting: `Vous (on espère) avez demandé un reset pour <strong style="color:${COLORS.text};">${email}</strong>.`,
         })}
 
         <div align="center">${ctaPrimary('Définir un nouveau mot de passe', resetUrl)}</div>
@@ -948,15 +948,15 @@ export function authPasswordReset({ resetUrl, email }) {
 // ───────────────────────────────────────────────────────────────
 export function authResendConfirmation({ confirmUrl, email }) {
   return {
-    subject: 'Volia — nouveau lien de confirmation',
+    subject: 'Nouveau lien de confirmation — Volia',
     html: layout({
-      preheader: 'Voici votre nouveau lien pour activer votre compte Volia (valide 24h).',
+      preheader: 'Voici votre nouveau lien (valide 24h).',
       accent: COLORS.brand,
       content: `
         ${hero({
           emoji: '✉️',
-          title: 'Voici votre nouveau lien',
-          greeting: `Vous avez demandé un nouveau lien de confirmation pour <strong style="color:${COLORS.text};">${email}</strong>.`,
+          title: 'Voilà, le nouveau lien.',
+          greeting: `Demandé pour <strong style="color:${COLORS.text};">${email}</strong>.`,
         })}
 
         <div align="center">${ctaPrimary('Confirmer mon email', confirmUrl)}</div>
@@ -987,9 +987,9 @@ export function referralPushEmail(userName, referralCode) {
   const name = userName || 'là';
   const referralUrl = `${APP_URL}/signup?ref=${referralCode}`;
   return {
-    subject: '🎁 Et si Volia vous payait 3 mois gratuits ?',
+    subject: '3 mois Pro offerts. Voici comment.',
     html: layout({
-      preheader: 'Invitez 3 amis, gagnez 3 mois Pro offerts. Aucune limite, votre lien personnalisé est dedans.',
+      preheader: '3 amis qui passent payant = 3 mois Pro pour vous. Sans plafond.',
       accent: COLORS.brand,
       content: `
         ${hero({
@@ -1050,9 +1050,9 @@ export function referralRewardEmail(userName, totalBonusMonths) {
   const name = userName || 'là';
   const m = totalBonusMonths || 1;
   return {
-    subject: '🎉 1 mois gratuit gagné grâce à votre parrainage',
+    subject: '+1 mois Pro offert. Merci pour l\'invitation.',
     html: layout({
-      preheader: `Total cumulé : ${m} mois bonus. Continuez à inviter pour en gagner plus.`,
+      preheader: `Total cumulé : ${m} mois bonus. Continuez à inviter, ça monte.`,
       accent: COLORS.brand,
       content: `
         ${hero({

@@ -50,7 +50,7 @@ export default function TopFormsTable({ topBySubmissions, topByConversion }) {
           <p className="text-xs text-content-tertiary">
             {sortKey === 'conversion_rate'
               ? 'Pas assez de vues pour calculer le taux (min 20 vues par form).'
-              : 'Aucune soumission pour l\'instant.'}
+              : 'Aucune soumission. Partage tes forms.'}
           </p>
         </div>
       ) : (

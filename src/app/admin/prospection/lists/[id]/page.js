@@ -396,7 +396,7 @@ export default function ListDetailPage() {
               <tbody>
                 {contacts.length === 0 ? (
                   <tr><td colSpan={7} className="p-12 text-center text-content-tertiary">
-                    {total === 0 ? 'Aucun contact pour le moment. Importez un CSV.' : 'Aucun contact pour cette recherche.'}
+                    {total === 0 ? 'Liste vide. Importe un CSV pour démarrer.' : 'Aucun contact pour cette recherche.'}
                   </td></tr>
                 ) : contacts.map((c) => (
                   <tr key={c.id} className={`border-t border-line ${c.opt_out ? 'opacity-50' : ''}`}>

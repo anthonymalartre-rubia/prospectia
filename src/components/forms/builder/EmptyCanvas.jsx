@@ -21,10 +21,10 @@ export default function EmptyCanvas() {
         <MousePointer2 size={20} />
       </div>
       <p className="text-sm font-semibold text-content-primary">
-        Glisse un champ depuis la gauche
+        Cette page est vide. Glisse un champ ici.
       </p>
       <p className="mt-1 text-xs text-content-tertiary max-w-xs mx-auto">
-        Ou clique sur un type de champ pour l'ajouter immédiatement à cette page.
+        Ou clique sur un type à gauche, ça l&apos;ajoute direct.
       </p>
     </div>
   );

@@ -21,10 +21,10 @@ export default function DashboardError({ error, reset }) {
         </div>
 
         <h2 className="text-xl font-semibold text-content-primary mb-2">
-          Erreur dans le tableau de bord
+          Le dashboard a planté.
         </h2>
         <p className="text-sm text-content-secondary mb-6 leading-relaxed">
-          Le tableau de bord a rencontr&eacute; un probl&egrave;me. Vos donn&eacute;es sont en s&eacute;curit&eacute;.
+          Tes données sont en sécu. On regarde — réessaie dans 30 secondes.
         </p>
 
         {process.env.NODE_ENV === 'development' && error?.message && (
@@ -38,13 +38,13 @@ export default function DashboardError({ error, reset }) {
             onClick={() => reset()}
             className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 text-white text-sm font-semibold hover:from-violet-500 hover:to-indigo-500 transition shadow-lg shadow-violet-500/20"
           >
-            R&eacute;essayer
+            Réessayer
           </button>
           <a
             href="/"
             className="w-full py-2.5 px-4 rounded-xl border border-line text-content-secondary text-sm font-medium hover:bg-surface-hover transition text-center"
           >
-            Retour &agrave; l&apos;accueil
+            Retour à l&apos;accueil
           </a>
         </div>
       </div>
