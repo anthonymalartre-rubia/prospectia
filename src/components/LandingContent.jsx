@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { ArrowRight, Check, Zap, Search, Mail, MapPin, Shield, Layers, Download, Crown, Star, Tag, Brain, TrendingDown, Database, X, Globe, BarChart3, Sparkles, FormInput } from 'lucide-react';
+import { ArrowRight, Check, Zap, Search, Mail, MapPin, Shield, Layers, Download, Crown, Star, Tag, Brain, TrendingDown, Database, X, Globe, BarChart3, Sparkles, FormInput, Rocket } from 'lucide-react';
 import { NavAuth, HeroCTA, FooterCTA } from '@/components/AuthCTA';
 import BookDemoButton from '@/components/BookDemoButton';
 import ProductsMenu from '@/components/ProductsMenu';
@@ -268,6 +268,26 @@ export default function LandingContent() {
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1200px] h-[700px] bg-gradient-to-br from-violet-200/40 via-indigo-100/30 to-pink-100/20 rounded-full blur-3xl pointer-events-none -z-0" />
         <div className="absolute top-40 right-[5%] w-96 h-96 bg-violet-300/20 rounded-full blur-3xl pointer-events-none -z-0 animate-pulse" style={{ animationDuration: '6s' }} />
         <div className="absolute top-60 left-[5%] w-80 h-80 bg-indigo-200/30 rounded-full blur-3xl pointer-events-none -z-0 animate-pulse" style={{ animationDuration: '8s' }} />
+
+        {/* 🚀 Fusée animée — décolle en diagonale du bas-gauche vers
+            haut-droite, loop infinie 8s. Cachée sur mobile (clutter visuel
+            sur petit écran), visible dès lg. z-0 pour passer derrière les
+            cards mais devant les blobs gradient. */}
+        <div
+          className="hidden lg:block absolute z-[1] pointer-events-none animate-hero-rocket"
+          style={{ bottom: '60px', left: '40px' }}
+          aria-hidden="true"
+        >
+          {/* Traînée de fumée derrière la fusée — gradient fade */}
+          <div
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-3 rounded-full bg-gradient-to-l from-orange-400/70 via-amber-300/40 to-transparent blur-md -z-10"
+            style={{ transform: 'translate(-90%, -50%) rotate(135deg)' }}
+          />
+          {/* La fusée elle-même — gradient violet/orange cohérent avec la brand */}
+          <div className="relative w-12 h-12 rounded-2xl bg-gradient-to-br from-violet-500 via-indigo-500 to-pink-500 flex items-center justify-center shadow-2xl shadow-violet-500/40">
+            <Rocket size={22} className="text-white -rotate-45" />
+          </div>
+        </div>
 
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">

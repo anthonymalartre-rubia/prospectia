@@ -380,3 +380,42 @@ body {
     font-size: 16px !important;
   }
 }
+
+/* ─── Hero rocket animation (landing) ────────────────────────────────
+   Une fusée 🚀 décolle en diagonale du bas-gauche vers le haut-droite,
+   avec rotation 45° (cap "nord-est"), boucle infinie toutes les 8s.
+   La traînée de fumée est rendue via box-shadow multiple sur un
+   pseudo-element pour économiser le DOM (pas de spans empilés).
+
+   - Phase 0-5%   : invisible (delay avant décollage)
+   - Phase 5-90%  : montée + drift + scale (effet perspective)
+   - Phase 90-100%: fade out en sortant de l'écran
+   ───────────────────────────────────────────────────────────────────── */
+@keyframes hero-rocket {
+  0% {
+    transform: translate(0, 0) rotate(-45deg) scale(0.7);
+    opacity: 0;
+  }
+  5% {
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(420px, -520px) rotate(-45deg) scale(1.05);
+    opacity: 0;
+  }
+}
+.animate-hero-rocket {
+  animation: hero-rocket 8s ease-out infinite;
+  will-change: transform, opacity;
+}
+
+/* Traînée de fumée — petits ronds qui s'effacent derrière la fusée.
+   On utilise des box-shadow multiples sur le ::after du wrapper. */
+@keyframes hero-rocket-trail {
+  0%   { opacity: 0; transform: translate(0, 0) scale(0.4); }
+  10%  { opacity: 0.6; }
+  100% { opacity: 0; transform: translate(-40px, 50px) scale(2.2); }
+}
