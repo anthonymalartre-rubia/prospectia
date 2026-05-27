@@ -8,11 +8,17 @@
 // ─────────────────────────────────────────────────────────────────────
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Inbox, Mail, MessageSquare, RefreshCw, AlertCircle } from 'lucide-react';
 import TopBar from '@/components/TopBar';
 import CrmSidebar from '@/components/crm/CrmSidebar';
 import { getSupabase } from '@/lib/supabase';
+
+// Bug fix audit 27 mai 2026 : page n'avait AUCUN gating Business → user free
+// arrivait sur l'UI CRM (contenu vide via RLS mais UX cassée + faux signal).
+// Pattern aligné sur /app/crm/page.js et /app/crm/contacts/page.js.
+const BUSINESS_PLANS = ['business', 'enterprise'];
 
 function formatDate(iso) {
   if (!iso) return '—';
@@ -35,9 +41,39 @@ function ChannelIcon({ channel }) {
 }
 
 export default function InboundEventsPage() {
+  const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [events, setEvents] = useState([]);
   const [error, setError] = useState(null);
+  // Gate Business : null = check en cours, false = redirect, true = autorisé
+  const [allowed, setAllowed] = useState(null);
+
+  // Vérifie plan + redirige si pas Business (UX cohérente avec /app/crm)
+  useEffect(() => {
+    (async () => {
+      const supabase = getSupabase();
+      if (!supabase) {
+        router.replace('/login');
+        return;
+      }
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        router.replace('/login?redirect=/app/crm/inbound');
+        return;
+      }
+      const { data: profile } = await supabase
+        .from('user_profiles')
+        .select('plan')
+        .eq('id', user.id)
+        .maybeSingle();
+      if (!profile || !BUSINESS_PLANS.includes(profile.plan)) {
+        // Pas Business → redirige vers /app/crm qui affiche la WaitlistForm
+        router.replace('/app/crm');
+        return;
+      }
+      setAllowed(true);
+    })();
+  }, [router]);
 
   const load = async () => {
     setLoading(true);
@@ -67,8 +103,20 @@ export default function InboundEventsPage() {
   };
 
   useEffect(() => {
-    load();
-  }, []);
+    if (allowed) load();
+  }, [allowed]);
+
+  // Render rien tant que le gate n'a pas validé (évite flash UI)
+  if (allowed !== true) {
+    return (
+      <>
+        <TopBar showHamburger={false} />
+        <main className="min-h-screen bg-surface-base flex items-center justify-center">
+          <div className="text-sm text-content-tertiary">Vérification du plan…</div>
+        </main>
+      </>
+    );
+  }
 
   return (
     <>

@@ -7,6 +7,7 @@
 import { NextResponse } from 'next/server';
 import { getAuthenticatedUser } from '@/lib/auth';
 import { generateUniqueSlug, slugify, validateFormSchema } from '@/lib/forms';
+import { validateUrl } from '@/lib/url-validation';
 
 function unauthorized() {
   return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
@@ -127,7 +128,32 @@ export async function PUT(request, { params }) {
         { status: 400 }
       );
     }
-    updates.settings = body.settings || {};
+    const sanitizedSettings = body.settings ? { ...body.settings } : {};
+    // Bug fix audit 27 mai 2026 : validateUrl() sur redirect_url pour
+    // empêcher open redirect (avant : acceptait n'importe quelle string,
+    // un attaquant pouvait configurer redirect vers domaine phishing).
+    if (sanitizedSettings.redirect_url) {
+      const check = validateUrl(sanitizedSettings.redirect_url);
+      if (!check.valid) {
+        return NextResponse.json(
+          { success: false, error: `redirect_url invalide : ${check.error}` },
+          { status: 400 }
+        );
+      }
+      sanitizedSettings.redirect_url = check.url;
+    }
+    // Idem privacy_url si présent (lien politique de confidentialité)
+    if (sanitizedSettings.privacy_url) {
+      const check = validateUrl(sanitizedSettings.privacy_url);
+      if (!check.valid) {
+        return NextResponse.json(
+          { success: false, error: `privacy_url invalide : ${check.error}` },
+          { status: 400 }
+        );
+      }
+      sanitizedSettings.privacy_url = check.url;
+    }
+    updates.settings = sanitizedSettings;
   }
 
   if (body.crm_auto_create_contact !== undefined) {

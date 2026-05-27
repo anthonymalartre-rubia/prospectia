@@ -56,6 +56,11 @@ export async function POST(request, { params }) {
       .eq('list_id', campaign.list_id)
       .not('email', 'is', null)
       .eq('opt_out', false)
+      // .order('id') indispensable pour que la pagination .range() soit
+      // déterministe. Sans ça Postgres peut renvoyer des résultats
+      // incohérents entre pages → certains contacts jamais queue-és (bug
+      // fix audit 27 mai 2026).
+      .order('id', { ascending: true })
       .range(offset, offset + PAGE_SIZE - 1);
 
     if (cErr) {

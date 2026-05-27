@@ -774,6 +774,39 @@ export default function FormRenderer({ form, slug, isEmbed = false }) {
           </button>
         )}
       </div>
+
+      {/*
+        Footer RGPD auto-injecté (audit 27 mai 2026).
+        Conformité article 13 RGPD : information préalable obligatoire
+        sur le traitement des données. Affiche au minimum la mention du
+        responsable + lien politique de confidentialité si configuré.
+        L'utilisateur du form (= le client Volia) peut désactiver via
+        settings.hide_rgpd_footer = true s'il a déjà sa propre mention
+        dans un champ texte au-dessus.
+      */}
+      {!settings.hide_rgpd_footer && (
+        <p className="mt-6 pt-4 border-t border-line/60 text-xs text-content-tertiary leading-relaxed">
+          En soumettant ce formulaire, vous acceptez que vos données soient
+          traitées par {form.owner_name || 'le responsable du formulaire'} pour
+          répondre à votre demande.{' '}
+          {settings.privacy_url ? (
+            <>
+              Voir notre{' '}
+              <a
+                href={settings.privacy_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline hover:text-pink-600 transition-colors"
+              >
+                politique de confidentialité
+              </a>
+              .
+            </>
+          ) : (
+            <>Vous pouvez exercer vos droits (accès, rectification, suppression) à tout moment.</>
+          )}
+        </p>
+      )}
     </form>
   );
 }

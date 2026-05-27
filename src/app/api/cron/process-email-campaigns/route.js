@@ -29,8 +29,57 @@ import {
 export const dynamic = 'force-dynamic';
 export const maxDuration = 60; // Pro tier requis si > 10s sur free, mais 60 ici par sécurité
 
-// Resend rate limit : ~10 emails/sec. On reste prudent (5/sec = 50 max par batch sur 10s)
+// Resend rate limit : ~10 emails/sec.
+// BATCH_SIZE = nombre total d'envois piochés par tick (50 = volume confortable)
+// CONCURRENCY = parallélisme MAX pendant l'envoi (5/sec respecté).
+//
+// Bug fix audit 27 mai 2026 : avant, Promise.all(50) firait 50 fetch Resend
+// SIMULTANÉS → 429 systématique en heure de pointe → emails marqués failed
+// sans retry. Le commentaire "5/sec sur 10s" était faux (Promise.all = pas
+// de throttle). Désormais on utilise un sémaphore inline + retry exponentiel
+// sur 429.
 const BATCH_SIZE = 50;
+const CONCURRENCY = 5;
+
+// Sémaphore inline (évite npm install p-limit pour 5 lignes de code).
+// runWithLimit(items, fn) : applique fn à chaque item en limitant la
+// concurrence à CONCURRENCY. Préserve l'ordre des résultats.
+async function runWithLimit(items, fn, limit = CONCURRENCY) {
+  const results = new Array(items.length);
+  let index = 0;
+  const workers = Array.from({ length: Math.min(limit, items.length) }, async () => {
+    while (true) {
+      const i = index++;
+      if (i >= items.length) return;
+      results[i] = await fn(items[i], i);
+    }
+  });
+  await Promise.all(workers);
+  return results;
+}
+
+// Retry exponentiel sur 429 (rate-limited) ou 5xx Resend.
+// Max 3 essais, backoff : 250ms, 750ms, 2250ms.
+async function withResendRetry(fn, maxRetries = 3) {
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      const result = await fn();
+      // sendEmail() retourne { success, error, status }. On retry si rate-limit.
+      const isRateLimit = result?.status === 429 || /rate.?limit|too many requests/i.test(result?.error || '');
+      const is5xx = typeof result?.status === 'number' && result.status >= 500 && result.status < 600;
+      if ((isRateLimit || is5xx) && attempt < maxRetries - 1) {
+        const delay = 250 * Math.pow(3, attempt); // 250 → 750 → 2250
+        await new Promise((r) => setTimeout(r, delay));
+        continue;
+      }
+      return result;
+    } catch (err) {
+      if (attempt === maxRetries - 1) throw err;
+      const delay = 250 * Math.pow(3, attempt);
+      await new Promise((r) => setTimeout(r, delay));
+    }
+  }
+}
 
 export async function GET(request) {
   try {
@@ -299,7 +348,9 @@ async function handleCron(request) {
   const inFlightByCampaign = new Map();
 
   // 4) Envoie chaque send (filtré par warmup quota)
-  const results = await Promise.all(sendsToProcess.map(async (send) => {
+  //    Throttling : CONCURRENCY=5 parallèles max (respecte Resend ~10/sec)
+  //    + retry exponentiel sur 429/5xx (cf withResendRetry en haut du fichier).
+  const results = await runWithLimit(sendsToProcess, async (send) => {
     const campaign = campaignMap.get(send.campaign_id);
     const contact = contactMap.get(send.contact_id);
 
@@ -405,14 +456,17 @@ async function handleCron(request) {
       { name: 'owner_id', value: String(campaign.owner_id).replace(/-/g, '_') },
     ];
 
-    const result = await sendEmail({
+    // Wrap dans retry exponentiel : sur 429 Resend (rate limit) ou 5xx,
+    // on retente 3x avec backoff 250ms → 750ms → 2250ms. Bug fix audit
+    // du 27 mai 2026 : avant, les 429 étaient marqués 'failed' immédiat.
+    const result = await withResendRetry(() => sendEmail({
       to: contact.email,
       from: fromHeader,
       subject,
       html,
       replyTo: replyToHeader,
       tags,
-    });
+    }));
 
     if (result.success) {
       // Met aussi à jour last_email_at sur le contact (throttling)
@@ -437,11 +491,17 @@ async function handleCron(request) {
       });
       return { ...sendUpdate, crmLogged: !!crmLog?.logged };
     } else {
+      // Bug fix audit 27 mai 2026 : décrémenter inFlight si on a incrémenté
+      // pour A/B (sinon biaise le round-robin du prochain batch)
+      if (abStateByCampaign.has(campaign.id) && !abStateByCampaign.get(campaign.id)?.winnerVariant) {
+        const cur = inFlightByCampaign.get(campaign.id) || 1;
+        inFlightByCampaign.set(campaign.id, Math.max(0, cur - 1));
+      }
       return updateSendStatus(supabase, send.id, 'failed', {
         error: result.error || 'Unknown error',
       });
     }
-  }));
+  });
 
   const succeeded = results.filter((r) => r?.ok).length;
   const failed = results.filter((r) => r && !r.ok).length;
@@ -465,11 +525,12 @@ async function handleCron(request) {
         .update({ status: 'sent', completed_at: new Date().toISOString() })
         .eq('id', cid)
         .eq('status', 'sending')
-        .select('id, user_id, name, subject, list_id')
+        .select('id, owner_id, name, subject, list_id')
         .maybeSingle();
 
       // Fire-and-forget : webhook 'campaign_completed' aux abonnés Zapier/Make
-      if (completedCampaign?.user_id) {
+      // NB : la colonne est owner_id (pas user_id) — bug fix audit du 27 mai 2026
+      if (completedCampaign?.owner_id) {
         const { data: stats } = await supabase
           .from('email_sends')
           .select('status')

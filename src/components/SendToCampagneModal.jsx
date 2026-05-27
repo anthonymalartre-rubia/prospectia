@@ -20,7 +20,7 @@
 //      (select).
 //   3. Submit POST /api/prospection/send-to-campagne.
 //   4. Sur succès → écran de résultat avec CTA "Créer la campagne →"
-//      qui redirige vers /admin/prospection/campaigns/new?list_id=…
+//      qui redirige vers /admin/prospection/campaigns/new?list=…
 // ─────────────────────────────────────────────────────────────────────
 
 import { useEffect, useState } from 'react';
@@ -242,7 +242,11 @@ export default function SendToCampagneModal({
                 Fermer
               </button>
               <Link
-                href={`/admin/prospection/campaigns/new?list_id=${encodeURIComponent(result.list_id)}`}
+                /* Param name must be `list` (not `list_id`) to match
+                   `campaigns/new/page.js` searchParams.get('list'). Bug
+                   fix audit 27 mai 2026 : avant, le wizard arrivait avec
+                   liste vide car le param était silencieusement ignoré. */
+                href={`/admin/prospection/campaigns/new?list=${encodeURIComponent(result.list_id)}`}
                 onClick={() => onClose?.()}
                 className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold text-white bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 shadow-md shadow-violet-500/20 transition-all"
               >
