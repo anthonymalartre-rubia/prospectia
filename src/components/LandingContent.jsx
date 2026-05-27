@@ -257,12 +257,11 @@ export default function LandingContent() {
       {/* ──────────────────────────────────────────────────────────────
           HERO — 2-col desktop (copy left, product mockup right)
           ─────────────────────────────────────────────────────────────
-          Refonte mai 2026 inspiration Linear/Apollo/Cal.com :
-          - Typo massive (text-7xl xl:text-8xl) = "wow" instantané
-          - Product mockup à droite = on VOIT le produit, pas que la promesse
-          - Avatars stack + social proof = trust visuel
-          - Animations CSS fade-in + float = sensation "vivant"
-          - HeroSearchWidget descendu en section dédiée plus bas
+          Refonte mai 2026 — pivot stratégique focus VALEUR CLIENT (B+C) :
+          - On parle DU client (résultat concret + émotion), pas DES concurrents
+          - H1 actionnable : "Trouve tes 50 premiers prospects en 30s"
+          - Sous-titre = valeur business (modules + prix accessible = bénéfice)
+          - Comparatif concurrent DÉPLACÉ en bas de page (consentement visiteur)
        */}
       <section className="relative pt-16 sm:pt-24 pb-20 px-4 sm:px-6 overflow-hidden">
         {/* Background gradient mesh — soft, colorful, moderne 2026 */}
@@ -281,26 +280,21 @@ export default function LandingContent() {
                 <span className="text-violet-700 font-bold">SUITE B2B FRANÇAISE · 4 MODULES · 19 €/MOIS</span>
               </div>
 
-              {/* H1 MASSIVE — Hero punchy direct (style Plausible/Cal.com) avec font-display signature.
-                  On nomme les concurrents direct : ça interpelle et positionne immédiatement.
-                  BRAND TODO : tester A/B la variante "Apollo coûte 99$. Volia 19€. Vous voyez l'idée." */}
-              <h1 className="font-display text-5xl sm:text-6xl lg:text-7xl xl:text-[80px] font-bold tracking-tight leading-[1.02] mb-6">
-                <span className="bg-gradient-to-br from-violet-600 via-indigo-600 to-violet-700 bg-clip-text text-transparent">Apollo.</span>{' '}
-                <span className="bg-gradient-to-br from-blue-600 to-cyan-600 bg-clip-text text-transparent">Lemlist.</span>{' '}
-                <span className="bg-gradient-to-br from-emerald-600 to-teal-600 bg-clip-text text-transparent">HubSpot.</span>{' '}
-                <span className="bg-gradient-to-br from-pink-600 to-rose-600 bg-clip-text text-transparent">Typeform.</span>
+              {/* H1 — focus VALEUR CLIENT : verbes d'action + résultats concrets.
+                  C'est ce que TU obtiens, pas ce qu'ON construit. */}
+              <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl xl:text-[64px] font-bold tracking-tight leading-[1.05] mb-6">
+                <span className="bg-gradient-to-br from-violet-600 via-indigo-600 to-violet-700 bg-clip-text text-transparent">Trouve tes 50 premiers prospects</span>
+                <span className="text-content-primary"> en 30 secondes.</span>
                 <br />
-                <span className="text-content-primary">Un seul outil, 19&nbsp;€/mois.</span>
+                <span className="text-content-primary">Lance ta campagne en 5 minutes.</span>
               </h1>
 
-              {/* Sous-titre — direct, sans détour. Vouvoiement (page publique). */}
+              {/* Sous-titre — valeur business : suite complète + prix accessible
+                  reformulé comme BÉNÉFICE (pas comme attaque concurrent). */}
               <p className="text-lg sm:text-xl text-content-secondary mb-8 leading-relaxed max-w-xl">
-                On a recodé{' '}
-                <strong className="text-violet-700">la prospection</strong>,{' '}
-                <strong className="text-blue-700">les campagnes</strong>,{' '}
-                <strong className="text-emerald-700">le CRM</strong> et{' '}
-                <strong className="text-pink-700">les formulaires</strong> dans une seule suite française.
-                Pas de 4 abonnements. Pas d&apos;import/export. Dès 19&nbsp;€/mois.
+                Volia : <strong className="text-violet-700">Prospection</strong> + <strong className="text-blue-700">Campagnes</strong> + <strong className="text-emerald-700">CRM</strong> + <strong className="text-pink-700">Formulaires</strong>.
+                Une seule app, un seul login, <strong className="text-content-primary">19&nbsp;€/mois</strong> pour démarrer.
+                Sans CB.
               </p>
 
               {/* CTAs — py-5 (plus de présence), shadow plus prononcé */}
@@ -309,14 +303,14 @@ export default function LandingContent() {
                   href="/signup"
                   className="group inline-flex items-center justify-center gap-2 px-8 py-5 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 text-white font-semibold shadow-xl shadow-violet-500/30 hover:shadow-2xl hover:shadow-violet-500/50 hover:-translate-y-0.5 transition-all text-base"
                 >
-                  Allez, on essaie
+                  Démarrer gratuitement
                   <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
                 </Link>
                 <a
                   href="#try-live"
                   className="inline-flex items-center justify-center gap-2 px-8 py-5 rounded-xl border-2 border-line-hover hover:border-violet-400 hover:bg-violet-50 text-content-primary font-semibold transition-all text-base"
                 >
-                  Voir le produit en live
+                  Voir une démo
                 </a>
               </div>
 
@@ -330,7 +324,9 @@ export default function LandingContent() {
                 />
               </div>
 
-              {/* Avatars stack + stat punchy (vs ancien "SDR, freelances...") */}
+              {/* Trust strip sous hero — 4 signaux factuels (287k = chiffre VRAI).
+                  TODO Anthony : remplace l'avatars stack par le compteur MRR/founders
+                  quand tu auras les chiffres réels. */}
               <div className="flex items-center gap-3 mb-6">
                 <div className="flex -space-x-2">
                   {[
@@ -349,21 +345,25 @@ export default function LandingContent() {
                   ))}
                 </div>
                 <div className="text-sm">
-                  <div className="font-semibold text-content-primary">287 000+ entreprises françaises</div>
-                  <div className="text-content-tertiary">déjà dans la base Volia</div>
+                  {/* TODO Anthony : remplace "founders" par MRR ou nb clients réels.
+                      Formulation flexible — ex: "Rejoins les 47 founders qui automatisent leur prospection avec Volia". */}
+                  <div className="font-semibold text-content-primary">Rejoins les founders qui automatisent leur prospection</div>
+                  <div className="text-content-tertiary">287 000+ entreprises dans la base · sans CB</div>
                 </div>
               </div>
 
-              {/* Trust badges — orientés "économie suite" */}
-              <div className="flex items-center gap-4 text-xs text-content-tertiary flex-wrap">
+              {/* Trust strip — 4 signaux factuels alignés au pivot focus-client */}
+              <div className="flex items-center gap-x-3 gap-y-1.5 text-xs text-content-tertiary flex-wrap">
                 <span className="inline-flex items-center gap-1.5">
                   <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                  ~250 €/mois économisés vs stack séparée
+                  287 000+ entreprises
                 </span>
                 <span>·</span>
-                <span>Pas de carte bancaire</span>
+                <span>4 modules connectés</span>
                 <span>·</span>
-                <span className="font-medium">RGPD-friendly</span>
+                <span>Made in France</span>
+                <span>·</span>
+                <span className="font-medium">RGPD by default</span>
               </div>
             </div>
 
@@ -499,23 +499,149 @@ export default function LandingContent() {
       </section>
 
       {/* ──────────────────────────────────────────────────────────────
+          AVANT / APRÈS VOLIA — storytelling visuel (direction C)
+          ─────────────────────────────────────────────────────────────
+          Split-screen : 2 colonnes côte à côte. Gauche = pain points
+          (gris/terne). Droite = bénéfices (violet/lumineux). Pattern
+          "before/after" très efficace pour faire ressentir le changement.
+       */}
+      <section className="relative py-20 px-4 sm:px-6 border-t border-line overflow-hidden bg-gradient-to-b from-white via-zinc-50/30 to-white">
+        <div className="max-w-6xl mx-auto">
+          <MotionInView>
+            <div className="text-center mb-14">
+              <p className="text-sm font-semibold text-violet-600 mb-3 uppercase tracking-wider">Avant / après Volia</p>
+              <h2 className="font-display text-3xl sm:text-5xl font-bold mb-4 bg-gradient-to-b from-zinc-900 to-zinc-600 bg-clip-text text-transparent">
+                Tu te reconnais&nbsp;?
+              </h2>
+              <p className="text-content-tertiary text-lg max-w-2xl mx-auto">
+                Le lundi matin de la plupart des founders ressemble à la colonne de gauche. Avec Volia, c&apos;est la droite.
+              </p>
+            </div>
+          </MotionInView>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
+
+            {/* ─── AVANT (gauche, terne) ─── */}
+            <MotionInView delay={100}>
+              <div className="h-full p-7 sm:p-8 rounded-2xl border-2 border-zinc-200 bg-gradient-to-br from-zinc-50 via-white to-zinc-50/50 shadow-sm">
+                <div className="flex items-center justify-between mb-6">
+                  <div>
+                    <div className="text-xs font-semibold uppercase tracking-wider text-zinc-500 mb-1">Avant Volia</div>
+                    <h3 className="text-xl font-bold text-content-primary">Ton lundi matin actuellement</h3>
+                  </div>
+                  <span className="text-2xl" aria-hidden="true">😩</span>
+                </div>
+                <ul className="space-y-3">
+                  {[
+                    'Ouvrir 3 outils différents (et payer 3 abonnements)',
+                    'Copier-coller des emails à la main entre Apollo, Lemlist, Notion',
+                    'Perdre 2 h sur la recherche, 30 min sur la rédaction',
+                    'Suivre tes relances dans un Google Sheet branlant',
+                    'Te demander si tu as déjà contacté tel prospect le mois dernier',
+                  ].map((item) => (
+                    <li key={item} className="flex items-start gap-3 text-sm text-content-secondary">
+                      <span className="inline-flex w-5 h-5 rounded-full bg-zinc-200 items-center justify-center flex-shrink-0 mt-0.5">
+                        <X size={11} className="text-zinc-500" />
+                      </span>
+                      <span className="leading-relaxed">{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </MotionInView>
+
+            {/* ─── APRÈS (droite, lumineux) ─── */}
+            <MotionInView delay={250}>
+              <div className="relative h-full p-7 sm:p-8 rounded-2xl border-2 border-violet-300 bg-gradient-to-br from-violet-50 via-white to-indigo-50/40 shadow-xl shadow-violet-500/10">
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-gradient-to-r from-violet-600 to-indigo-600 text-white text-[10px] font-bold uppercase tracking-wider shadow-md">
+                  Avec Volia
+                </div>
+                <div className="flex items-center justify-between mb-6 mt-2">
+                  <div>
+                    <div className="text-xs font-semibold uppercase tracking-wider text-violet-700 mb-1">Après Volia</div>
+                    <h3 className="text-xl font-bold text-content-primary">Ton lundi matin avec Volia</h3>
+                  </div>
+                  <span className="text-2xl" aria-hidden="true">☕</span>
+                </div>
+                <ul className="space-y-3">
+                  {[
+                    'Une seule app, un seul login, un seul prix',
+                    'Click → 50 prospects qualifiés (email + téléphone + site)',
+                    'Click → ta séquence email se lance toute seule',
+                    'Click → tes deals atterrissent dans le CRM automatiquement',
+                    'Aller boire un café. Revenir. Voir qui a répondu.',
+                  ].map((item) => (
+                    <li key={item} className="flex items-start gap-3 text-sm text-content-primary">
+                      <span className="inline-flex w-5 h-5 rounded-full bg-violet-100 items-center justify-center flex-shrink-0 mt-0.5">
+                        <Check size={11} className="text-violet-700" />
+                      </span>
+                      <span className="leading-relaxed font-medium">{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </MotionInView>
+          </div>
+        </div>
+      </section>
+
+      {/* ──────────────────────────────────────────────────────────────
           Widget interactif — section dédiée propre
           (descendu du hero pour laisser le hero respirer)
-          id="try-live" cible du CTA "Voir une démo en direct" du hero
+          id="try-live" cible du CTA "Voir une démo" du hero
+          Mise en avant claire (titre orienté bénéfice client).
        */}
-      <section id="try-live" className="relative pb-20 px-4 sm:px-6 overflow-hidden scroll-mt-20">
+      <section id="try-live" className="relative pt-4 pb-20 px-4 sm:px-6 overflow-hidden scroll-mt-20">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-6">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-violet-100 border border-violet-200 text-xs text-violet-700 font-semibold mb-3">
               <Sparkles size={12} />
-              ESSAYEZ MAINTENANT
+              TESTE MAINTENANT
             </div>
             <h2 className="font-display text-2xl sm:text-3xl font-bold text-content-primary mb-2">
-              50 prospects en 10 secondes. Sans signup.
+              Tape ta recherche, vois 5 vrais prospects en 3 secondes.
             </h2>
-            <p className="text-content-tertiary">Tapez votre cible, on vous montre.</p>
+            <p className="text-content-tertiary">Aucune inscription, aucune CB. Juste pour que tu voies ce que Volia fait pour toi.</p>
           </div>
           <HeroSearchWidget />
+        </div>
+      </section>
+
+      {/* ──────────────────────────────────────────────────────────────
+          SOCIAL PROOF BAR — chiffres factuels (subtil, ligne fine).
+          Remplace l'ancienne section "Volia, en chiffres" flashy.
+          Pattern Linear/Cal.com : 4 stats en ligne, sans gradients
+          dominants, juste les chiffres VRAIS pour rassurer.
+       */}
+      <section className="relative py-14 px-4 sm:px-6 border-t border-line bg-gradient-to-b from-white via-zinc-50/40 to-white">
+        <div className="max-w-6xl mx-auto">
+          <MotionInView>
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 text-center">
+              {[
+                { value: '287 000+', label: 'entreprises dans la base Volia' },
+                { value: '101', label: 'départements France + Belgique + Suisse romande' },
+                { value: '150+', label: 'catégories B2B (commerce de proximité aux SaaS)' },
+                // TODO Anthony : remplace "founders" par chiffre réel (MRR ou nb clients payants)
+                { value: '47', label: 'founders nous font déjà confiance', placeholder: true },
+              ].map((stat) => (
+                <div key={stat.label}>
+                  <div className="text-3xl sm:text-4xl font-bold font-mono tabular-nums text-violet-700 mb-1">
+                    {stat.value}
+                  </div>
+                  <div className="text-xs sm:text-sm text-content-tertiary leading-snug">
+                    {stat.label}
+                    {stat.placeholder && (
+                      // Marqueur visuel discret pour Anthony — à supprimer une fois chiffre réel
+                      <span className="block text-[9px] uppercase tracking-wider text-amber-600 mt-0.5">
+                        {/* TODO Anthony : remplace 47 par MRR ou nb clients réels */}
+                        chiffre à confirmer
+                      </span>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </MotionInView>
         </div>
       </section>
 
@@ -676,6 +802,142 @@ export default function LandingContent() {
               </div>
             </div>
           </MotionInView>
+        </div>
+      </section>
+
+      {/* ──────────────────────────────────────────────────────────────
+          SCÉNARIO TYPE — storytelling court (direction C, émotion)
+          ─────────────────────────────────────────────────────────────
+          3 timecards (9h05 / 9h12 / 9h15) qui racontent une vraie
+          journée. Pas de chiffres bidons : juste le flow naturel.
+       */}
+      <section className="py-24 px-4 sm:px-6 border-t border-line bg-gradient-to-b from-white via-violet-50/30 to-white">
+        <div className="max-w-6xl mx-auto">
+          <MotionInView>
+            <div className="text-center mb-14">
+              <p className="text-sm font-semibold text-violet-600 mb-3 uppercase tracking-wider">Scénario type</p>
+              <h2 className="font-display text-3xl sm:text-5xl font-bold mb-4 bg-gradient-to-b from-zinc-900 to-zinc-600 bg-clip-text text-transparent">
+                Voici à quoi ressemble une journée avec Volia
+              </h2>
+              <p className="text-content-tertiary text-lg max-w-2xl mx-auto">
+                Pas de promesse marketing. Le vrai flow, minute par minute.
+              </p>
+            </div>
+          </MotionInView>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            {[
+              {
+                time: '9h05',
+                module: 'Prospection',
+                moduleColor: 'violet',
+                title: 'Tu tapes ta recherche',
+                desc: 'Tu ouvres Volia. Tu tapes "restaurants Lyon" dans la barre. 50 prospects qualifiés en 4 secondes — adresse, téléphone, email, site web.',
+                emoji: '🔎',
+              },
+              {
+                time: '9h12',
+                module: 'Campagnes',
+                moduleColor: 'blue',
+                title: 'Tu lances ta séquence',
+                desc: 'Tu cliques "Lancer une campagne". Tu choisis ton template "Cold email FR", tu remplaces 2 variables. C\'est parti.',
+                emoji: '📨',
+              },
+              {
+                time: '9h15+',
+                module: 'CRM',
+                moduleColor: 'emerald',
+                title: 'Tu vas chercher ton café',
+                desc: 'Tu reviens, 3 prospects ont déjà ouvert. Un a répondu — il atterrit automatiquement dans ton CRM comme deal au stage Lead. Voilà. C\'est ça, Volia.',
+                emoji: '☕',
+              },
+            ].map((step, i) => (
+              <MotionInView key={step.time} delay={i * 150}>
+                <div className="group h-full p-7 rounded-2xl border-2 border-line hover:border-violet-300 bg-white shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col">
+                  <div className="flex items-center justify-between mb-5">
+                    <div>
+                      <div className="text-xs font-semibold uppercase tracking-wider text-content-tertiary mb-1">{step.time}</div>
+                      <span className={`inline-flex text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-md bg-${step.moduleColor}-100 text-${step.moduleColor}-700 border border-${step.moduleColor}-200`}>
+                        {step.module}
+                      </span>
+                    </div>
+                    <span className="text-3xl" aria-hidden="true">{step.emoji}</span>
+                  </div>
+                  <h3 className="text-lg font-bold text-content-primary mb-3 leading-tight">{step.title}</h3>
+                  <p className="text-sm text-content-secondary leading-relaxed">{step.desc}</p>
+                </div>
+              </MotionInView>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ──────────────────────────────────────────────────────────────
+          POUR QUI ? — 3 personas avec quotes (au lieu de faux témoignages)
+          ─────────────────────────────────────────────────────────────
+          Tant qu'Anthony n'a pas de vrais témoignages clients chiffrés,
+          on montre 3 personas inspirés de src/lib/personas.js avec des
+          quotes "esprit produit" qui parlent à l'audience cible.
+          TODO Anthony : remplace ces quotes par de vrais témoignages
+          quand tu en auras (priorité haute).
+       */}
+      <section className="py-24 px-4 sm:px-6 border-t border-line">
+        <div className="max-w-6xl mx-auto">
+          <MotionInView>
+            <div className="text-center mb-14">
+              <p className="text-sm font-semibold text-violet-600 mb-3 uppercase tracking-wider">Pour qui ?</p>
+              <h2 className="font-display text-3xl sm:text-5xl font-bold mb-4 bg-gradient-to-b from-zinc-900 to-zinc-600 bg-clip-text text-transparent">
+                Tu te retrouves dans l&apos;un de ces profils&nbsp;?
+              </h2>
+              <p className="text-content-tertiary text-lg max-w-2xl mx-auto">
+                {/* TODO Anthony : remplace par de vrais témoignages clients quand tu en auras */}
+                Volia a été pensé pour les pros qui veulent un outil simple, pas une usine à gaz.
+              </p>
+            </div>
+          </MotionInView>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            {[
+              {
+                emoji: '💼',
+                role: 'Founder solo',
+                desc: 'Tu prospectes toi-même, tu veux un outil qui ne te bouffe pas ton après-midi.',
+                quote: "J'avais besoin d'un outil simple. Apollo coûtait 99 $/mois pour une UI buggée. Volia me donne tout pour 19 €.",
+                color: 'violet',
+              },
+              {
+                emoji: '🚀',
+                role: 'SDR débordée',
+                desc: 'Tu passes trop de temps à chercher au lieu de pitcher.',
+                quote: 'Je passais 60 % de mon temps à chercher au lieu de pitcher. Maintenant je signe.',
+                color: 'blue',
+              },
+              {
+                emoji: '📈',
+                role: 'Agence growth FR',
+                desc: 'Tu factures plusieurs clients et tu veux un outil propre, RGPD, facturable.',
+                quote: 'Mes clients comprennent enfin la facture : un seul outil, un seul prix.',
+                color: 'emerald',
+              },
+            ].map((persona, i) => (
+              <MotionInView key={persona.role} delay={i * 120}>
+                <div className={`group h-full p-7 rounded-2xl border-2 border-${persona.color}-200 bg-gradient-to-br from-${persona.color}-50/40 to-white shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col`}>
+                  <div className="flex items-center gap-3 mb-4">
+                    <span className="text-3xl" aria-hidden="true">{persona.emoji}</span>
+                    <h3 className="text-lg font-bold text-content-primary">{persona.role}</h3>
+                  </div>
+                  <p className="text-sm text-content-tertiary mb-5 leading-relaxed">{persona.desc}</p>
+                  <blockquote className={`mt-auto p-4 rounded-xl bg-white border-l-4 border-${persona.color}-400 text-sm text-content-secondary italic leading-relaxed`}>
+                    &laquo;&nbsp;{persona.quote}&nbsp;&raquo;
+                  </blockquote>
+                  {/* Marqueur explicite "persona" — honnêteté éditoriale */}
+                  <p className="mt-3 text-[10px] uppercase tracking-wider text-content-muted">
+                    Profil type · pas un témoignage client
+                  </p>
+                </div>
+              </MotionInView>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -912,49 +1174,10 @@ export default function LandingContent() {
         </div>
       </section>
 
-      {/* ──────────────────────────────────────────────────────────────
-          LIVE STATS BANNER — chiffres clés globaux Volia (mirror du
-          pattern utilisé sur /produits/prospection). Position : juste
-          après la démo, avant les profils — sert d'ancrage chiffré
-          crédible avant de continuer la narrative.
-       */}
-      <section className="relative py-20 px-4 sm:px-6 border-t border-line overflow-hidden bg-gradient-to-br from-violet-50/60 via-white to-indigo-50/40">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-violet-200/30 rounded-full blur-3xl pointer-events-none -z-0" />
-        <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-indigo-200/25 rounded-full blur-3xl pointer-events-none -z-0" />
-
-        <div className="max-w-6xl mx-auto relative z-10">
-          <MotionInView>
-            <div className="text-center mb-12">
-              <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-violet-200 bg-violet-100 text-violet-700 text-[11px] font-bold uppercase tracking-wider">
-                <span className="relative flex h-1.5 w-1.5">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-violet-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-violet-600"></span>
-                </span>
-                Volia, en chiffres
-              </span>
-            </div>
-          </MotionInView>
-
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 text-center">
-            {[
-              { value: '287 000+', label: 'entreprises', sub: 'françaises dans la base', color: 'from-violet-600 via-indigo-600 to-violet-700' },
-              { value: '19 €', label: 'par mois', sub: 'à partir de', color: 'from-indigo-600 to-blue-700' },
-              { value: '5×', label: 'moins cher', sub: 'qu’Apollo / Hunter', color: 'from-emerald-600 to-teal-700' },
-              { value: '100 %', label: 'RGPD', sub: 'conforme by default', color: 'from-blue-600 to-cyan-700' },
-            ].map((stat, i) => (
-              <MotionInView key={stat.label} delay={i * 100}>
-                <div className="group">
-                  <div className={`text-5xl sm:text-6xl lg:text-7xl font-bold font-mono tabular-nums bg-gradient-to-br ${stat.color} bg-clip-text text-transparent leading-none mb-3 group-hover:scale-105 transition-transform`}>
-                    {stat.value}
-                  </div>
-                  <div className="text-sm font-semibold text-content-primary">{stat.label}</div>
-                  <div className="text-xs text-content-tertiary mt-1">{stat.sub}</div>
-                </div>
-              </MotionInView>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* Note pivot mai 2026 : l'ancienne "LIVE STATS BANNER" (4 chiffres
+          gradient flashy avec "5× moins cher qu'Apollo") a été supprimée.
+          La social proof bar subtile est désormais en haut de page sous
+          le widget try-live. */}
 
       {/* Bloc "Pensé pour ces profils" — remplace les anciens chips
           "profils anonymisés". Plus honnête (on ne prétend pas avoir des
@@ -1365,120 +1588,11 @@ export default function LandingContent() {
         </div>
       </section>
 
-      {/* Full Competitor Comparison */}
-      <section id="vs-concurrence" className="py-28 px-4 sm:px-6 border-t border-line">
-        <div className="max-w-6xl mx-auto">
-          <MotionInView>
-            <div className="text-center mb-16">
-              <p className="text-sm font-semibold text-violet-600 mb-3 uppercase tracking-wider">{t('landing.competition.label')}</p>
-              <h2 className="font-display text-3xl sm:text-5xl font-bold mb-4 bg-gradient-to-b from-zinc-900 to-zinc-600 bg-clip-text text-transparent">
-                {t('landing.competition.title')}
-              </h2>
-              <p className="text-content-tertiary text-lg max-w-2xl mx-auto" dangerouslySetInnerHTML={{ __html: t('landing.competition.desc') }} />
-            </div>
-          </MotionInView>
-
-          <div className="p-1 rounded-2xl bg-gradient-to-b from-violet-500/20 to-transparent">
-            <div className="p-6 sm:p-8 rounded-2xl bg-surface-card border border-line">
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="border-b border-line">
-                      <th className="text-left py-4 px-4 font-medium text-content-tertiary min-w-[140px]"></th>
-                      <th className="text-center py-4 px-4 min-w-[120px]">
-                        <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 text-[10px] font-bold uppercase tracking-wider mb-1">
-                          <TrendingDown size={10} /> Le moins cher
-                        </div>
-                        <div className="font-bold text-violet-400 text-base">Volia</div>
-                        <div className="text-violet-400/60 text-xs mt-0.5">dès 19&euro;/{t('landing.competition.month')}</div>
-                      </th>
-                      {COMPETITORS.map((c) => (
-                        <th key={c.name} className="text-center py-4 px-4 font-medium text-content-tertiary min-w-[100px]">
-                          <div>{c.name}</div>
-                          <div className="text-content-muted text-xs mt-0.5">dès {c.entryPrice}/{t('landing.competition.month')}</div>
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {[
-                      { label: t('landing.competition.enrichSources'), volia: t('landing.competition.sevenSources'), key: 'enrichments' },
-                      { label: t('landing.competition.confidenceScoring'), volia: true, key: 'scoring' },
-                      { label: t('landing.competition.aiSearch'), volia: true, key: 'ai' },
-                      { label: t('landing.competition.deptsFR'), volia: true, key: 'depts' },
-                      { label: t('landing.competition.b2bCategories'), volia: '150+', key: 'categories' },
-                      { label: t('landing.competition.googlePlaces'), volia: true, key: 'google', competitors: [false, false, false, false, false] },
-                    ].map((row) => (
-                      <tr key={row.label} className="border-b border-line">
-                        <td className="py-3.5 px-4 text-content-secondary">{row.label}</td>
-                        <td className="py-3.5 px-4 text-center">
-                          {typeof row.volia === 'boolean' ? (
-                            <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-violet-500/20">
-                              <Check size={14} className="text-violet-400" />
-                            </span>
-                          ) : (
-                            <span className="font-semibold text-content-primary">{row.volia}</span>
-                          )}
-                        </td>
-                        {COMPETITORS.map((c) => {
-                          const val = row.competitors ? row.competitors[COMPETITORS.indexOf(c)] : c[row.key];
-                          return (
-                            <td key={c.name} className="py-3.5 px-4 text-center">
-                              {typeof val === 'boolean' ? (
-                                val ? <Check size={14} className="text-content-tertiary mx-auto" /> : <X size={14} className="text-zinc-800 mx-auto" />
-                              ) : (
-                                <span className="text-content-tertiary">{val}</span>
-                              )}
-                            </td>
-                          );
-                        })}
-                      </tr>
-                    ))}
-                    {/* Price rows : Entry tier (Solo) + Pro tier */}
-                    <tr className="border-t-2 border-line">
-                      <td className="py-4 px-4 text-content-secondary font-semibold">Ticket d'entrée</td>
-                      <td className="py-4 px-4 text-center">
-                        <span className="text-2xl font-bold text-emerald-400">19&euro;</span>
-                        <div className="text-[10px] text-emerald-400/60 mt-0.5 uppercase tracking-wider font-bold">Solo</div>
-                      </td>
-                      {COMPETITORS.map((c) => (
-                        <td key={c.name} className="py-4 px-4 text-center">
-                          <span className="text-lg text-content-tertiary">{c.entryPrice}</span>
-                        </td>
-                      ))}
-                    </tr>
-                    <tr className="border-t border-line">
-                      <td className="py-4 px-4 text-content-secondary font-semibold">Plan Pro</td>
-                      <td className="py-4 px-4 text-center">
-                        <span className="text-2xl font-bold text-violet-400">49&euro;</span>
-                        <div className="text-[10px] text-violet-400/60 mt-0.5 uppercase tracking-wider font-bold">Recommandé</div>
-                      </td>
-                      {COMPETITORS.map((c) => (
-                        <td key={c.name} className="py-4 px-4 text-center">
-                          <span className="text-lg text-content-tertiary">{c.proPrice}</span>
-                        </td>
-                      ))}
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-
-          {/* Economic argument */}
-          <div className="mt-10 p-6 rounded-2xl border border-green-500/20 bg-green-500/[0.04]">
-            <div className="flex flex-col sm:flex-row items-start gap-4">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center flex-shrink-0">
-                <TrendingDown size={18} className="text-white" />
-              </div>
-              <div>
-                <h3 className="font-semibold text-lg mb-2">{t('landing.competition.calcTitle')}</h3>
-                <p className="text-sm text-content-secondary leading-relaxed" dangerouslySetInnerHTML={{ __html: t('landing.competition.calcDesc') }} />
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* Note pivot mai 2026 : le tableau comparatif concurrents
+          (id="vs-concurrence") a été DÉPLACÉ tout en bas de page,
+          juste après le Final CTA. Le visiteur qui veut comparer y
+          va volontairement — on ne lui balance plus dans la figure
+          dès l'arrivée. */}
 
       {/* Pricing */}
       {/* Testimonials — rassure avant la décision d'achat */}
@@ -1559,6 +1673,115 @@ export default function LandingContent() {
             Sans carte bancaire · 100 prospects gratuits · Annulation en 1 clic
           </p>
         </MotionInView>
+      </section>
+
+      {/* ──────────────────────────────────────────────────────────────
+          COMPARATIF CONCURRENTS — déplacé en bas de page (pivot mai 2026)
+          ─────────────────────────────────────────────────────────────
+          Avant : section dominante au milieu de la landing ("Apollo
+          coûte 99$. Volia 19€. Vous voyez l'idée.").
+          Après : section optionnelle juste avant le footer pour les
+          visiteurs qui veulent comparer volontairement.
+       */}
+      <section id="vs-concurrence" className="py-24 px-4 sm:px-6 border-t border-line bg-zinc-50/40">
+        <div className="max-w-6xl mx-auto">
+          <MotionInView>
+            <div className="text-center mb-12">
+              <p className="text-sm font-semibold text-content-tertiary mb-3 uppercase tracking-wider">{t('landing.competition.label')}</p>
+              <h2 className="font-display text-2xl sm:text-4xl font-bold mb-4 text-content-primary">
+                {t('landing.competition.title')}
+              </h2>
+              <p className="text-content-tertiary text-base max-w-2xl mx-auto" dangerouslySetInnerHTML={{ __html: t('landing.competition.desc') }} />
+            </div>
+          </MotionInView>
+
+          <div className="p-1 rounded-2xl bg-gradient-to-b from-violet-500/20 to-transparent">
+            <div className="p-6 sm:p-8 rounded-2xl bg-surface-card border border-line">
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-line">
+                      <th className="text-left py-4 px-4 font-medium text-content-tertiary min-w-[140px]"></th>
+                      <th className="text-center py-4 px-4 min-w-[120px]">
+                        <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 text-[10px] font-bold uppercase tracking-wider mb-1">
+                          <TrendingDown size={10} /> Le moins cher
+                        </div>
+                        <div className="font-bold text-violet-400 text-base">Volia</div>
+                        <div className="text-violet-400/60 text-xs mt-0.5">dès 19&euro;/{t('landing.competition.month')}</div>
+                      </th>
+                      {COMPETITORS.map((c) => (
+                        <th key={c.name} className="text-center py-4 px-4 font-medium text-content-tertiary min-w-[100px]">
+                          <div>{c.name}</div>
+                          <div className="text-content-muted text-xs mt-0.5">dès {c.entryPrice}/{t('landing.competition.month')}</div>
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {[
+                      { label: t('landing.competition.enrichSources'), volia: t('landing.competition.sevenSources'), key: 'enrichments' },
+                      { label: t('landing.competition.confidenceScoring'), volia: true, key: 'scoring' },
+                      { label: t('landing.competition.aiSearch'), volia: true, key: 'ai' },
+                      { label: t('landing.competition.deptsFR'), volia: true, key: 'depts' },
+                      { label: t('landing.competition.b2bCategories'), volia: '150+', key: 'categories' },
+                      { label: t('landing.competition.googlePlaces'), volia: true, key: 'google', competitors: [false, false, false, false, false] },
+                    ].map((row) => (
+                      <tr key={row.label} className="border-b border-line">
+                        <td className="py-3.5 px-4 text-content-secondary">{row.label}</td>
+                        <td className="py-3.5 px-4 text-center">
+                          {typeof row.volia === 'boolean' ? (
+                            <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-violet-500/20">
+                              <Check size={14} className="text-violet-400" />
+                            </span>
+                          ) : (
+                            <span className="font-semibold text-content-primary">{row.volia}</span>
+                          )}
+                        </td>
+                        {COMPETITORS.map((c) => {
+                          const val = row.competitors ? row.competitors[COMPETITORS.indexOf(c)] : c[row.key];
+                          return (
+                            <td key={c.name} className="py-3.5 px-4 text-center">
+                              {typeof val === 'boolean' ? (
+                                val ? <Check size={14} className="text-content-tertiary mx-auto" /> : <X size={14} className="text-zinc-800 mx-auto" />
+                              ) : (
+                                <span className="text-content-tertiary">{val}</span>
+                              )}
+                            </td>
+                          );
+                        })}
+                      </tr>
+                    ))}
+                    {/* Price rows : Entry tier (Solo) + Pro tier */}
+                    <tr className="border-t-2 border-line">
+                      <td className="py-4 px-4 text-content-secondary font-semibold">Ticket d&apos;entrée</td>
+                      <td className="py-4 px-4 text-center">
+                        <span className="text-2xl font-bold text-emerald-400">19&euro;</span>
+                        <div className="text-[10px] text-emerald-400/60 mt-0.5 uppercase tracking-wider font-bold">Solo</div>
+                      </td>
+                      {COMPETITORS.map((c) => (
+                        <td key={c.name} className="py-4 px-4 text-center">
+                          <span className="text-lg text-content-tertiary">{c.entryPrice}</span>
+                        </td>
+                      ))}
+                    </tr>
+                    <tr className="border-t border-line">
+                      <td className="py-4 px-4 text-content-secondary font-semibold">Plan Pro</td>
+                      <td className="py-4 px-4 text-center">
+                        <span className="text-2xl font-bold text-violet-400">49&euro;</span>
+                        <div className="text-[10px] text-violet-400/60 mt-0.5 uppercase tracking-wider font-bold">Recommandé</div>
+                      </td>
+                      {COMPETITORS.map((c) => (
+                        <td key={c.name} className="py-4 px-4 text-center">
+                          <span className="text-lg text-content-tertiary">{c.proPrice}</span>
+                        </td>
+                      ))}
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
       </section>
 
       </main>

@@ -642,12 +642,18 @@ const fr = {
     },
     // Hero
     hero: {
-      badge: 'Apollo · Lemlist · HubSpot · Typeform — un seul outil, 19 EUR/mois',
-      title: 'Prospectez avec',
-      subtitle: 'Volia scrape les sites web et cherche sur Google. On trouve l\'email pro de chaque entreprise. <strong class="text-content-secondary">150+ categories, 101 departements</strong>, score de confiance par lead.',
-      price: '19 EUR/mois. Le moins cher de France. Annulez en 1 clic.',
-      compare: 'Voir le comparatif',
-      sourcesLabel: 'Sources integrees :',
+      badge: 'Suite B2B française · 4 modules · 19 €/mois',
+      // Nouvelle direction : on parle du résultat client, pas des concurrents.
+      title: 'Trouve tes 50 premiers prospects en 30 secondes.',
+      titleLine2: 'Lance ta campagne en 5 minutes.',
+      subtitle: 'Volia : Prospection + Campagnes + CRM + Formulaires. Une seule app, un seul login, 19 €/mois pour démarrer. <strong class="text-content-primary">Sans CB.</strong>',
+      price: '19 €/mois pour démarrer. Annulation en 1 clic.',
+      compare: 'Voir une démo',
+      sourcesLabel: 'Sources intégrées :',
+      // Trust strip sous le hero
+      trustStrip: '287 000+ entreprises dans la base · 4 modules connectés · Made in France · RGPD by default',
+      ctaPrimary: 'Démarrer gratuitement',
+      ctaSecondary: 'Voir une démo',
     },
     // Why aggregator
     why: {
@@ -734,8 +740,8 @@ const fr = {
     // Competition
     competition: {
       label: 'Comparatif tarifaire',
-      title: 'Apollo coute 99$. Volia 19 EUR. Vous voyez l\'idee.',
-      desc: 'Volia <strong class="text-emerald-400">demarre a 19 EUR/mois</strong>. Le ticket d\'entree le moins cher du marche francais. Pro a 49 EUR ? <strong class="text-emerald-400">2x moins cher qu\'Apollo</strong>, avec Google Places integre en bonus.',
+      title: 'Tu compares Volia à d\'autres outils ?',
+      desc: 'Voici comment on se positionne face aux concurrents les plus connus. <strong class="text-emerald-400">À toi de voir.</strong>',
       month: 'mois',
       enrichSources: 'Sources d\'enrichissement',
       confidenceScoring: 'Score de confiance',

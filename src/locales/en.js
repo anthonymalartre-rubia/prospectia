@@ -640,12 +640,17 @@ const en = {
     },
     // Hero
     hero: {
-      badge: 'Cheapest on the French market - Solo at EUR 19/month - unlimited prospects',
-      title: 'Prospect with',
-      subtitle: 'Volia scrapes websites and searches Google to find the professional email of every business. <strong class="text-content-secondary">150+ categories, 101 departments</strong>, confidence scoring.',
-      price: 'Starting at EUR 19/month - cheapest in France. Cancel anytime.',
-      compare: 'Compare with competition',
+      badge: 'French B2B suite · 4 modules · €19/mo',
+      // Same client-centric pivot as the FR version.
+      title: 'Find your first 50 leads in 30 seconds.',
+      titleLine2: 'Ship your campaign in 5 minutes.',
+      subtitle: 'Volia: Prospecting + Campaigns + CRM + Forms. One app, one login, €19/mo to start. <strong class="text-content-primary">No credit card.</strong>',
+      price: '€19/mo to start. Cancel anytime, one click.',
+      compare: 'Watch a demo',
       sourcesLabel: 'Integrated sources:',
+      trustStrip: '287,000+ companies in the database · 4 connected modules · Made in France · GDPR by default',
+      ctaPrimary: 'Start for free',
+      ctaSecondary: 'Watch a demo',
     },
     // Why aggregator
     why: {
@@ -732,8 +737,8 @@ const en = {
     // Competition
     competition: {
       label: 'Pricing comparison',
-      title: 'Cheapest on the market, proven by the numbers',
-      desc: 'Volia <strong class="text-emerald-400">starts at EUR 19/month</strong> \u2014 the cheapest entry ticket on the French market. Our Pro plan at EUR 49/month is <strong class="text-emerald-400">2x cheaper than Apollo</strong> with built-in Google Places discovery.',
+      title: 'Comparing Volia with other tools?',
+      desc: 'Here\'s how we stack up against the most well-known competitors. <strong class="text-emerald-400">You decide.</strong>',
       month: 'month',
       enrichSources: 'Enrichment sources',
       confidenceScoring: 'Confidence scoring',
