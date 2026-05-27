@@ -205,9 +205,15 @@ export default function SettingsPage() {
     return () => window.removeEventListener('hashchange', readHash);
   }, []);
 
+  // Bug fix 27 mai 2026 : avec le tab system, scrollIntoView sur une
+  // section cachée (display:none via 'hidden') ne fait rien. La fonction
+  // doit update le hash → déclenche hashchange → setActiveSection →
+  // section devient visible, puis scroll au top.
   const scrollToSection = useCallback((id) => {
-    const el = document.getElementById(id);
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (typeof window !== 'undefined') {
+      window.location.hash = id;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   }, []);
 
   function showToast(message, type = 'success') {
