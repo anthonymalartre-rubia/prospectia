@@ -27,8 +27,20 @@ export default function FormsLayout({ children }) {
   //   /admin/forms/abc/preview        → preview fullscreen
   //   /admin/forms/abc/settings       → garde sidebar
   //   /admin/forms/abc/responses      → garde sidebar
-  const fullscreenMatch = /^\/admin\/forms\/[^/]+(\/preview)?\/?$/.test(pathname);
-  const isFullscreen = fullscreenMatch && pathname !== '/admin/forms';
+  //   /admin/forms/templates          → garde sidebar (sous-route nommée)
+  //   /admin/forms/stats              → garde sidebar (sous-route nommée)
+  //
+  // ⚠️ Bug 28 mai 2026 (signalé par founder) : la regex `[^/]+` matchait
+  // aussi "templates" et "stats" → le menu de gauche disparaissait sur
+  // ces 2 pages. Fix : whitelist explicite des sous-routes nommées non
+  // fullscreen, comme ça toute future sous-route (ex /admin/forms/import)
+  // ne cassera pas non plus.
+  const RESERVED_SUBROUTES = new Set(['templates', 'stats']);
+  const fullscreenExec = /^\/admin\/forms\/([^/]+)(\/preview)?\/?$/.exec(pathname);
+  const isFullscreen =
+    fullscreenExec &&
+    pathname !== '/admin/forms' &&
+    !RESERVED_SUBROUTES.has(fullscreenExec[1]);
 
   if (isFullscreen) {
     return <main className="min-w-0">{children}</main>;
