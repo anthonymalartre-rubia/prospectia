@@ -117,12 +117,14 @@ function KanbanColumn({
           Compaction sur 1 ligne → moins haut, moins de chance d'être
           recouvert, et même tronqué l'user voit nom + total.
 
-          Sticky `top-[140px]` (= TopBar 56 + page header ~84) : reste
-          collé sous le sticky de page, donc même au scroll vertical
-          profond avec beaucoup de cards, le nom du stage reste visible.
-          z-10 < z-30 du page header pour ne pas le chevaucher.
-          shadow-sm subtile pour démarquer du contenu qui passe dessous. */}
-      <div className={`px-3 py-2.5 rounded-t-xl ${colors.headerBg} border-b-2 ${colors.border} sticky top-[140px] z-10 shadow-sm`}>
+          [Revert 28 mai 2026 — tentative sticky abandonnée]
+          On avait essayé `sticky top-[140px]` pour que le header reste
+          visible au scroll vertical profond. Mais le sticky se positionnait
+          EN BAS de la column (au lieu de top viewport) parce que la column
+          flex est plus courte que le delta de scroll requis → sticky reste
+          collé à la fin du parent. Re-tentative future = autre approche
+          (ex : KanbanBoard avec h-[calc(100vh-N)] + scroll interne). */}
+      <div className={`px-3 py-2.5 rounded-t-xl ${colors.headerBg} border-b-2 ${colors.border}`}>
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2 min-w-0">
             <span

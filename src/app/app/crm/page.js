@@ -414,10 +414,10 @@ export default function CrmAppPage() {
     <div className="min-h-screen bg-surface-base text-content-primary flex flex-col">
       <TopBar user={user} onToggleSidebar={() => setSidebarOpen((v) => !v)} />
 
-      <div className="flex flex-1">
+      <div className="flex flex-1 overflow-hidden">
         <CrmSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-        <main className="flex-1 flex flex-col min-w-0">
+        <main className="flex-1 flex flex-col overflow-hidden min-w-0">
           {/* ─── Pipeline header ──────────────────────────────────── */}
           <header className="border-b border-line bg-surface-base sticky top-14 z-30">
             <div className="px-4 sm:px-6 py-3 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
@@ -667,12 +667,8 @@ export default function CrmAppPage() {
             )}
           </header>
 
-          {/* ─── Kanban content ──────────────────────────────────────
-              Note 28 mai 2026 : retrait du `overflow-hidden` pour laisser
-              le sticky `top-[140px]` des headers de colonne (KanbanBoard)
-              fonctionner correctement. Le scroll horizontal du board est
-              géré par son propre `overflow-x-auto`. */}
-          <section className="flex-1 px-3 sm:px-5 py-4 bg-gradient-to-br from-emerald-50/30 via-surface-base to-teal-50/20">
+          {/* ─── Kanban content ──────────────────────────────────── */}
+          <section className="flex-1 px-3 sm:px-5 py-4 bg-gradient-to-br from-emerald-50/30 via-surface-base to-teal-50/20 overflow-hidden">
             {dataLoading && !pipeline ? (
               <KanbanSkeleton />
             ) : !pipeline ? (
